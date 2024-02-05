@@ -1,6 +1,7 @@
 import React from "react";
 import brandSm from "../../assets/dist/img/brand-sm.svg";
 import brand from "../../assets/dist/img/Jampack.svg";
+import { Link } from "react-router-dom";
 
 const VerticalNavbar = () => {
   return (
@@ -48,7 +49,7 @@ const VerticalNavbar = () => {
             <div className="menu-group">
               <ul className="navbar-nav flex-column">
                 <li className="nav-item active">
-                  <a className="nav-link" href="index.html">
+                  <Link className="nav-link" to={"/dashboard"}>
                     <span className="nav-icon-wrap">
                       <span className="svg-icon">
                         <svg
@@ -76,7 +77,7 @@ const VerticalNavbar = () => {
                     <span className="badge badge-sm badge-soft-pink ms-auto">
                       Hot
                     </span>
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -124,9 +125,9 @@ const VerticalNavbar = () => {
                     <li className="nav-item">
                       <ul className="nav flex-column">
                         <li className="nav-item">
-                          <a className="nav-link" href="/chats">
+                          <Link to={"/chats"} className="nav-link">
                             <span className="nav-link-text">Chats</span>
-                          </a>
+                          </Link>
                         </li>
                         <li className="nav-item">
                           <a className="nav-link" href="chats-group.html">

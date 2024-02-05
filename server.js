@@ -18,7 +18,7 @@ global.db = knex(knexConfig);
 //Database connection
 dbConnection.connect_database();
 
-const app = express();
+global.app = express();
 require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 // Setting parsers for parsing the incoming data
@@ -47,7 +47,12 @@ app.use(
 );
 
 //Allow requests from the client
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST"],
+  })
+);
 //error handling middleware
 app.use((error, req, res, next) => {
   logger.error(`Error :: ${req.originalUrl} :: ${error}`);
@@ -66,12 +71,17 @@ app.get("/", (req, res) => {
 });
 
 //Routes
-const authRoutes = require("./routes/auth");
-
-app.use("/v1/auth", authRoutes);
-
+const routes = require("./routes");
 const port = process.env.PORT;
 const server = http.createServer(app);
+const { Server } = require("socket.io");
+global.io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+const socketLogic = require("./socket");
 server.listen(port, () => {
   console.log("Server listening on port " + port);
 });

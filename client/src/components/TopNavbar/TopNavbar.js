@@ -570,12 +570,12 @@ const TopNavbar = () => {
                             </div>
                           </div>
                           <div className="fs-7">contact@hencework.com</div>
-                          <a
+                          <button
                             onClick={handleLogOut}
-                            className="d-block fs-8 link-secondary "
+                            className="d-block fs-8 link-secondary btn btn-light text-dark btn-sm"
                           >
-                            <u>Sign Out</u>
-                          </a>
+                            Sign Out
+                          </button>
                         </div>
                       </div>
                     </div>
