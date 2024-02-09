@@ -21,7 +21,7 @@ const SignIn = () => {
   } = useForm({});
   useEffect(() => {
     if (isAuthenticated) {
-      redirectTo("/dashboard");
+      redirectTo("/");
     }
   }, [isAuthenticated, redirectTo]);
   const signInHandler = (data) => {

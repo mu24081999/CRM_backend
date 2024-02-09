@@ -9,6 +9,10 @@ exports.up = function (knex) {
     table.string("recipient").notNullable();
     table.string("room").notNullable();
     table.string("message").nullable();
+    table.string("file_url").nullable();
+    table.string("file_key").nullable();
+    table.bigint("file_size").nullable();
+    table.enum("type", ["text", "file"]).defaultTo("text");
     // table.foreign("sender_id").references("id").inTable("users");
 
     table.timestamps(true, true);

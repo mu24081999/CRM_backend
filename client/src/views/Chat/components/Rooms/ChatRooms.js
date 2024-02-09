@@ -10,7 +10,7 @@ const ChatRooms = ({ rooms, authUser, socket, onDataFromChild, messages }) => {
   const roomClickHandler = (room) => {
     console.log("🚀 ~ roomClickHandler ~ room:", room);
     setSelectedRoom(room);
-    // console.log("🚀 ~ ChatRooms ~ selectedRoom:", selectedRoom);
+    console.log("🚀 ~ ChatRooms ~ selectedRoom:", room.name);
     sendDataToParent();
     socket.emit("joinRoom", { roomId: room.name });
   };
@@ -76,9 +76,11 @@ const ChatRooms = ({ rooms, authUser, socket, onDataFromChild, messages }) => {
                     </div>
                     <div>
                       <div class="last-chat-time">
-                        {formatRelativeDate(
-                          lastMessage?.created_at || new Date()
-                        )}
+                        {lastMessage?.created_at
+                          ? formatRelativeDate(
+                              lastMessage?.created_at || new Date()
+                            )
+                          : "..."}
                       </div>
                       <div class="badge badge-primary badge-sm badge-pill">
                         15

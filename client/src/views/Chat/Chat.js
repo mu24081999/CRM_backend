@@ -1,6 +1,6 @@
 import React from "react";
 import Layout from "../layout/Layout";
-import ChatContent from "./ChatContent";
+import ChatContent from "./components/ChatContent/ChatContent";
 
 const Chat = () => {
   return (

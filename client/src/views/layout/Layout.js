@@ -14,14 +14,17 @@ const Layout = ({ component }) => {
   }, [isAuthenticated, redirectTo]);
   return (
     <div
-      className="hk-wrapper"
+      class="hk-wrapper"
       data-layout="vertical"
-      data-layout-style="default"
+      data-layout-style="collapsed"
       data-menu="light"
       data-footer="simple"
+      data-hover="active"
     >
       <TopNavbar />
       <VerticalNavbar />
+      <div id="hk_menu_backdrop" className="hk-menu-backdrop"></div>
+
       <ChatPopup />
       {component}
     </div>

@@ -1,7 +1,17 @@
 import React from "react";
-import ChatRooms from "./ChatRooms";
+import ChatRooms from "../Rooms/ChatRooms";
+import { FaCog, FaPlus, FaUserCheck } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 const ChatAside = ({ rooms, authUser, socket, onDataFromChild, messages }) => {
+  const { users } = useSelector((state) => state.user);
+  function extractCharactersFromArray(str) {
+    const firstCharacter = str?.charAt(0);
+    const spaceIndex = str?.indexOf(" ");
+    const characterAfterSpace =
+      spaceIndex !== -1 ? str.charAt(spaceIndex + 1) : "";
+    return { firstCharacter, characterAfterSpace };
+  }
   return (
     <div>
       {" "}
@@ -58,14 +68,16 @@ const ChatAside = ({ rooms, authUser, socket, onDataFromChild, messages }) => {
               >
                 <span class="icon">
                   <span class="feather-icon">
-                    <i data-feather="settings"></i>
+                    {/* <i data-feather="settings"></i> */}
+                    <FaCog />
                   </span>
                 </span>
               </a>
               <div class="dropdown-menu dropdown-menu-end">
                 <a class="dropdown-item" href="/">
                   <span class="feather-icon dropdown-icon">
-                    <i data-feather="user-check"></i>
+                    {/* <i data-feather="user-check"></i> */}
+                    <FaUserCheck />
                   </span>
                   <span>Active Contacts</span>
                 </a>
@@ -107,7 +119,8 @@ const ChatAside = ({ rooms, authUser, socket, onDataFromChild, messages }) => {
             >
               <span class="icon">
                 <span class="feather-icon">
-                  <i data-feather="plus"></i>
+                  {/* <i data-feather="plus"></i> */}
+                  <FaPlus />
                 </span>
               </span>
             </a>
@@ -126,40 +139,47 @@ const ChatAside = ({ rooms, authUser, socket, onDataFromChild, messages }) => {
               <span>Frequent contact</span>
             </div>
             <ul class="hk-list">
-              <li>
-                <div class="avatar avatar-sm avatar-primary position-relative avatar-rounded">
-                  <span class="initial-wrap">H</span>
-                  <div class="badge-icon badge-circle badge-icon-xxs text-white position-bottom-end-overflow-1">
-                    <div class="badge-icon-wrap">
-                      <i class="ri-group-fill text-light"></i>
+              {users?.length > 0 &&
+                users.map((user, inded) => (
+                  <li>
+                    <div class="avatar avatar-sm avatar-primary position-relative avatar-rounded">
+                      <span class="initial-wrap">
+                        {extractCharactersFromArray(user.name).firstCharacter +
+                          extractCharactersFromArray(user.name)
+                            .characterAfterSpace}
+                      </span>
+                      <div class="badge-icon badge-circle badge-icon-xxs text-white position-bottom-end-overflow-1">
+                        <div class="badge-icon-wrap">
+                          <i class="ri-group-fill text-light"></i>
+                        </div>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 127 127"
+                        >
+                          <g
+                            data-name="Ellipse 302"
+                            transform="translate(8 8)"
+                            stroke-width="3"
+                          >
+                            <circle
+                              cx="55.5"
+                              cy="55.5"
+                              r="55.5"
+                              stroke="currentColor"
+                            ></circle>
+                            <circle
+                              cx="55.5"
+                              cy="55.5"
+                              r="59.5"
+                              fill="currentColor"
+                            ></circle>
+                          </g>
+                        </svg>
+                      </div>
                     </div>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 127 127"
-                    >
-                      <g
-                        data-name="Ellipse 302"
-                        transform="translate(8 8)"
-                        stroke-width="3"
-                      >
-                        <circle
-                          cx="55.5"
-                          cy="55.5"
-                          r="55.5"
-                          stroke="currentColor"
-                        ></circle>
-                        <circle
-                          cx="55.5"
-                          cy="55.5"
-                          r="59.5"
-                          fill="currentColor"
-                        ></circle>
-                      </g>
-                    </svg>
-                  </div>
-                </div>
-              </li>
-              <li>
+                  </li>
+                ))}
+              {/* <li>
                 <div class="avatar avatar-sm avatar-primary position-relative avatar-rounded">
                   <img
                     src="dist/img/avatar1.jpg"
@@ -220,7 +240,7 @@ const ChatAside = ({ rooms, authUser, socket, onDataFromChild, messages }) => {
                     class="avatar-img"
                   />
                 </div>
-              </li>
+              </li> */}
             </ul>
           </div>
           <ChatRooms

@@ -1,22 +1,20 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import ChatAside from "./ChatAside";
-import SingleChat from "./SingleChat";
-import AudioCall from "./AudioCall";
-import VideoCall from "./VideoCall";
-import InvitePeople from "./InvitePeople";
+import ChatAside from "../ChatAside/ChatAside";
+import SingleChat from "../Messages/SingleChat";
+import AudioCall from "../AudioCall/AudioCall";
+import VideoCall from "../VideoCall/VideoCall";
+import InvitePeople from "../InvitePeople/InvitePeople";
 import { useDispatch, useSelector } from "react-redux";
-import { getUsers } from "../../redux/services/users";
+import { getUsers } from "../../../../redux/services/users";
 import io from "socket.io-client";
 import { toast } from "react-toastify";
 import axios from "axios";
 
 const ChatContent = () => {
   const backendURL = `${process.env.REACT_APP_BACKEND_URL_PRODUCTION}`;
+  const socketURL = process.env.REACT_APP_BACKEND_SOCKET_URL_PRODUCTION;
   //Socket connection
-  const socket = useMemo(
-    () => io(process.env.REACT_APP_BACKEND_SOCKET_URL_PRODUCTION),
-    []
-  );
+  const socket = useMemo(() => io(socketURL), [socketURL]);
   const [selectedRoom, setSelectedRoom] = useState({});
   const [messages, setMessages] = useState([]);
   const [allMessages, setAllMessages] = useState([]);
@@ -106,6 +104,7 @@ const ChatContent = () => {
   useEffect(() => {
     // Listen for incoming messages
     socket.on("message_added", (data) => {
+      console.log("🚀 ~ socket.on ~ data:", data);
       // setMessages([...messages, data]);
       setMessages(data);
     });

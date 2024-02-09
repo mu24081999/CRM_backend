@@ -1,13 +1,39 @@
 import _ from "lodash";
 import moment from "moment";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { FaArrowAltCircleRight, FaFileExport } from "react-icons/fa";
+import AWS from "aws-sdk";
+import FilePreview from "../../../../components/FilePreview/FilePreview";
 
 const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [files, setFiles] = useState([]);
+  console.log("🚀 ~ SingleChat ~ files:", files);
+
   const [message, setMessage] = useState();
-  console.log("🚀 ~ SingleChat ~ message:", message);
-  const sendMessage = (e) => {
-    if (e.key === "Enter") {
-      const messageData = {
+  const sendMessage = () => {
+    // if (e.key === "Enter") {
+
+    let formData;
+    if (selectedFile) {
+      formData = {
+        sender:
+          selectedRoom && selectedRoom?.user_id_1 === authUser?.id
+            ? selectedRoom.user_id_1
+            : selectedRoom?.user_id_2,
+        recipient:
+          selectedRoom && selectedRoom?.user_id_1 === authUser?.id
+            ? selectedRoom.user_id_2
+            : selectedRoom?.user_id_1,
+        room: selectedRoom?.name,
+        file_name: selectedFile.name,
+        file_data: selectedFile,
+        file_size: selectedFile.size,
+        file_type: selectedFile.type,
+        type: "file",
+      };
+    } else {
+      formData = {
         sender:
           selectedRoom && selectedRoom?.user_id_1 === authUser?.id
             ? selectedRoom.user_id_1
@@ -18,14 +44,90 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
             : selectedRoom?.user_id_1,
         room: selectedRoom?.name,
         message: message,
+        type: "text",
       };
-      console.log("🚀 ~ sendMessage ~ messageData:", messageData);
-      socket.emit("chat_message", messageData);
-      setMessage("");
-      //   const chatBody = document.getElementById("chat_body");
-      //   chatBody.scrollTop = chatBody.scrollHeight;
+    }
+    socket.emit("chat_message", formData);
+    // socket.emit("chat_message", messageData);
+    setMessage("");
+    setSelectedFile("");
+    document
+      .getElementById("dummy_avatar")
+      .scrollIntoView({ behavior: "smooth", block: "end" });
+
+    //   const chatBody = document.getElementById("chat_body");
+    //   chatBody.scrollTop = chatBody.scrollHeight;
+    // }
+  };
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+
+  useEffect(() => {
+    // Configure AWS
+    AWS.config.update({
+      accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY,
+      secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+      region: process.env.REACT_APP_AWS_REGION,
+    });
+
+    // Create S3 service object
+    const s3 = new AWS.S3();
+
+    const fetchObjects = async () => {
+      const params = {
+        Bucket: "jampackcrm",
+      };
+      try {
+        const data = await s3.listObjectsV2(params).promise();
+        setFiles(data.Contents);
+      } catch (error) {
+        console.error("Error fetching objects:", error);
+      }
+    };
+
+    fetchObjects();
+  }, []);
+  const downloadFile = async (bucketName, objectKey) => {
+    const s3 = new AWS.S3();
+    const params = {
+      Bucket: bucketName,
+      Key: objectKey,
+    };
+    try {
+      const data = await s3.getObject(params).promise();
+      const url = URL.createObjectURL(new Blob([data.Body]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", objectKey);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading file:", error);
     }
   };
+  const getFile = (key) => {
+    const file = files?.filter((fl) => fl.Key === key);
+    console.log("🚀 ~ getFile ~ file:", file);
+    return file;
+  };
+  // Function to extract file extension from the file name
+  function getFileExtension(filename) {
+    const resp = filename?.split(".").pop().toLowerCase();
+    console.log("🚀 ~ getFileExtension ~ resp:", resp);
+    return resp;
+  }
+  // Function to convert bytes to gigabytes (GB)
+  function bytesToGigabytes(bytes) {
+    return (bytes / (1024 * 1024 * 1024)).toFixed(2);
+  }
+
+  // Function to convert bytes to megabytes (MB)
+  function bytesToMegabytes(bytes) {
+    return (bytes / (1024 * 1024)).toFixed(2);
+  }
+
   return (
     <div class="chatapp-single-chat">
       <header class="chat-header">
@@ -243,7 +345,7 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
           {messages?.length > 0 ? (
             messages.map((msg, index) =>
               _.toInteger(msg?.sender) !== authUser?.id ? (
-                <li class="media received">
+                <li class="media received" key={index}>
                   <div class="avatar avatar-xs avatar-rounded">
                     <img
                       //   src="dist/img/avatar8.jpg"
@@ -259,9 +361,31 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
                   <div class="media-body">
                     <div class="msg-box">
                       <div>
+                        {msg?.file_key && (
+                          <button
+                            style={{ border: "none", background: "none" }}
+                            onClick={() =>
+                              downloadFile(
+                                "jampackcrm",
+                                getFile(msg.file_key)[0]?.Key
+                              )
+                            }
+                          >
+                            <FilePreview
+                              fileType={getFileExtension(msg?.file_key)}
+                              fileUrl={`https://s3.eu-west-2.amazonaws.com/jampackcrm/${msg?.file_key}`}
+                            />
+                          </button>
+                        )}
                         <p>{msg.message}</p>
                         <span class="chat-time">
                           {moment(message?.created_at).format("h:mm A")}
+                          <span className="float-end">
+                            {" "}
+                            {msg?.file_key &&
+                              (msg?.file_size / (1024 * 1024)).toFixed(2) +
+                                " mb"}
+                          </span>
                         </span>
                       </div>
                       <div class="msg-action">
@@ -296,53 +420,38 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
                         </div>
                       </div>
                     </div>
-                    {/* <div class="msg-box">
-                            <div>
-                              <p>Images for new marketing pages have been sent</p>
-                              <span class="chat-time">10:53 PM</span>
-                            </div>
-                            <div class="msg-action">
-                              <a
-                                href="/"
-                                class="btn btn-icon btn-flush-dark btn-rounded flush-soft-hover no-caret"
-                              >
-                                <span class="icon">
-                                  <span class="feather-icon">
-                                    <i data-feather="corner-up-right"></i>
-                                  </span>
-                                </span>
-                              </a>
-                              <a
-                                href="/"
-                                class="btn btn-icon btn-flush-dark btn-rounded flush-soft-hover dropdown-toggle no-caret"
-                                data-bs-toggle="dropdown"
-                              >
-                                <span class="icon">
-                                  <span class="feather-icon">
-                                    <i data-feather="more-horizontal"></i>
-                                  </span>
-                                </span>
-                              </a>
-                              <div class="dropdown-menu dropdown-menu-end">
-                                <a class="dropdown-item" href="/">
-                                  Forward
-                                </a>
-                                <a class="dropdown-item" href="/">
-                                  Copy
-                                </a>
-                              </div>
-                            </div>
-                          </div> */}
                   </div>
                 </li>
               ) : (
-                <li class="media sent">
+                <li class="media sent" key={index}>
                   <div class="media-body">
                     <div class="msg-box">
                       <div>
+                        {msg?.file_key && (
+                          <button
+                            style={{ border: "none", background: "none" }}
+                            onClick={() =>
+                              downloadFile(
+                                "jampackcrm",
+                                getFile(msg.file_key)[0]?.Key
+                              )
+                            }
+                          >
+                            <FilePreview
+                              fileType={getFileExtension(msg?.file_key)}
+                              fileUrl={`https://s3.eu-west-2.amazonaws.com/jampackcrm/${msg?.file_key}`}
+                            />
+                          </button>
+                        )}
                         <p>{msg.message}</p>
                         <span class="chat-time">
                           {moment(message?.created_at).format("h:mm A")}
+                          <span className="float-end">
+                            {" "}
+                            {msg?.file_key &&
+                              (msg?.file_size / (1024 * 1024)).toFixed(2) +
+                                " mb"}
+                          </span>
                         </span>
                       </div>
                       <div class="msg-action">
@@ -662,14 +771,15 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
       </div>
       <footer class="chat-footer">
         <button
-          class="btn btn-icon btn-flush-dark btn-rounded flush-soft-hover flex-shrink-0"
+          class="btn btn-icon btn-flush-primary btn-rounded flush-soft-hover flex-shrink-0"
           data-bs-toggle="dropdown"
           aria-haspopup="true"
           aria-expanded="false"
         >
           <span class="icon">
             <span class="feather-icon">
-              <i data-feather="share"></i>
+              {/* <i data-feather="share"></i> */}
+              <FaFileExport />
             </span>
           </span>
         </button>
@@ -682,7 +792,9 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
                 </span>
               </div>
               <div>
-                <span class="h6 mb-0">Photo or Video Library</span>
+                <span class="h6 mb-0">
+                  <input type="file" onChange={handleFileChange} />
+                </span>
               </div>
             </div>
           </a>
@@ -733,17 +845,16 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
               placeholder="Type your message..."
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              onKeyUp={(e) => sendMessage(e)}
+              onKeyUp={(e) => e.key === "Enter" && sendMessage()}
             />
             <span class="input-suffix">
               <button
                 class="btn btn-icon btn-flush-primary btn-rounded btn-send"
-                // onClick={sendMessage}
+                onClick={sendMessage}
               >
                 <span class="icon">
-                  <span class="feather-icon">
-                    <i data-feather="arrow-right"></i>
-                  </span>
+                  {/* <span class="feather-icon"></span> */}
+                  <FaArrowAltCircleRight />
                 </span>
               </button>
             </span>

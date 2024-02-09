@@ -10,7 +10,19 @@ const http = require("http");
 const knexConfig = require("./knexfile");
 const knex = require("knex");
 const dbConnection = require("./config/database");
+const multer = require("multer");
 
+const AWS = require("aws-sdk");
+
+// Set AWS credentials and region
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+});
+const connect = new AWS.Connect();
+global.s3 = new AWS.S3();
+global.upload = multer({ dest: "uploads/" });
 // const { Logger } = require("winston");
 
 //Global variables

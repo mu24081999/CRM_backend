@@ -77,18 +77,85 @@ io.on("connection", (socket) => {
   });
   socket.on("chat_message", async function (data) {
     console.log("🚀 ~ data:", data);
-    const { sender, recipient, message, room } = data;
-    const is_message_added = await db("chats").insert({
-      sender: sender,
-      recipient: recipient,
-      message: message,
-      room: room,
-    });
+    const {
+      sender,
+      recipient,
+      message,
+      room,
+      type,
+      file_name,
+      file_data,
+      file_size,
+      file_type,
+    } = data;
+    let formData;
+    if (type === "text") {
+      formData = {
+        sender: sender,
+        recipient: recipient,
+        message: message,
+        room: room,
+        type: "text",
+      };
+    } else if (type === "file") {
+      const params = {
+        Bucket: process.env.S3_BUCKET,
+        Key: file_name,
+        Body: file_data,
+        ContentType: file_type,
+      };
+      const is_added = await new Promise((resolve, reject) => {
+        s3.upload(params, {}, (err, data) => {
+          if (err) {
+            console.error(err);
+            reject(new Error("Error Uploading File: " + err));
+          } else {
+            // console.log("File uploaded successfully:", data);
+            formData = {
+              sender: sender,
+              recipient: recipient,
+              message: message,
+              room: room,
+              file_size: file_size,
+              file_url: data.Location,
+              file_key: data.Key,
+              type: "file",
+            };
+            resolve(true);
+          }
+        });
+      });
+    }
+    const is_message_added = await db("chats").insert(formData);
     if (!is_message_added) {
       throw new NEW_ERROR_RES(500, "Something went wrong." + error);
     }
     const room_messages = await db("chats").where({ room: room }).select();
     io.to(room).emit("message_added", room_messages);
+  });
+
+  socket.on("call-user", (data) => {
+    console.log("🚀 ~ socket.on ~ data:", data);
+
+    io.to(data.to).emit("call-made", {
+      offer: data.offer,
+      socket: socket.id,
+    });
+  });
+
+  socket.on("make-answer", (data) => {
+    console.log("🚀 ~ socket.on ~ data:", data);
+    io.to(data.to).emit("answer-made", {
+      socket: socket.id,
+      answer: data.answer,
+    });
+  });
+
+  socket.on("reject-call", (data) => {
+    console.log("🚀 ~ socket.on ~ data:", data);
+    io.to(data.from).emit("call-rejected", {
+      socket: socket.id,
+    });
   });
   socket.on("disconnect", () => {
     connectedDevices--;

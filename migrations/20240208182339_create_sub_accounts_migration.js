@@ -3,7 +3,7 @@
  * @returns { Promise<void> }
  */
 exports.up = function (knex) {
-  return knex.schema.createTable("users", (table) => {
+  return knex.schema.createTable("sub_accounts", (table) => {
     table.increments("id").primary();
     table.string("avatar").nullable();
     table.string("phone").nullable();
@@ -13,7 +13,7 @@ exports.up = function (knex) {
     table.string("password").notNullable();
     table.json("tags").nullable();
     table.string("role").nullable();
-    table.enum("status", ["active", "blocked"]).defaultTo("active");
+    table.enum("status", ["active", "blocked"]);
     table.timestamps(true, true);
   });
 };
@@ -23,5 +23,5 @@ exports.up = function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = function (knex) {
-  return knex.schema.dropTableIfExists("users");
+  return knex.schema.dropTableIfExists("sub_accounts");
 };

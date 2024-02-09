@@ -11,16 +11,28 @@ import ResetPassword from "./views/Auth/ResetPassword";
 import VerifyPassword from "./views/Auth/VerifyPassword";
 import ResetUserPassword from "./views/Auth/ResetUserPassword";
 import Chat from "./views/Chat/Chat";
+import Contacts from "./views/Contacts/Contacts";
+import Test from "./views/Test/Test";
 
 const router = createBrowserRouter([
   {
-    path: "/dashboard",
+    path: "/",
     element: <Dashboard />,
+    loader: Loader,
+  },
+  {
+    path: "/test",
+    element: <Test />,
     loader: Loader,
   },
   {
     path: "sign-in",
     element: <SignIn />,
+    loader: Loader,
+  },
+  {
+    path: "contacts",
+    element: <Contacts />,
     loader: Loader,
   },
   {
