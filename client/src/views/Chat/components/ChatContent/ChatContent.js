@@ -144,8 +144,16 @@ const ChatContent = () => {
                   socket={socket}
                 />
               )}
-              <AudioCall />
-              <VideoCall />
+              <AudioCall
+                socket={socket}
+                authUser={user}
+                selectedRoom={selectedRoom}
+              />
+              <VideoCall
+                socket={socket}
+                authUser={user}
+                selectedRoom={selectedRoom}
+              />
               <InvitePeople users={users} authUser={user} socket={socket} />
             </div>
           </div>

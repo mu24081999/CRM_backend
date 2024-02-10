@@ -134,28 +134,15 @@ io.on("connection", (socket) => {
     io.to(room).emit("message_added", room_messages);
   });
 
-  socket.on("call-user", (data) => {
-    console.log("🚀 ~ socket.on ~ data:", data);
-
-    io.to(data.to).emit("call-made", {
-      offer: data.offer,
-      socket: socket.id,
-    });
+  socket.emit("me", socket.id);
+  socket.on("disconnect_call", () => {
+    socket.broadcast.emit("callEnded");
   });
-
-  socket.on("make-answer", (data) => {
-    console.log("🚀 ~ socket.on ~ data:", data);
-    io.to(data.to).emit("answer-made", {
-      socket: socket.id,
-      answer: data.answer,
-    });
+  socket.on("callUser", ({ userToCall, signalData, from, name }) => {
+    io.to(userToCall).emit("callUser", { signal: signalData, from, name });
   });
-
-  socket.on("reject-call", (data) => {
-    console.log("🚀 ~ socket.on ~ data:", data);
-    io.to(data.from).emit("call-rejected", {
-      socket: socket.id,
-    });
+  socket.on("answerCall", (data) => {
+    io.to(data.to).emit("callAccepted", data.signal);
   });
   socket.on("disconnect", () => {
     connectedDevices--;

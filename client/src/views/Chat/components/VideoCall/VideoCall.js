@@ -1,6 +1,6 @@
 import React from "react";
 
-const VideoCall = () => {
+const VideoCall = ({ selectedRoom, authUser, socket }) => {
   return (
     <div>
       {/* <!--Video Call Window --> */}
@@ -46,9 +46,21 @@ const VideoCall = () => {
             </div>
             <div class="modal-body">
               <div class="avatar avatar-xxxl avatar-rounded d-20">
-                <img src="dist/img/avatar8.jpg" alt="user" class="avatar-img" />
+                <img
+                  src={
+                    selectedRoom.user_id_1 === authUser?.id
+                      ? selectedRoom.user_image_2
+                      : selectedRoom.user_image_1
+                  }
+                  alt="user"
+                  class="avatar-img"
+                />
               </div>
-              <h3 class="text-white mt-3">Huma Therman</h3>
+              <h3 class="text-white mt-3">
+                {selectedRoom.user_id_1 === authUser?.id
+                  ? selectedRoom.user_name_2
+                  : selectedRoom.user_name_1}
+              </h3>
               <p class="text-white">
                 Video Calling<span class="one">.</span>
                 <span class="two">.</span>
@@ -108,7 +120,11 @@ const VideoCall = () => {
               </ul>
               <div class="avatar avatar-lg avatar-rounded chatapp-caller-img">
                 <img
-                  src="dist/img/avatar13.jpg"
+                  src={
+                    selectedRoom.user_id_1 === authUser?.id
+                      ? selectedRoom.user_image_1
+                      : selectedRoom.user_image_2
+                  }
                   alt="user"
                   class="avatar-img"
                 />

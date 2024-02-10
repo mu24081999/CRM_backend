@@ -1,7 +1,14 @@
 import _ from "lodash";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
-import { FaArrowAltCircleRight, FaFileExport } from "react-icons/fa";
+import {
+  FaArrowAltCircleRight,
+  FaArrowDown,
+  FaFileExport,
+  FaPhone,
+  FaVideo,
+  FaInfo,
+} from "react-icons/fa";
 import AWS from "aws-sdk";
 import FilePreview from "../../../../components/FilePreview/FilePreview";
 
@@ -64,6 +71,9 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
   };
 
   useEffect(() => {
+    document
+      .getElementById("dummy_avatar")
+      .scrollIntoView({ behavior: "smooth", block: "end" });
     // Configure AWS
     AWS.config.update({
       accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY,
@@ -195,7 +205,7 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
             class="btn btn-icon btn-flush-dark btn-rounded flush-soft-hover d-none d-xl-block"
             href="/"
             data-bs-toggle="modal"
-            data-bs-target="/audio_call"
+            data-bs-target="#audio_call"
           >
             <span
               class="icon"
@@ -205,7 +215,8 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
               data-bs-original-title="Audio call"
             >
               <span class="feather-icon">
-                <i data-feather="phone"></i>
+                {/* <i data-feather="phone"></i> */}
+                <FaPhone />
               </span>
             </span>
           </a>
@@ -213,7 +224,7 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
             class="btn btn-icon btn-flush-dark btn-rounded flush-soft-hover d-none d-xl-block"
             href="/"
             data-bs-toggle="modal"
-            data-bs-target="/video_call"
+            data-bs-target="#video_call"
           >
             <span
               class="icon"
@@ -223,7 +234,8 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
               data-bs-original-title="Video Call"
             >
               <span class="feather-icon">
-                <i data-feather="video"></i>
+                {/* <i data-feather="video"></i> */}
+                <FaVideo />
               </span>
             </span>
           </a>
@@ -240,6 +252,7 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
             >
               <span class="feather-icon">
                 <i data-feather="info"></i>
+                <FaInfo />
               </span>
             </span>
           </a>
@@ -276,7 +289,7 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
               class="d-xl-none dropdown-item"
               href="/"
               data-bs-toggle="modal"
-              data-bs-target="/audio_call"
+              data-bs-target="#audio_call"
             >
               <span class="feather-icon dropdown-icon">
                 <i data-feather="phone"></i>
@@ -287,7 +300,7 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
               class="d-xl-none dropdown-item"
               href="/"
               data-bs-toggle="modal"
-              data-bs-target="/video_call"
+              data-bs-target="#video_call"
             >
               <span class="feather-icon dropdown-icon">
                 <i data-feather="video"></i>
@@ -493,6 +506,7 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
           ) : (
             <li> No Messages</li>
           )}
+
           {/* <li class="media media-attachment received">
             <div class="avatar avatar-xs avatar-rounded">
               <img src="dist/img/avatar8.jpg" alt="user" class="avatar-img" />
@@ -769,7 +783,19 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
           </li> */}
         </ul>
       </div>
+
       <footer class="chat-footer">
+        <button
+          className="btn btn-primary rounded-circle  float-end"
+          style={{ width: "35px" }}
+          onClick={() =>
+            document
+              .getElementById("dummy_avatar")
+              .scrollIntoView({ behavior: "smooth", block: "end" })
+          }
+        >
+          <FaArrowDown style={{ marginLeft: "-7px" }} />
+        </button>
         <button
           class="btn btn-icon btn-flush-primary btn-rounded flush-soft-hover flex-shrink-0"
           data-bs-toggle="dropdown"
@@ -875,9 +901,23 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
           </button>
           <div class="text-center">
             <div class="avatar avatar-xxl avatar-rounded">
-              <img src="dist/img/avatar8.jpg" alt="user" class="avatar-img" />
+              <img
+                src={
+                  selectedRoom?.user_id_1 === authUser?.id
+                    ? selectedRoom?.user_image_2
+                    : selectedRoom?.user_image_1 ||
+                      "https://darrenjameseeley.files.wordpress.com/2014/09/expendables3.jpeg"
+                }
+                alt="user"
+                class="avatar-img"
+              />
             </div>
-            <div class="cp-name text-truncate mt-2">Huma Therman</div>
+            <div class="cp-name text-truncate mt-2">
+              {" "}
+              {selectedRoom?.user_id_1 === authUser?.id
+                ? selectedRoom?.user_name_2
+                : selectedRoom?.user_name_1}
+            </div>
             <p class="text-truncate">No phone calls Always busy</p>
           </div>
 
