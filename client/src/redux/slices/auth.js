@@ -45,6 +45,9 @@ export const authSlice = createSlice({
       state.message = "Login Success";
       state.type = "Success";
     },
+    updatedMe: (state, action) => {
+      state.user = action.payload;
+    },
     logout: (state, action) => {
       state.user = {};
       state.user_id = "";
@@ -112,5 +115,6 @@ export const {
   forgotPassword,
   resetPassword,
   reloadPage,
+  updatedMe,
   verifyOtp,
 } = authSlice.actions;

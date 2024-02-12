@@ -19,7 +19,7 @@ const VideoPlayer = () => {
               ref={myVideo}
               autoPlay
               width="600"
-              controlsList="true"
+              controls="true"
             />
           </Grid>
         </Box>

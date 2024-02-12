@@ -1,6 +1,6 @@
 import _ from "lodash";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   FaArrowAltCircleRight,
   FaArrowDown,
@@ -11,13 +11,60 @@ import {
 } from "react-icons/fa";
 import AWS from "aws-sdk";
 import FilePreview from "../../../../components/FilePreview/FilePreview";
+import { SocketContext } from "../../../../Context";
+import { useDispatch, useSelector } from "react-redux";
+import { getUsers } from "../../../../redux/services/users";
 
 const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
+  const {
+    me,
+    // leaveCall,
+    calling,
+    // myVideo,
+    // name,
+    // setName,
+    // callEnded,
+    // leaveCall,
+    call,
+    callUser,
+  } = useContext(SocketContext);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [usersArray, setUsersArray] = useState(null);
+  const { users } = useSelector((state) => state.user);
+  const { token } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (selectedUser && me && token) {
+      // callUser(selectedUser?.socket_id, authUser.name);
+    }
+  }, [selectedUser, authUser, callUser, call, me, token]);
+  useEffect(() => {
+    if (users?.length > 0) {
+      setUsersArray(users);
+    }
+  }, [users]);
+
+  useEffect(() => {
+    if (token) {
+      dispatch(getUsers(token));
+    }
+  }, [token, dispatch]);
+  useEffect(() => {
+    const selectedId =
+      selectedRoom.user_id_1 === authUser.id
+        ? selectedRoom.user_id_2
+        : selectedRoom.user_id_1;
+    if (usersArray?.length > 0) {
+      const response = usersArray?.filter((user) => user.id === selectedId);
+      setSelectedUser(response[0]);
+    }
+  }, [usersArray, authUser, selectedRoom]);
   const [selectedFile, setSelectedFile] = useState(null);
+
   const [files, setFiles] = useState([]);
-  console.log("🚀 ~ SingleChat ~ files:", files);
 
   const [message, setMessage] = useState();
+
   const sendMessage = () => {
     // if (e.key === "Enter") {
 
@@ -221,10 +268,13 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
             </span>
           </a>
           <a
+            id="triggerCall"
             class="btn btn-icon btn-flush-dark btn-rounded flush-soft-hover d-none d-xl-block"
             href="/"
             data-bs-toggle="modal"
             data-bs-target="#video_call"
+            onClick={() => calling()}
+            // onClick={() => callUser(selectedUser?.socket_id, authUser.name)}
           >
             <span
               class="icon"

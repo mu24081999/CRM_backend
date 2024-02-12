@@ -15,7 +15,16 @@ io.on("connection", (socket) => {
   connectedDevices++;
   console.log("A user connected: ", socket.id);
   console.log("connectedDevices: " + connectedDevices);
-
+  socket.on("user_connected", async (user_id) => {
+    if (user_id) {
+      const is_updated = await db("users").where("id", user_id).update({
+        socket_id: socket.id,
+        connected: 1,
+      });
+      const user = await db("users").where("id", user_id).first();
+      io.to(user.socket_id).emit("updated_me", user);
+    }
+  });
   //chat events
   socket.on("joinRoom", ({ roomId }) => {
     console.log("🚀 ~ socket.on ~ roomId:", roomId);
@@ -135,17 +144,25 @@ io.on("connection", (socket) => {
   });
 
   socket.emit("me", socket.id);
-  socket.on("disconnect_call", () => {
-    socket.broadcast.emit("callEnded");
+  socket.on("disconnect_call", (data) => {
+    console.log("🚀 ~ socket.on ~ data:", data);
+    io.to(data.to).emit("callEnded");
   });
   socket.on("callUser", ({ userToCall, signalData, from, name }) => {
+    console.log({ userToCall, signalData, from, name });
     io.to(userToCall).emit("callUser", { signal: signalData, from, name });
   });
   socket.on("answerCall", (data) => {
     io.to(data.to).emit("callAccepted", data.signal);
   });
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     connectedDevices--;
+    const is_updated_user = await db("users")
+      .where("socket_id", socket.id)
+      .update({
+        connected: 0,
+      });
+    console.log(is_updated_user);
     console.log("A user disconnected...", socket.id);
     console.log("connectedDevices: " + connectedDevices);
   });
