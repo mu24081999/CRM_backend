@@ -13,6 +13,7 @@ const ContextProvider = ({ children }) => {
   const [callEnded, setCallEnded] = useState(false);
   const [openCalling, setOpenCalling] = useState(false);
   const [isCalling, setIsCalling] = useState(false);
+  const [ringing, setRinging] = useState(false);
   const [stream, setStream] = useState();
   const [name, setName] = useState("");
   const [call, setCall] = useState({});
@@ -52,6 +53,13 @@ const ContextProvider = ({ children }) => {
       );
     }
   }
+  const stopRingtone = () => {
+    // setPlaying(false);
+    // You can replace 'ringtone.mp3' with the path to your actual ringtone file
+    const audio = new Audio(ringTone);
+    audio.pause();
+    audio.currentTime = 0;
+  };
   useEffect(() => {
     if (socket) {
       navigator.mediaDevices
@@ -68,12 +76,19 @@ const ContextProvider = ({ children }) => {
       });
       socket.on("me", (id) => setMe(id));
       socket.on("callEnded", () => {
+        // setCallEnded(true);
         console.log("🚀 ~ socket.on ~ callEnded:", callEnded);
-        clickElementByDataBsDismiss("modal");
+        // clickElementByDataBsDismiss("modal");
       });
       socket.on("callUser", ({ from, name: callerName, signal }) => {
         clickElementByDataBsTarget("#video_call");
+        setRinging(true);
         // ringtone.play();
+
+        ringtone.play();
+        setTimeout(() => {
+          ringtone.pause();
+        }, 3000); //
         setIsCalling(true);
         setCall({ isReceivingCall: true, from, name: callerName, signal });
       });
@@ -87,6 +102,8 @@ const ContextProvider = ({ children }) => {
   };
   const answerCall = () => {
     setCallAccepted(true);
+    setRinging(false);
+    ringtone.pause();
     const peer = new Peer({ initiator: false, trickle: false, stream });
     peer.on("signal", (data) => {
       socket.emit("answerCall", { signal: data, to: call.from });
@@ -112,6 +129,8 @@ const ContextProvider = ({ children }) => {
       userVideo.current.srcObject = currentStream;
     });
     socket.on("callAccepted", (signal) => {
+      ringtone.pause();
+
       setCallAccepted(true);
       peer.signal(signal);
     });
@@ -122,8 +141,9 @@ const ContextProvider = ({ children }) => {
     socket.emit("disconnect_call", { to: to });
     setCallEnded(true);
     ringtone.pause();
-    // connectionRef.current.destroy();
+    // connectionRef.current = "";
     // window.location.reload();
+    clickElementByDataBsDismiss("modal");
   };
 
   return (
@@ -136,6 +156,7 @@ const ContextProvider = ({ children }) => {
         isCalling,
         myVideo,
         userVideo,
+        ringing,
         stream,
         name,
         setName,

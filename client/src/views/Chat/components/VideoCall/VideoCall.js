@@ -10,7 +10,6 @@ import { SocketContext } from "../../../../Context";
 import { FaPhone } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { getUsers } from "../../../../redux/services/users";
-import { Grid, Box, Heading } from "@chakra-ui/react";
 const VideoCall = ({ selectedRoom, authUser, socket }) => {
   const {
     isCalling,
@@ -19,7 +18,7 @@ const VideoCall = ({ selectedRoom, authUser, socket }) => {
     myVideo,
     call,
     answerCall,
-    // name,
+    ringing,
     userVideo,
     callEnded,
     leaveCall,
@@ -122,18 +121,14 @@ const VideoCall = ({ selectedRoom, authUser, socket }) => {
               )}
               {/* user's video */}
               {callAccepted && !callEnded && (
-                <Box>
-                  <Grid colSpan={1}>
-                    <Heading as="h5">{call.name || "Name"}</Heading>
-                    <video
-                      playsInline
-                      ref={userVideo}
-                      autoPlay
-                      width="600"
-                      controls="true"
-                    />
-                  </Grid>
-                </Box>
+                <video
+                  playsInline
+                  ref={userVideo}
+                  autoPlay
+                  style={{}}
+                  className="video-container"
+                  // controls="true"
+                />
               )}
               <h3 class="text-white mt-3">
                 {selectedRoom.user_id_1 === authUser?.id
@@ -167,7 +162,8 @@ const VideoCall = ({ selectedRoom, authUser, socket }) => {
                   </button>
                 </li>
                 {call.isReceivingCall === true &&
-                authUser.socket_id !== call.from &&
+                // authUser.socket_id === call.from &&
+                ringing &&
                 !callAccepted ? (
                   <li>
                     <button

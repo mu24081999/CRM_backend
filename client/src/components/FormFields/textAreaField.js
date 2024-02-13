@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useController, Controller } from "react-hook-form";
 import PropTypes from "prop-types";
+import _ from "lodash";
 
 export const TextAreaField = React.forwardRef((props, ref) => {
   const { field, fieldState } = useController(props);
@@ -18,7 +19,7 @@ export const TextAreaField = React.forwardRef((props, ref) => {
   } = props;
   let err = _.get(errors, props.name);
   return (
-    <div className="mb-5">
+    <>
       <Controller
         name={props?.name}
         control={props?.control}
@@ -40,7 +41,7 @@ export const TextAreaField = React.forwardRef((props, ref) => {
             rows={props.rows || 2}
             value={field.value}
             placeholder={props.placeholder ? props.placeholder : ""}
-            className={`w-full flex p-[0.8rem] border border-paragraph rounded-[16px] focus:outline-none bg-white text-base font-light text-black-300 ${
+            className={`form-control ${
               disabled && "bg-gray-100"
             }                     ${
               isHighLight && " bg-highLight  "
@@ -50,11 +51,15 @@ export const TextAreaField = React.forwardRef((props, ref) => {
       />
 
       {props.rules && err && (
-        <p className="mt-0.5 text-xs text-red-600 h-3" id="email-error">
-          {props.rules && err && props.rules && err.message}
+        <p
+          className="text-danger p-1 h-3 bg-inherit"
+          style={{ fontSize: "14.5px" }}
+          id="email-error"
+        >
+          {props.rules && err && props.rules && err?.message}
         </p>
       )}
-    </div>
+    </>
   );
 });
 

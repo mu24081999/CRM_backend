@@ -1,20 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import "react-datepicker/dist/react-datepicker.module.css";
 import { useController, Controller } from "react-hook-form";
 import _ from "lodash";
 import moment from "moment";
 import PropTypes from "prop-types";
-import "./DatePickerStyles.css";
-import { FaCalendarAlt } from "react-icons/fa";
+import "./DatePickerStyles.css"; // Create this file for custom styles
 
 const DatePickerFeild = React.forwardRef((props, ref) => {
+  // console.log("🚀 ~ file: datePicker.js:8 ~ DatePickerFeild ~ ref:", ref);
   const [focusState, setFocusState] = useState(false);
-  const [newDate, setNewDate] = useState("");
   const {
     title,
-    label,
-    showTime,
     style,
     type,
     errors,
@@ -30,9 +28,12 @@ const DatePickerFeild = React.forwardRef((props, ref) => {
   } = props;
   const { field, fieldState } = useController(props);
   let err = _.get(errors, props.name);
-
+  // const inputRef = useRef(null);
+  // useEffect(() => {
+  //     inputRef.current.setOpen(false)
+  // }, [])
   return (
-    <div className="mb-5">
+    <>
       <Controller
         autoFocus={false}
         name={props?.name}
@@ -49,74 +50,59 @@ const DatePickerFeild = React.forwardRef((props, ref) => {
             updateDate = "";
           }
           return (
-            <>
-              <label
-                for={props?.name}
-                className="block mb-2 text-sm font-bold text-gray-900 dark:text-white"
-              >
-                {label}
-              </label>
-              <DatePicker
-                {...field}
-                ref={ref}
-                autoComplete="off"
-                showIcon={true}
-                // icon={<FaCalendarAlt />}
-                isClearable
-                showTimeSelect={showTime}
-                shouldCloseOnSelect
-                autoFocus={false}
-                onChange={(e) => {
-                  field.onChange(moment(e).format("YYYY-MM-DD HH:mm:ss"));
-                  setNewDate(moment(e).format("YYYY-MM-DD HH:mm:ss"));
-                  if (onChange) {
-                    onChange(e, props?.name);
-                  }
-                }}
-                selected={updateDate}
-                //new change for handling reset (start)
-                value={newDate}
-                //(end)
-                onFocus={() => setFocusState(true)}
-                onBlur={() => {
-                  field.onBlur;
-                  setFocusState(false);
-                }}
-                dateFormat={showYearPicker ? "yyyy" : "yyyy-MM-dd HH:mm:ss"}
-                className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
-                  isDisabled ? "opacity-50" : ""
-                }                     ${
-                  isHighLight && " focus:bg-highLight   "
-                }                `}
-                placeholderText={
-                  props.placeholder ? props.placeholder : "Select a DateTime"
+            <DatePicker
+              {...field}
+              ref={ref}
+              autoComplete="off"
+              autoFocus={false}
+              placeholderText="Select Date"
+              onChange={(e) => {
+                field.onChange(moment(e).format("yyyy-MM-DD HH:mm:ss"));
+                if (onChange) {
+                  onChange(e, props?.name);
                 }
-                disabled={isDisabled}
-                maxDate={props?.maxDate}
-                minDate={props?.minDate}
-                // placeholderText="Select a date"
-                showYearPicker={showYearPicker ? showYearPicker : false}
-                {...others}
-              />
-            </>
+              }}
+              selected={updateDate}
+              //new change for handling reset (start)
+              // value={defaultValue}
+              //(end)
+              onFocus={() => setFocusState(true)}
+              onBlur={() => {
+                // field.onBlur;
+                setFocusState(false);
+              }}
+              dateFormat={showYearPicker ? "yyyy" : "yyyy-MM-DD HH:mm:ss"}
+              className={`form-control text-lg  ${
+                isDisabled ? "opacity-50" : ""
+              }
+                                   ${isHighLight && " focus:bg-dark   "}`}
+              placeholder={props.placeholder ? props.placeholder : ""}
+              disabled={isDisabled}
+              maxDate={props?.maxDate}
+              minDate={props?.minDate}
+              showTimeSelect
+              isClearable
+              timeFormat="HH:mm:ss"
+              timeIntervals={15}
+              showYearPicker={showYearPicker ? showYearPicker : false}
+              {...others}
+            />
           );
         }}
       />
       {/* </div> */}
       {props.rules && err && (
-        <p className=" text-xs text-red-600 h-3 m-2" id="email-error">
+        <p className=" text-xs text-red-600 h-3" id="email-error">
           {props.rules && err && props.rules && err.message}
         </p>
       )}
-    </div>
+    </>
   );
 });
 
 DatePickerFeild.displayName = "DatePickerFeild";
 DatePickerFeild.propTypes = {
   title: PropTypes.string,
-  label: PropTypes.string,
-  showTime: PropTypes.bool,
   backgroundColor: PropTypes.string,
   borderTopLeftRadius: PropTypes.string,
   borderBottomLeftRadius: PropTypes.string,
