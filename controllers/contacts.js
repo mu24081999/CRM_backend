@@ -46,6 +46,7 @@ exports.addContact = catchAsyncFunc(async (req, res, next) => {
     return helper.sendError(req, res, " Contact already exist.", 401);
   }
   const { file } = req.files;
+  console.log("🚀 ~ exports.addContact=catchAsyncFunc ~ file:", file);
   const { name, mimetype, data, size } = file;
   let image = undefined;
   console.log("🚀 ~ file:", file);
@@ -100,13 +101,18 @@ exports.addContact = catchAsyncFunc(async (req, res, next) => {
   }
   return helper.sendSuccess(req, res, {}, "Contact successfully created.");
 });
-exports.readUser = catchAsyncFunc(async (req, res, next) => {
-  const { user_id } = req.params;
-  const is_exist_user = await db("users").where("id", user_id).first();
-  if (!is_exist_user) {
-    return helper.sendError(req, res, "User not found.", 404);
+exports.readContact = catchAsyncFunc(async (req, res, next) => {
+  const { contact_id } = req.params;
+  const is_exist_contact = await db("contacts").where("id", contact_id).first();
+  if (!is_exist_contact) {
+    return helper.sendError(req, res, "Contact not found.", 404);
   }
-  return helper.sendSuccess(req, res, { userData: is_exist_user }, "success");
+  return helper.sendSuccess(
+    req,
+    res,
+    { contactData: is_exist_contact },
+    "success"
+  );
 });
 exports.updateUser = catchAsyncFunc(async (req, res, next) => {
   const schema = Joi.object({
@@ -183,11 +189,13 @@ exports.updateUser = catchAsyncFunc(async (req, res, next) => {
   return helper.sendSuccess(req, res, {}, "User successfully updated.");
 });
 
-exports.deleteUser = catchAsyncFunc(async (req, res, next) => {
-  const { user_id } = req.params;
-  const deletedCount = await db("users").where("id", user_id).del();
+exports.deleteContact = catchAsyncFunc(async (req, res, next) => {
+  const { contact_id } = req.params;
+  const is_deleted = await db("contacts")
+    .where("id", contact_id)
+    .update({ status: "blocked" });
 
-  if (!deletedCount) {
+  if (!is_deleted) {
     return helper.sendError(
       req,
       res,
@@ -195,20 +203,23 @@ exports.deleteUser = catchAsyncFunc(async (req, res, next) => {
       500
     );
   }
-  return helper.sendSuccess(req, res, {}, "User deleted successfully.");
+  return helper.sendSuccess(req, res, {}, "Contact deleted successfully.");
 });
-exports.getAllUsers = catchAsyncFunc(async (req, res, next) => {
-  const users = await db("users").orderBy("created_at", "desc").select();
+exports.getContacts = catchAsyncFunc(async (req, res, next) => {
+  const contacts = await db("contacts")
+    // .where("status", "active")
+    .orderBy("created_at", "desc")
+    .select();
 
-  if (!users) {
+  if (!contacts) {
     return helper.sendError(
       req,
       res,
-      "Something went wrong, while searching for users.",
+      "Something went wrong, while searching for contacts.",
       500
     );
   }
-  return helper.sendSuccess(req, res, { userData: users }, "success");
+  return helper.sendSuccess(req, res, { contactsData: contacts }, "success");
 });
 
 exports.searchUser = catchAsyncFunc(async (req, res, next) => {

@@ -13,11 +13,11 @@ export const contactSlice = createSlice({
   reducers: {
     contactRequestLoading: (state, action) => {
       state.isLoading = true;
-      state.contacts = [];
-      state.message = "";
-      state.error = "";
-      state.token = "";
-      state.type = "";
+      // state.contacts = [];
+      // state.message = "";
+      // state.error = "";
+      // state.token = "";
+      // state.type = "";
     },
     invalidRequest: (state, action) => {
       state.isLoading = false;
@@ -29,8 +29,26 @@ export const contactSlice = createSlice({
     },
     postContact: (state, action) => {
       state.isLoading = false;
+      state.message = action.payload;
+      state.error = "";
+      state.type = "success";
+    },
+    getContacts: (state, action) => {
+      state.isLoading = false;
       state.contacts = action.payload;
       state.message = "success";
+      state.error = "";
+      state.type = "success";
+    },
+    deleteContact: (state, action) => {
+      state.isLoading = false;
+      state.message = action.payload;
+      state.error = "";
+      state.type = "success";
+    },
+    contactDetails: (state, action) => {
+      state.isLoading = false;
+      state.contactDetails = action.payload;
       state.error = "";
       state.type = "success";
     },
@@ -38,5 +56,11 @@ export const contactSlice = createSlice({
 });
 
 export default contactSlice.reducer;
-export const { contactRequestLoading, invalidRequest, postContact } =
-  contactSlice.actions;
+export const {
+  contactRequestLoading,
+  invalidRequest,
+  postContact,
+  getContacts,
+  deleteContact,
+  contactDetails,
+} = contactSlice.actions;

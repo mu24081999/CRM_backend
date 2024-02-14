@@ -1,16 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Sidebar from "./components/SidebarContact";
 import Header from "./components/Header";
 import ContactList from "./components/ContactList";
 import AddContactList from "./components/AddContactList";
+import { useSelector } from "react-redux";
+import ContactDetails from "./components/ContactDetails";
+
 const ContactsContent = () => {
+  const [data, setData] = useState([]);
+  const [isEdit, setIsEdit] = useState(false);
+  console.log("🚀 ~ ContactsContent ~ isEdit:", isEdit);
+  const { contacts } = useSelector((state) => state.contact);
+  useEffect(() => {
+    if (contacts.length > 0) {
+      const filterData = contacts.filter(
+        (contact) => contact.status !== "blocked"
+      );
+      setData(filterData);
+    }
+  }, [contacts]);
+  const handleReceiveData = (receivedData) => {
+    setData(receivedData);
+  };
+  const handleToggleEdit = (value) => {
+    setIsEdit(value);
+  };
   return (
     <div className="hk-pg-wrapper pb-0">
       {/* <!-- Page Body --> */}
       <div className="hk-pg-body py-0">
         <div className="contactapp-wrap">
           <div className="contactapp-content">
-            <Sidebar />
+            <Sidebar
+              onSendData={handleReceiveData}
+              contactsData={contacts}
+              onToggleEdit={handleToggleEdit}
+            />
 
             <div className="contactapp-detail-wrap">
               <Header />
@@ -119,11 +144,17 @@ const ContactsContent = () => {
                       </form>
                     </div>
                   </div>
-                  {/* <Table columns={columns} rows={rows} /> */}
-                  <ContactList />
+
+                  <ContactList
+                    contactsData={data}
+                    onToggleEdit={handleToggleEdit}
+                    isEdit={isEdit}
+                  />
+                  <ContactDetails isEdit={isEdit} />
                 </div>
               </div>
             </div>
+
             {/* <!-- Edit Info --> */}
             <div
               id="add_new_contact"

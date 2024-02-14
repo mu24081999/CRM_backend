@@ -12,8 +12,28 @@ import {
   FaUpload,
   FaUserClock,
 } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
-const ContactSidebar = () => {
+const ContactSidebar = ({ onSendData, contactsData, onToggleEdit }) => {
+  const { contacts } = useSelector((state) => state.contact);
+
+  const handleDeleteClick = () => {
+    const data = contactsData.filter((cntct) => cntct.status === "blocked");
+    document.getElementById("deleted_contacts").classList.add("active");
+    document.getElementById("all_contacts").classList.remove("active");
+    onSendData(data);
+    onToggleEdit(false);
+  };
+  const handleAllClick = () => {
+    const filterData = contacts.filter(
+      (contact) => contact.status !== "blocked"
+    );
+    document.getElementById("all_contacts").classList.add("active");
+    document.getElementById("deleted_contacts").classList.remove("active");
+    onToggleEdit(false);
+
+    onSendData(filterData);
+  };
   return (
     <nav className="contactapp-sidebar">
       <div data-simplebar className="nicescroll-bar">
@@ -28,8 +48,8 @@ const ContactSidebar = () => {
           </button>
           <div className="menu-group p-1">
             <ul className="nav nav-light navbar-nav flex-column">
-              <li className="nav-item active">
-                <a className="nav-link" href="/">
+              <li id="all_contacts" className="nav-item ">
+                <a onClick={handleAllClick} className="nav-link">
                   <span className="nav-icon-wrap">
                     <span className="feather-icon">
                       {/* <i data-feather="inbox"></i> */}
@@ -73,7 +93,11 @@ const ContactSidebar = () => {
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="/">
+                <a
+                  id="deleted_contacts"
+                  onClick={handleDeleteClick}
+                  className="nav-link"
+                >
                   <span className="nav-icon-wrap">
                     <span className="feather-icon">
                       {/* <i data-feather="trash-2"></i> */}

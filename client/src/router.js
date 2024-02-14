@@ -2,7 +2,6 @@ import React from "react";
 // import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { faCoffee } from "@fortawesome/free-solid-svg-icons";
 import { createBrowserRouter } from "react-router-dom";
-import Loader from "./components/Loader";
 
 import SignIn from "./views/Auth/SignIn";
 import Dashboard from "./views/Dashboard/Dashboard";
@@ -13,52 +12,48 @@ import ResetUserPassword from "./views/Auth/ResetUserPassword";
 import Chat from "./views/Chat/Chat";
 import Contacts from "./views/Contacts/Contacts";
 import Test from "./views/Test/Test";
+import ContactDetails from "./views/Contacts/components/ContactDetails";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Dashboard />,
-    loader: Loader,
   },
   {
     path: "/test",
     element: <Test />,
-    loader: Loader,
   },
   {
     path: "sign-in",
     element: <SignIn />,
-    loader: Loader,
   },
   {
     path: "contacts",
     element: <Contacts />,
-    loader: Loader,
   },
   {
     path: "sign-up",
     element: <SignUp />,
-    loader: Loader,
   },
   {
     path: "reset-password",
     element: <ResetPassword />,
-    loader: Loader,
   },
   {
     path: "reset-password-verification/:email",
     element: <VerifyPassword />,
-    loader: Loader,
+  },
+  {
+    path: "edit-contact/:contactId",
+    element: <ContactDetails />,
   },
   {
     path: "reset-password/:email",
     element: <ResetUserPassword />,
-    loader: Loader,
   },
   {
     path: "/chats",
     element: <Chat />,
-    loader: Loader,
   },
 ]);
 
