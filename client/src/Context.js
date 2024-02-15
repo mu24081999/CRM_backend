@@ -60,6 +60,16 @@ const ContextProvider = ({ children }) => {
     audio.pause();
     audio.currentTime = 0;
   };
+  const readyForCall = () => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((currentStream) => {
+        setStream(currentStream);
+        if (myVideo.current) {
+          myVideo.current.srcObject = currentStream;
+        }
+      });
+  };
   useEffect(() => {
     if (socket) {
       navigator.mediaDevices
@@ -150,6 +160,7 @@ const ContextProvider = ({ children }) => {
     <SocketContext.Provider
       value={{
         calling,
+        readyForCall,
         call,
         callAccepted,
         openCalling,

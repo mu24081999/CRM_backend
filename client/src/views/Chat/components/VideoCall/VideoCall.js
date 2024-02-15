@@ -24,6 +24,7 @@ const VideoCall = ({ selectedRoom, authUser, socket }) => {
     leaveCall,
     openCalling,
     callUser,
+    readyForCall,
   } = useContext(SocketContext);
 
   const [selectedUser, setSelectedUser] = useState(null);
@@ -32,6 +33,9 @@ const VideoCall = ({ selectedRoom, authUser, socket }) => {
   const { token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   console.log(isCalling, call.isRecieving);
+  // useEffect(() => {
+  //   readyForCall();
+  // }, [readyForCall]);
   const callToUser = useCallback(() => {
     if (!isCalling && !call.isRecieving && openCalling) {
       callUser(selectedUser?.socket_id, authUser.name);

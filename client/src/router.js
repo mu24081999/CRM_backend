@@ -13,6 +13,7 @@ import Chat from "./views/Chat/Chat";
 import Contacts from "./views/Contacts/Contacts";
 import Test from "./views/Test/Test";
 import ContactDetails from "./views/Contacts/components/ContactDetails";
+import Email from "./views/Email/Email";
 
 const router = createBrowserRouter([
   {
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
   {
     path: "/chats",
     element: <Chat />,
+  },
+  {
+    path: "/emails",
+    element: <Email />,
   },
 ]);
 

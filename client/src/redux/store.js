@@ -10,7 +10,7 @@ const persistConfig = {
   key: "store",
   storage,
   transforms: [createExpirationTransaform(expireTime)],
-  blacklist: ["user", "contact"],
+  blacklist: ["user", "contact", "email"],
   whitelist: ["auth"],
 };
 const persistedReducer = persistReducer(persistConfig, rootReducer);
