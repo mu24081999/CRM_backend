@@ -91,12 +91,14 @@ const ReactSelectField = React.forwardRef((props, ref) => {
         defaultValue={defaultValue}
         render={({ field: { onChange } }) => (
           <>
-            <label
-              for={props?.name}
-              class="block mb-2 text-sm font-bold text-gray-900 dark:text-white"
-            >
-              {label}
-            </label>
+            {label && (
+              <label
+                for={props?.name}
+                class="block mb-2 text-sm font-bold text-gray-900 dark:text-white"
+              >
+                {label}
+              </label>
+            )}
             <Select
               {...field}
               {...others}

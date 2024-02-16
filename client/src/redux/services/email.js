@@ -32,11 +32,12 @@ export const getEmailList = (token) => async (dispatch) => {
   }
 };
 export const sendEmailRec = (token, data) => async (dispatch) => {
+  console.log("🚀 ~ sendEmailRec ~ data:", data);
   try {
     dispatch(emailRequestLoading());
     const config = {
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "multipart/form-data",
         "x-access-token": token,
       },
     };

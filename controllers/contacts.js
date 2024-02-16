@@ -49,8 +49,6 @@ exports.addContact = catchAsyncFunc(async (req, res, next) => {
   console.log("🚀 ~ exports.addContact=catchAsyncFunc ~ file:", file);
   const { name, mimetype, data, size } = file;
   let image = undefined;
-  console.log("🚀 ~ file:", file);
-  // Upload file to S3
   if (file) {
     const params = {
       Bucket: process.env.S3_BUCKET,
