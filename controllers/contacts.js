@@ -3,9 +3,10 @@ const helper = require("../helper/helper");
 const Joi = require("joi");
 const bcrypt = require("bcryptjs");
 const cloudinary = require("cloudinary").v2;
+const fs = require("fs");
 
 exports.addContact = catchAsyncFunc(async (req, res, next) => {
-  console.log(req.body);
+  console.log(req.files);
   const tagSchema = Joi.object({
     name: Joi.string().required(),
   });
@@ -46,58 +47,66 @@ exports.addContact = catchAsyncFunc(async (req, res, next) => {
     return helper.sendError(req, res, " Contact already exist.", 401);
   }
   const { file } = req.files;
-  console.log("🚀 ~ exports.addContact=catchAsyncFunc ~ file:", file);
-  const { name, mimetype, data, size } = file;
-  let image = undefined;
+  const { name, mimetype, tempFilePath } = file;
   if (file) {
-    const params = {
-      Bucket: process.env.S3_BUCKET,
-      Key: name,
-      Body: data,
-      ContentType: mimetype,
-    };
-    const is_added = await new Promise((resolve, reject) => {
-      s3.upload(params, {}, (err, data) => {
-        if (err) {
-          console.error(err);
-          reject(new Error("Error Uploading File: " + err));
-        } else {
-          // console.log("File uploaded successfully:", data);
-          image = data.Location;
-          resolve(true);
-        }
+    fs.readFile(tempFilePath, async (err, data) => {
+      if (err) {
+        console.error("Error reading file:", err);
+        return res.status(500).send("Internal Server Error");
+      }
+      const params = {
+        Bucket: process.env.S3_BUCKET,
+        Key: name,
+        Body: data,
+        ContentType: mimetype,
+      };
+      const is_added = await new Promise((resolve, reject) => {
+        s3.upload(params, {}, async (err, data) => {
+          if (err) {
+            console.error(err);
+            reject(new Error("Error Uploading File: " + err));
+          } else {
+            console.log("File uploaded successfully:", data);
+
+            const is_record_inserted = await db("contacts").insert({
+              firstname: value.firstname,
+              middlename: value.middlename,
+              lastname: value.lastname,
+              biography: value.biography,
+              website: value.website,
+              phone: value.phone,
+              email: value.email,
+              city: value.city,
+              state: value.state,
+              country: value.country,
+              company_name: value.company_name,
+              designation: value.designation,
+              work_phone: value.work_phone,
+              tags: value.tags,
+              social_links: value.social_links,
+              role: value.role,
+              avatar: data.Location,
+            });
+            if (!is_record_inserted) {
+              return helper.sendError(
+                req,
+                res,
+                "Something went wrong, while creating user.",
+                500
+              );
+            }
+            resolve(true);
+            return helper.sendSuccess(
+              req,
+              res,
+              {},
+              "Contact successfully created."
+            );
+          }
+        });
       });
     });
   }
-
-  const is_record_inserted = await db("contacts").insert({
-    firstname: value.firstname,
-    middlename: value.middlename,
-    lastname: value.lastname,
-    biography: value.biography,
-    website: value.website,
-    phone: value.phone,
-    email: value.email,
-    city: value.city,
-    state: value.state,
-    country: value.country,
-    company_name: value.company_name,
-    designation: value.designation,
-    work_phone: value.work_phone,
-    tags: value.tags,
-    social_links: value.social_links,
-    role: value.role,
-    avatar: image !== undefined ? image : null,
-  });
-  if (!is_record_inserted) {
-    return helper.sendError(
-      req,
-      res,
-      "Something went wrong, while creating user.",
-      500
-    );
-  }
-  return helper.sendSuccess(req, res, {}, "Contact successfully created.");
 });
 exports.readContact = catchAsyncFunc(async (req, res, next) => {
   const { contact_id } = req.params;

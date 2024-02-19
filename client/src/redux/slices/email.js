@@ -31,7 +31,7 @@ export const emailSlice = createSlice({
     },
     getEmails: (state, action) => {
       state.isLoading = false;
-      state.contacts = action.payload;
+      state.emails = action.payload;
       state.message = "success";
       state.error = "";
       state.type = "success";

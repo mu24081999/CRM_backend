@@ -1,41 +1,64 @@
+import moment from "moment";
 import React from "react";
-
-const EmailsList = () => {
+import { useDispatch } from "react-redux";
+const EmailsList = ({ emailsData, emails, onEmailDetail }) => {
+  const dispatch = useDispatch();
+  const handleEmailClick = (id) => {
+    const repliesData = emails.filter((email) => email.parent_id === id);
+    const selectedEmail = emailsData.filter((email) => email.id === id)[0];
+    const data = {
+      subject: selectedEmail?.subject,
+      selectedEmail: selectedEmail,
+      emails: repliesData,
+    };
+    onEmailDetail(data);
+  };
   return (
     <ul class="email-list list-group list-group-flush">
-      <li class="list-group-item">
-        <div class="media">
-          <div class="media-head">
-            <div class="avatar avatar-sm avatar-rounded">
-              <img src="dist/img/avatar2.jpg" alt="user" class="avatar-img" />
-            </div>
-            <span class="badge badge-primary badge-indicator badge-indicator-nobdr"></span>
-          </div>
-          <div class="media-body">
-            <div>
-              <div>
-                <div class="email-head">Morgan Freeman</div>
+      {emailsData?.length > 0 &&
+        emailsData?.map((email, index) => (
+          <li
+            onClick={() => handleEmailClick(email.id)}
+            class="list-group-item"
+            key={index}
+          >
+            <div class="media">
+              <div class="media-head">
+                <div class="avatar avatar-sm avatar-rounded">
+                  <img
+                    // src="dist/img/avatar2.jpg"
+                    src={email?.sender?.avatar}
+                    alt="user"
+                    class="avatar-img"
+                  />
+                </div>
+                <span class="badge badge-primary badge-indicator badge-indicator-nobdr"></span>
+              </div>
+              <div class="media-body">
                 <div>
-                  <span class="email-star marked">
-                    <span class="feather-icon">
-                      <i data-feather="star"></i>
-                    </span>
-                  </span>
-                  <div class="email-time">9:30 AM</div>
+                  <div>
+                    <div class="email-head">{email?.sender?.name}</div>
+                    <div>
+                      <span class="email-star marked">
+                        <span class="feather-icon">
+                          <i data-feather="star"></i>
+                        </span>
+                      </span>
+                      <div class="email-time">
+                        {moment(email.created_at, "h:mm A").format("h:mm A")}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="email-subject">{email.subject}</div>
+                  <div class="email-text">
+                    <p>{email?.body?.slice(0, 200)}</p>
+                  </div>
                 </div>
               </div>
-              <div class="email-subject">Creation timelines for our forth</div>
-              <div class="email-text">
-                <p>
-                  Abilities or he perfectly pretended so strangers be exquisite.
-                  Oh to anothe.
-                </p>
-              </div>
             </div>
-          </div>
-        </div>
-      </li>
-      <li class="list-group-item">
+          </li>
+        ))}
+      {/* <li class="list-group-item">
         <div class="media read-email">
           <div class="media-head">
             <div class="avatar avatar-sm avatar-rounded">
@@ -300,7 +323,7 @@ const EmailsList = () => {
             </div>
           </div>
         </div>
-      </li>
+      </li> */}
     </ul>
   );
 };

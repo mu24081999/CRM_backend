@@ -7,6 +7,7 @@ exports.up = function (knex) {
     table.increments("id").primary();
     table.integer("email_id").unsigned().notNullable();
     table.string("file_link").notNullable();
+    table.string("file_type").notNullable();
     table.integer("size").unsigned().notNullable();
     table.timestamps(true, true);
     // Foreign key constraint

@@ -22,7 +22,7 @@ export const getEmailList = (token) => async (dispatch) => {
     await axios
       .get(`${backendURL}/user/email/get-emails`, config)
       .then((response) => {
-        if (response?.data?.code !== 200) {
+        if (response?.status !== 200) {
           return dispatch(invalidRequest(response.data.message));
         }
         dispatch(getEmails(response.data.data.emailsData));
@@ -44,10 +44,12 @@ export const sendEmailRec = (token, data) => async (dispatch) => {
     await axios
       .post(`${backendURL}/user/email/send-email`, data, config)
       .then((response) => {
-        if (response?.data?.code !== 200) {
+        console.log(response);
+        if (response?.status !== 200) {
           return dispatch(invalidRequest(response.data.message));
         }
         dispatch(sendEmail(response.data.message));
+        dispatch(getEmailList(token));
         toast.success(response.data.message);
       });
   } catch (e) {

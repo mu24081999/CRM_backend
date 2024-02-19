@@ -7,17 +7,27 @@ import {
   FaCog,
   FaCommentSlash,
   FaEdit,
-  FaEyeSlash,
   FaInbox,
-  FaMailBulk,
   FaRecycle,
-  FaRegCheckCircle,
   FaSort,
   FaStar,
   FaTrash,
 } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { getEmailList } from "../../../../../redux/services/email";
+import { getUsers } from "../../../../../redux/services/users";
 
-const EmailsHeader = () => {
+const EmailsHeader = ({ onDataFromChild, emailsData, authUser }) => {
+  const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.auth);
+  const handleSentClick = () => {
+    const data = emailsData.filter((data) => data.sender === authUser.email);
+    onDataFromChild(data);
+  };
+  const refresh = () => {
+    dispatch(getEmailList(token));
+    dispatch(getUsers(token));
+  };
   return (
     <header class="aside-header">
       <a
@@ -38,13 +48,13 @@ const EmailsHeader = () => {
           </span>
           <span>Inbox</span>
         </a>
-        <a class="dropdown-item" href="/">
+        <button onClick={handleSentClick} class="dropdown-item" href="/">
           <span class="feather-icon dropdown-icon">
             {/* <i data-feather="send"></i> */}
             <FaCheckSquare />
           </span>
           <span>Sent</span>
-        </a>
+        </button>
         <a class="dropdown-item" href="/">
           <span class="feather-icon dropdown-icon">
             {/* <i data-feather="archive"></i> */}
@@ -70,7 +80,8 @@ const EmailsHeader = () => {
       <div class="d-flex">
         <a
           class="btn btn-icon btn-flush-dark btn-rounded flush-soft-hover me-0"
-          href="/"
+          // href="/"
+          onClick={refresh}
         >
           <span class="icon">
             <span class="feather-icon">
@@ -81,7 +92,7 @@ const EmailsHeader = () => {
         </a>
         <a
           class="btn btn-icon btn-flush-dark btn-rounded flush-soft-hover dropdown-toggle no-caret"
-          href="/"
+          // href="/"
           data-bs-toggle="dropdown"
         >
           <span class="icon">

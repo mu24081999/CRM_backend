@@ -50,12 +50,14 @@ const ComposeEmail = () => {
     formData.append("subject", "Contact");
     formData.append("body", data.body);
     formData.append("type", "email");
+    formData.append("from", user.email);
     data.to.forEach((element) => {
       formData.append("to", element.email);
     });
-    data.files.forEach((element) => {
-      formData.append("files", element);
-    });
+    data.files &&
+      data.files.forEach((element) => {
+        formData.append("files", element);
+      });
 
     console.log("🚀 ~ handleSendEmail ~ formData:", formData);
 
