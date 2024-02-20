@@ -121,79 +121,91 @@ exports.readContact = catchAsyncFunc(async (req, res, next) => {
     "success"
   );
 });
-exports.updateUser = catchAsyncFunc(async (req, res, next) => {
+exports.updateContact = catchAsyncFunc(async (req, res, next) => {
+  console.log(req.body);
   const schema = Joi.object({
-    firstname: Joi.string().required(),
+    firstname: Joi.string().optional(),
+    middlename: Joi.string().optional(),
     lastname: Joi.string().optional(),
-    phone: Joi.number().integer().required(),
-    email: Joi.string().required(),
-    password: Joi.string().required(),
-    country: Joi.string().required(),
-    address: Joi.string().required(),
-    city: Joi.string().required(),
-    state: Joi.string().required(),
-    zip: Joi.number().integer().required(),
-    id_card_number: Joi.number().integer().required(),
-    role: Joi.string().required(),
+    biography: Joi.string().optional(),
+    phone: Joi.number().integer().optional(),
+    email: Joi.string().optional(),
+    country: Joi.string().optional(),
+    city: Joi.string().optional(),
+    state: Joi.string().optional(),
+    company_name: Joi.string().optional(),
+    designation: Joi.string().optional(),
+    website: Joi.string().optional(),
+    work_phone: Joi.number().integer().optional(),
+    // tags: Joi.array().items(tagSchema).optional(),
+    tags: Joi.string().optional(),
+    social_links: Joi.string().optional(),
+    role: Joi.string().optional(),
   });
 
   const { error, value } = schema.validate(req.body);
   if (error) {
     return helper.sendError(req, res, error, 403);
   }
-  const { user_id } = req.params;
-  var image;
-  const imageLinks = [];
-  var image_to_upload;
+  const { contact_id } = req.params;
+  if (req.files) {
+    const { file } = req.files;
+    const { name, mimetype, tempFilePath } = file;
+    fs.readFile(tempFilePath, async (err, data) => {
+      if (err) {
+        console.error("Error reading file:", err);
+        return res.status(500).send("Internal Server Error");
+      }
+      const params = {
+        Bucket: process.env.S3_BUCKET,
+        Key: name,
+        Body: data,
+        ContentType: mimetype,
+      };
+      const is_added = await new Promise((resolve, reject) => {
+        s3.upload(params, {}, async (err, data) => {
+          if (err) {
+            console.error(err);
+            reject(new Error("Error Uploading File: " + err));
+          } else {
+            console.log("File uploaded successfully:", data);
 
-  if (req.files !== null && req.files.image !== undefined) {
-    image = req.files.image;
-    const result = await cloudinary.uploader.upload(image.tempFilePath, {
-      folder: "Users",
-    });
-
-    if (result) {
-      imageLinks.push({
-        public_id: result.public_id,
-        url: result.secure_url,
+            resolve(true);
+          }
+        });
       });
-    } else {
-      return helper.sendError(
-        req,
-        res,
-        "Something went wrong while uploading image.",
-        500
-      );
-    }
-    image_to_upload = imageLinks[0].url;
+    });
   }
-  const saltRounds = 10;
-  const hashedPassword = bcrypt.hashSync(value.password, saltRounds);
-  console.log(value, image_to_upload, hashedPassword, user_id);
-  const is_record_updated = await db("users").where("id", user_id).update({
-    firstname: value.firstname,
-    lastname: value.lastname,
-    phone: value.phone,
-    email: value.email,
-    password: hashedPassword,
-    address: value.address,
-    id_card_number: value.id_card_number,
-    city: value.city,
-    state: value.state,
-    zip: value.zip,
-    country: value.country,
-    role: value.role,
-    image: image_to_upload,
-  });
+  const is_record_updated = await db("contacts")
+    .where("id", contact_id)
+    .update({
+      firstname: value.firstname,
+      middlename: value.middlename,
+      lastname: value.lastname,
+      biography: value.biography,
+      website: value.website,
+      phone: value.phone,
+      email: value.email,
+      city: value.city,
+      state: value.state,
+      country: value.country,
+      company_name: value.company_name,
+      designation: value.designation,
+      work_phone: value.work_phone,
+      tags: value.tags,
+      social_links: value.social_links,
+      role: value.role,
+      // avatar: data.Location,
+    });
   if (!is_record_updated) {
     return helper.sendError(
       req,
       res,
-      "Something went wrong, while updating user.",
+      "Something went wrong, while creating user.",
       500
     );
   }
-  return helper.sendSuccess(req, res, {}, "User successfully updated.");
+  return helper.sendSuccess(req, res, {}, "Contact successfully updated.");
 });
 
 exports.deleteContact = catchAsyncFunc(async (req, res, next) => {

@@ -36,124 +36,126 @@ const ContactsContent = () => {
               contactsData={contacts}
               onToggleEdit={handleToggleEdit}
             />
+            {isEdit && <ContactDetails isEdit={isEdit} />}
 
-            <div className="contactapp-detail-wrap">
-              <Header />
-              <div className="contact-body">
-                <div data-simplebar className="nicescroll-bar">
-                  <div className="collapse" id="collapseQuick">
-                    <div className="quick-access-form-wrap">
-                      <form className="quick-access-form border">
-                        <div className="row gx-3">
-                          <div className="col-xxl-10">
-                            <div className="position-relative">
-                              <div className="dropify-square">
-                                <input type="file" className="dropify-1" />
-                              </div>
-                              <div className="col-md-12">
-                                <div className="row gx-3">
-                                  <div className="col-lg-4">
-                                    <div className="form-group">
-                                      <input
-                                        className="form-control"
-                                        placeholder="First name*"
-                                        value=""
-                                        type="text"
-                                      />
+            {!isEdit && (
+              <div className="contactapp-detail-wrap">
+                <Header />
+                <div className="contact-body">
+                  <div data-simplebar className="nicescroll-bar">
+                    <div className="collapse" id="collapseQuick">
+                      <div className="quick-access-form-wrap">
+                        <form className="quick-access-form border">
+                          <div className="row gx-3">
+                            <div className="col-xxl-10">
+                              <div className="position-relative">
+                                <div className="dropify-square">
+                                  <input type="file" className="dropify-1" />
+                                </div>
+                                <div className="col-md-12">
+                                  <div className="row gx-3">
+                                    <div className="col-lg-4">
+                                      <div className="form-group">
+                                        <input
+                                          className="form-control"
+                                          placeholder="First name*"
+                                          value=""
+                                          type="text"
+                                        />
+                                      </div>
+                                      <div className="form-group">
+                                        <input
+                                          className="form-control"
+                                          placeholder="Last name*"
+                                          value=""
+                                          type="text"
+                                        />
+                                      </div>
                                     </div>
-                                    <div className="form-group">
-                                      <input
-                                        className="form-control"
-                                        placeholder="Last name*"
-                                        value=""
-                                        type="text"
-                                      />
+                                    <div className="col-lg-4">
+                                      <div className="form-group">
+                                        <input
+                                          className="form-control"
+                                          placeholder="Email Id*"
+                                          value=""
+                                          type="text"
+                                        />
+                                      </div>
+                                      <div className="form-group">
+                                        <input
+                                          className="form-control"
+                                          placeholder="Phone"
+                                          value=""
+                                          type="text"
+                                        />
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="col-lg-4">
-                                    <div className="form-group">
-                                      <input
-                                        className="form-control"
-                                        placeholder="Email Id*"
-                                        value=""
-                                        type="text"
-                                      />
-                                    </div>
-                                    <div className="form-group">
-                                      <input
-                                        className="form-control"
-                                        placeholder="Phone"
-                                        value=""
-                                        type="text"
-                                      />
-                                    </div>
-                                  </div>
-                                  <div className="col-lg-4">
-                                    <div className="form-group">
-                                      <input
-                                        className="form-control"
-                                        placeholder="Department"
-                                        value=""
-                                        type="text"
-                                      />
-                                    </div>
-                                    <div className="form-group">
-                                      <select
-                                        id="input_tags"
-                                        className="form-control"
-                                        multiple="multiple"
-                                      >
-                                        <option selected="selected">
-                                          Collaborator
-                                        </option>
-                                        <option>Designer</option>
-                                        <option selected="selected">
-                                          Developer
-                                        </option>
-                                      </select>
+                                    <div className="col-lg-4">
+                                      <div className="form-group">
+                                        <input
+                                          className="form-control"
+                                          placeholder="Department"
+                                          value=""
+                                          type="text"
+                                        />
+                                      </div>
+                                      <div className="form-group">
+                                        <select
+                                          id="input_tags"
+                                          className="form-control"
+                                          multiple="multiple"
+                                        >
+                                          <option selected="selected">
+                                            Collaborator
+                                          </option>
+                                          <option>Designer</option>
+                                          <option selected="selected">
+                                            Developer
+                                          </option>
+                                        </select>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                          <div className="col-xxl-2">
-                            <div className="form-group">
-                              <button
-                                data-bs-toggle="collapse"
-                                data-bs-target="#collapseExample"
-                                aria-expanded="false"
-                                className="btn btn-block btn-primary "
-                              >
-                                Create New
-                              </button>
+                            <div className="col-xxl-2">
+                              <div className="form-group">
+                                <button
+                                  data-bs-toggle="collapse"
+                                  data-bs-target="#collapseExample"
+                                  aria-expanded="false"
+                                  className="btn btn-block btn-primary "
+                                >
+                                  Create New
+                                </button>
+                              </div>
+                              <div className="form-group">
+                                <button
+                                  data-bs-toggle="collapse"
+                                  disabled
+                                  data-bs-target="#collapseExample"
+                                  aria-expanded="false"
+                                  className="btn btn-block btn-secondary"
+                                >
+                                  Discard
+                                </button>
+                              </div>
                             </div>
-                            <div className="form-group">
-                              <button
-                                data-bs-toggle="collapse"
-                                disabled
-                                data-bs-target="#collapseExample"
-                                aria-expanded="false"
-                                className="btn btn-block btn-secondary"
-                              >
-                                Discard
-                              </button>
-                            </div>
                           </div>
-                        </div>
-                      </form>
+                        </form>
+                      </div>
                     </div>
-                  </div>
 
-                  <ContactList
-                    contactsData={data}
-                    onToggleEdit={handleToggleEdit}
-                    isEdit={isEdit}
-                  />
-                  <ContactDetails isEdit={isEdit} />
+                    <ContactList
+                      contactsData={data}
+                      onToggleEdit={handleToggleEdit}
+                      isEdit={isEdit}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* <!-- Edit Info --> */}
             <div

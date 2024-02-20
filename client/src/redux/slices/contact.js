@@ -46,6 +46,12 @@ export const contactSlice = createSlice({
       state.error = "";
       state.type = "success";
     },
+    updateContact: (state, action) => {
+      state.isLoading = false;
+      state.message = action.payload;
+      state.error = "";
+      state.type = "success";
+    },
     contactDetails: (state, action) => {
       state.isLoading = false;
       state.contactDetails = action.payload;
@@ -63,4 +69,5 @@ export const {
   getContacts,
   deleteContact,
   contactDetails,
+  updateContact,
 } = contactSlice.actions;

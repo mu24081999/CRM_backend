@@ -7,6 +7,7 @@ import {
   getContacts,
   deleteContact,
   contactDetails,
+  updateContact,
 } from "../slices/contact";
 import { toast } from "react-toastify";
 const backendURL = `${process.env.REACT_APP_BACKEND_URL_PRODUCTION}`;
@@ -79,6 +80,37 @@ export const getContactDetais = (token, contact_id) => async (dispatch) => {
     dispatch(invalidRequest(e.message));
   }
 };
+
+export const updateContactRec =
+  (token, contact_id, data) => async (dispatch) => {
+    console.log("🚀 ~ token, contact_id, data:", token, contact_id, data);
+    try {
+      dispatch(contactRequestLoading());
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          "x-access-token": token,
+        },
+      };
+      await axios
+        .put(
+          `${backendURL}/user/contact/contact-update/${contact_id}`,
+          data,
+          config
+        )
+        .then((response) => {
+          console.log("🚀 ~ .then ~ response:", response);
+          if (response?.status !== 200) {
+            return dispatch(invalidRequest(response.data.message));
+          }
+          dispatch(updateContact(response.data.message));
+          dispatch(getContactsList(token));
+          toast.success(response.data.message);
+        });
+    } catch (e) {
+      dispatch(invalidRequest(e.message));
+    }
+  };
 export const deleteContactRec = (token, contact_id) => async (dispatch) => {
   try {
     dispatch(contactRequestLoading());

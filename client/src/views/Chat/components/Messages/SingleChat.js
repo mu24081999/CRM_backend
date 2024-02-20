@@ -25,6 +25,8 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
     // setName,
     // callEnded,
     // leaveCall,
+    readyForCall,
+    readyForAudioCall,
     call,
     callUser,
   } = useContext(SocketContext);
@@ -166,13 +168,11 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
   };
   const getFile = (key) => {
     const file = files?.filter((fl) => fl.Key === key);
-    console.log("🚀 ~ getFile ~ file:", file);
     return file;
   };
   // Function to extract file extension from the file name
   function getFileExtension(filename) {
     const resp = filename?.split(".").pop().toLowerCase();
-    console.log("🚀 ~ getFileExtension ~ resp:", resp);
     return resp;
   }
   // Function to convert bytes to gigabytes (GB)
@@ -253,6 +253,10 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
             href="/"
             data-bs-toggle="modal"
             data-bs-target="#audio_call"
+            onClick={() => {
+              calling();
+              readyForAudioCall();
+            }}
           >
             <span
               class="icon"
@@ -262,7 +266,6 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
               data-bs-original-title="Audio call"
             >
               <span class="feather-icon">
-                {/* <i data-feather="phone"></i> */}
                 <FaPhone />
               </span>
             </span>
@@ -273,7 +276,10 @@ const SingleChat = ({ messages, selectedRoom, authUser, socket }) => {
             href="/"
             data-bs-toggle="modal"
             data-bs-target="#video_call"
-            onClick={() => calling()}
+            onClick={() => {
+              calling();
+              readyForCall();
+            }}
             // onClick={() => callUser(selectedUser?.socket_id, authUser.name)}
           >
             <span

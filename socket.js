@@ -146,11 +146,16 @@ io.on("connection", (socket) => {
   socket.emit("me", socket.id);
   socket.on("disconnect_call", (data) => {
     console.log("🚀 ~ socket.on ~ data:", data);
-    io.to(data.to).emit("callEnded");
+    io.to(data.to).emit("callEnded", { to: data.to });
   });
-  socket.on("callUser", ({ userToCall, signalData, from, name }) => {
-    console.log({ userToCall, signalData, from, name });
-    io.to(userToCall).emit("callUser", { signal: signalData, from, name });
+  socket.on("callUser", ({ userToCall, signalData, from, name, type }) => {
+    console.log({ userToCall, from, name, type });
+    io.to(userToCall).emit("callUser", {
+      signal: signalData,
+      from,
+      name,
+      type,
+    });
   });
   socket.on("answerCall", (data) => {
     io.to(data.to).emit("callAccepted", data.signal);

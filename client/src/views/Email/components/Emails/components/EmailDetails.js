@@ -15,7 +15,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { sendEmailRec } from "../../../../../redux/services/email";
 
-const EmailDetails = ({ emailDetails }) => {
+const EmailDetails = ({ emailDetails, emailsData, emails, onEmailDetail }) => {
   const {
     handleSubmit,
     // watch,
@@ -80,6 +80,18 @@ const EmailDetails = ({ emailDetails }) => {
       });
 
     dispatch(sendEmailRec(token, formData));
+    const repliesData = emails.filter(
+      (email) => email.parent_id === emailDetails?.selectedEmail?.id
+    );
+    const selectedEmail = emailsData.filter(
+      (email) => email.id === emailDetails?.selectedEmail?.id
+    )[0];
+    const filteredData = {
+      subject: selectedEmail?.subject,
+      selectedEmail: selectedEmail,
+      emails: repliesData,
+    };
+    onEmailDetail(filteredData);
   };
   return (
     <div class="email-body">
@@ -330,6 +342,147 @@ const EmailDetails = ({ emailDetails }) => {
                         </div>
                       </div>
                     ))}
+                    <div class="my-5">
+                      <button
+                        class="btn btn-outline-light me-2"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#compose_email"
+                        aria-expanded="false"
+                      >
+                        <span>
+                          <span class="icon">
+                            <span class="feather-icon">
+                              <i data-feather="corner-up-left"></i>
+                            </span>
+                          </span>
+                          <span>Reply</span>
+                        </span>
+                      </button>
+                      <button
+                        class="btn btn-outline-light"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#compose_email"
+                        aria-expanded="false"
+                      >
+                        <span>
+                          <span class="icon">
+                            <span class="feather-icon">
+                              <i data-feather="arrow-right"></i>
+                            </span>
+                          </span>
+                          <span>Forward</span>
+                        </span>
+                      </button>
+                    </div>
+                    {/* <!-- Compose email --> */}
+                    <div id="compose_email" class="collapse mt-7">
+                      <div class="d-flex">
+                        <div class="media">
+                          <div class="media-head me-3">
+                            <div class="avatar avatar-icon avatar-soft-light avatar-rounded d-8">
+                              <span class="initial-wrap">
+                                <i class="ri-user-fill"></i>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <form
+                          className="card p-3"
+                          onSubmit={handleSubmit(handleSendEmail)}
+                        >
+                          <div className="w-100 mb-1">
+                            <InputField
+                              name="subject"
+                              placeholder="Subject"
+                              control={control}
+                              errors={errors}
+                            />
+                          </div>
+                          <div className="w-100 mb-1">
+                            <InputField
+                              name="to"
+                              placeholder="email"
+                              defaultValue={
+                                emailDetails.selectedEmail.reciever.email
+                              }
+                              control={control}
+                              errors={errors}
+                            />
+                          </div>
+
+                          <div className="w-100 mb-1">
+                            <TextAreaField
+                              name="body"
+                              placeholder="Text"
+                              rows={7}
+                              control={control}
+                              errors={errors}
+                            />
+                          </div>
+                          <div class="compose-email-footer mt-5">
+                            <div>
+                              <button
+                                class="btn btn-primary me-2"
+                                type="submit"
+                              >
+                                Send
+                              </button>
+                              <input
+                                type="file"
+                                name="file"
+                                multiple
+                                onChange={handleFileChange}
+                              />
+                              <button class="btn btn-icon btn-flush-dark btn-rounded flush-soft-hover">
+                                <span
+                                  class="icon"
+                                  data-bs-toggle="tooltip"
+                                  data-bs-placement="top"
+                                  title="Add flag"
+                                  data-bs-original-title="Add flag"
+                                >
+                                  <span class="feather-icon">
+                                    {/* <i data-feather="paperclip"></i> */}
+                                    <FaClipboard />
+                                  </span>
+                                </span>
+                              </button>
+                            </div>
+                            <div>
+                              <button class="btn btn-icon btn-flush-dark btn-rounded flush-soft-hover">
+                                <span
+                                  class="icon"
+                                  data-bs-toggle="Save Draft"
+                                  data-bs-placement="top"
+                                  title="Save Draft"
+                                  data-bs-original-title="Save Draft"
+                                >
+                                  <span class="feather-icon">
+                                    {/* <i data-feather="edit"></i> */}
+                                    <FaEdit />
+                                  </span>
+                                </span>
+                              </button>
+                              <button class="btn btn-icon btn-flush-dark btn-rounded flush-soft-hover">
+                                <span
+                                  class="icon"
+                                  data-bs-toggle="tooltip"
+                                  data-bs-placement="top"
+                                  title="Delete"
+                                  data-bs-original-title="Delete"
+                                >
+                                  <span class="feather-icon">
+                                    {/* <i data-feather="trash-2"></i> */}
+                                    <FaTrash />
+                                  </span>
+                                </span>
+                              </button>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                    {/* <!-- /Compose email --> */}
                     {/* 
                     <div class="attachment-box">
                       <div>

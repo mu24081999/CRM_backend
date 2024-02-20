@@ -2,7 +2,6 @@ import React from "react";
 import { FaFileArchive, FaFilePdf } from "react-icons/fa";
 
 function FilePreview({ fileType, fileUrl, fileWidth }) {
-  console.log("🚀 ~ FilePreview ~ fileType, fileUrl:", fileType, fileUrl);
   let content;
 
   switch (fileType) {

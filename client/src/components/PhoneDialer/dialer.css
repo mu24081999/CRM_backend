@@ -2,6 +2,9 @@
   width: 100%;
   font-size: 1.5em;
 }
+#popup-2 {
+  width: 300px;
+}
 #dialer_table tr td {
   text-align: center;
   height: 50px;
@@ -82,6 +85,12 @@
 #dialer_table .dialer_num_tr td:nth-child(3) {
   border-left: 1px solid #fafafa;
 }
+.dialer_num_tr {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px;
+}
 
 #dialer_table .dialer_num_tr:nth-child(1) td,
 #dialer_table .dialer_num_tr:nth-child(2) td,
@@ -93,6 +102,8 @@
 #dialer_table .dialer_num_tr .dialer_num {
   color: #0b559f;
   cursor: pointer;
+  background-color: #cccccc4e;
+  border-radius: 5px;
 }
 
 #dialer_table .dialer_num_tr .dialer_num:hover {

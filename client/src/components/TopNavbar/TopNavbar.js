@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../redux/services/auth";
 import defaultAvatar from "../../assets/dist/img/avatar12.jpg";
 import _ from "lodash";
+import Dialer from "../PhoneDialer/Dialer";
 
 const TopNavbar = () => {
   const dispatch = useDispatch();
@@ -247,6 +248,9 @@ const TopNavbar = () => {
                 </span>
               </a>
             </li>
+            {/* <li className="nav-item">
+              <Dialer />
+            </li> */}
             <li className="nav-item">
               <div className="dropdown dropdown-notifications">
                 <a
@@ -267,6 +271,7 @@ const TopNavbar = () => {
                     </span>
                   </span>
                 </a>
+
                 <div className="dropdown-menu dropdown-menu-end p-0">
                   <h6 className="dropdown-header px-4 fs-6">
                     Notifications

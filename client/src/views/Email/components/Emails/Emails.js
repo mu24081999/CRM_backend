@@ -93,7 +93,12 @@ const Emails = () => {
       </div>
       <div class="emailapp-single-email">
         <EmailDetailsHeader />
-        <EmailDetails emailDetails={emailDetails} />
+        <EmailDetails
+          emailDetails={emailDetails}
+          emailsData={emailsData}
+          emails={emailArray}
+          onEmailDetail={handleEmailDetails}
+        />
       </div>
     </div>
   );

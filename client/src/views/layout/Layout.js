@@ -25,14 +25,13 @@ const Layout = ({ component }) => {
       <TopNavbar />
       <VerticalNavbar />
       <div id="hk_menu_backdrop" className="hk-menu-backdrop"></div>
-      <button
+      {/* <button
         type="button"
         class="btn btn-primary btn-rounded btn-block mb-4 show-compose-popup"
         id="show_compose_popup"
       >
         Compose email
-      </button>
-      <Dialer />
+      </button> */}
       <ChatPopup />
       {component}
     </div>
