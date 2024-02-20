@@ -287,9 +287,9 @@ const VerticalNavbar = () => {
                   <li className="nav-item">
                     <ul className="nav flex-column">
                       <li className="nav-item">
-                        <a className="nav-link" href="projects-board.html">
+                        <Link className="nav-link" to="/projects-board">
                           <span className="nav-link-text">All Boards</span>
-                        </a>
+                        </Link>
                       </li>
 
                       <li className="nav-item">

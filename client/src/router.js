@@ -14,6 +14,7 @@ import Contacts from "./views/Contacts/Contacts";
 import Test from "./views/Test/Test";
 import ContactDetails from "./views/Contacts/components/ContactDetails";
 import Email from "./views/Email/Email";
+import Board from "./views/Board/Board";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
   {
     path: "/test",
     element: <Test />,
+  },
+  {
+    path: "/projects-board",
+    element: <Board />,
   },
   {
     path: "sign-in",

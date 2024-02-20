@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from "react";
-import Select from "react-select";
+import React, { useState } from "react";
 import { useController, Controller } from "react-hook-form";
 import _ from "lodash";
-import PropTypes from "prop-types";
-import { TagsInput } from "react-tag-input-component";
+import InputColor from "react-input-color";
 
-const ReactTagInputComponent = React.forwardRef((props, ref) => {
-  const [selected, setSelected] = useState([]);
+const ReactColorInput = React.forwardRef((props, ref) => {
   const {
     title,
     style,
@@ -23,12 +20,14 @@ const ReactTagInputComponent = React.forwardRef((props, ref) => {
     ...others
   } = props;
   const { field, fieldState, formState } = useController(props);
+  const [color, setColor] = useState({});
+  console.log("🚀 ~ ReactTagInputComponent ~ color:", field);
 
   let err = _.get(errors, props.name);
   const handleOnChange = (value) => {
     // field.onChange(value);
-    setSelected(value);
-    field.onChange(value);
+    setColor(value);
+    field.onChange(value.hex);
   };
   return (
     <div className="mb-5">
@@ -47,15 +46,31 @@ const ReactTagInputComponent = React.forwardRef((props, ref) => {
                 {label}
               </label>
             )}
-            <TagsInput
-              {...field}
-              {...others}
-              ref={ref}
-              value={selected}
-              onChange={handleOnChange}
-              name={props.name}
-              placeHolder="input tags"
-            />
+            <div>
+              <InputColor
+                initialValue="#5e72e4"
+                onChange={handleOnChange}
+                placement="bottom"
+                name={field.name}
+                className="position-absolute "
+                style={{ height: "38px" }}
+              />
+              {/* <div
+                style={{
+                  width: 50,
+                  height: 50,
+                  marginTop: 20,
+                  backgroundColor: color.rgba,
+                }}
+              /> */}
+              <input
+                className="form-control"
+                style={{ paddingLeft: "70px" }}
+                type="text"
+                name={field.name}
+                value={color.hex}
+              />
+            </div>
           </>
         )}
       />
@@ -70,5 +85,5 @@ const ReactTagInputComponent = React.forwardRef((props, ref) => {
   );
 });
 
-ReactTagInputComponent.displayName = "ReactTagInputComponent";
-export default ReactTagInputComponent;
+ReactColorInput.displayName = "ReactColorInput";
+export default ReactColorInput;

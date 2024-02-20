@@ -4,9 +4,10 @@ import InputField from "../../../components/FormFields/InputField";
 import { useDispatch, useSelector } from "react-redux";
 import { updateContactRec } from "../../../redux/services/contact";
 import TagInput from "../../../components/FormFields/reactTagInputComponent";
+import TextAreaField from "../../../components/FormFields/textAreaField";
+import ReactColorInput from "../../../components/FormFields/reactColorInput";
 
 const ContactProfile = ({ contact }) => {
-  console.log("🚀 ~ ContactProfile ~ contactDetails:", contact.firstname);
   const { token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const {
@@ -22,12 +23,16 @@ const ContactProfile = ({ contact }) => {
       setValue("lastname", contact.lastname);
       setValue("phone", contact.phone);
       setValue("email", contact.email);
+      setValue("biography", contact.biography);
       // setValue("contact_id", contact.id);
     }
   }, [contact, setValue]);
   const handleUpdateContact = (data) => {
     console.log("🚀 ~ handleUpdateContact ~ data:", data, token, contact.id);
-    // dispatch(updateContactRec(token, contact.id, data));
+    dispatch(updateContactRec(token, contact.id, data));
+  };
+  const handleUpdateBio = (data) => {
+    dispatch(updateContactRec(token, contact.id, data));
   };
   return (
     <>
@@ -57,6 +62,20 @@ const ContactProfile = ({ contact }) => {
             <div className="modal-body">
               <form onSubmit={handleSubmit(handleUpdateContact)}>
                 <div className="row gx-3">
+                  {/* <div className="col-sm-6">
+                    <ReactColorInput
+                      name="color"
+                      label="First Name"
+                      control={control}
+                      rules={{
+                        required: {
+                          value: true,
+                          message: "Field required!",
+                        },
+                      }}
+                      errors={errors}
+                    />
+                  </div> */}
                   <div className="col-sm-6">
                     <InputField
                       name="firstname"
@@ -121,7 +140,7 @@ const ContactProfile = ({ contact }) => {
                     />
                   </div>
                 </div>
-                <div className="col-sm-6">
+                {/* <div className="col-sm-6">
                   <TagInput
                     name="tags"
                     placeholder="Enter your phone number"
@@ -135,7 +154,7 @@ const ContactProfile = ({ contact }) => {
                     }}
                     errors={errors}
                   />
-                </div>
+                </div> */}
                 <div className="row gx-3">
                   <div className="col-sm-12">
                     <label className="form-label">Location</label>
@@ -278,6 +297,117 @@ const ContactProfile = ({ contact }) => {
         </div>
       </div>
       {/* <!-- /More Info --> */}
+
+      {/* <!-- Add Bio --> */}
+      <div
+        className="modal fade"
+        id="tagsInput"
+        tabindex="-1"
+        role="dialog"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h6 className="modal-title">Tags</h6>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <form>
+                <div className="row gx-3">
+                  <div className="col-sm-12">
+                    <div className="form-group">
+                      <select
+                        id="input_tags"
+                        className="form-control"
+                        multiple="multiple"
+                      >
+                        <option selected="selected">Collaborator</option>
+                        <option>Designer</option>
+                        <option selected="selected">React Developer</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div className="modal-footer align-items-center">
+              <button type="button" className="btn btn-secondary">
+                Discard
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                data-bs-dismiss="modal"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* <!-- /Tags --> */}
+
+      {/* <!-- Add Bio --> */}
+      <div
+        className="modal fade"
+        id="addBio"
+        tabindex="-1"
+        role="dialog"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h6 className="modal-title">Biography</h6>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <form onSubmit={handleSubmit(handleUpdateBio)}>
+                <div className="row gx-3">
+                  <div className="col-sm-12">
+                    <div className="form-group">
+                      <TextAreaField
+                        control={control}
+                        errors={errors}
+                        name="biography"
+                        rows={5}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-footer align-items-center">
+                  <button
+                    type="button"
+                    data-bs-dismiss="modal"
+                    className="btn btn-secondary"
+                  >
+                    Discard
+                  </button>
+                  <button type="submit" className="btn btn-primary">
+                    Update
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* <!-- /Add Bio --> */}
     </>
   );
 };
