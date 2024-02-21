@@ -1,4 +1,5 @@
 import React from "react";
+import { FaEnvelope } from "react-icons/fa";
 
 const ChatPopup = () => {
   return (
@@ -277,7 +278,19 @@ const ChatPopup = () => {
       >
         <span className="icon">
           <span className="feather-icon">
-            <i data-feather="message-circle"></i>
+            {/* <i data-feather="message-circle"></i> */}
+            <FaEnvelope />
+          </span>
+        </span>
+      </a>
+      <a
+        href="/"
+        className="btn btn-icon btn-floating btn-primary btn-lg btn-rounded btn-popup-open"
+      >
+        <span className="icon">
+          <span className="feather-icon">
+            {/* <i data-feather="message-circle"></i> */}
+            <FaEnvelope />
           </span>
         </span>
       </a>

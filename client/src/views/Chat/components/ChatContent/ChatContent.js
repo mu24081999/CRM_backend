@@ -29,10 +29,9 @@ const ChatContent = () => {
     // setName,
     isCalling,
     // leaveCall,
-    call,
+    readyForCall,
     // callUser,
   } = useContext(SocketContext);
-  console.log("🚀 ~ ChatContent ~ isCalling:", isCalling);
   //Socket connection
   const socket = useMemo(() => io(socketURL), [socketURL]);
   const [selectedRoom, setSelectedRoom] = useState({});
@@ -43,7 +42,6 @@ const ChatContent = () => {
   const { users } = useSelector((state) => state.user);
   const [rooms, setRooms] = useState([]);
   const dispatch = useDispatch();
-  console.log("🚀 ~ ChatCo\\ntent ~ socket:", socket);
   const getRooms = useCallback(async () => {
     try {
       const config = {
@@ -124,7 +122,6 @@ const ChatContent = () => {
   useEffect(() => {
     // Listen for incoming messages
     socket.on("message_added", (data) => {
-      console.log("🚀 ~ socket.on ~ data:", data);
       // setMessages([...messages, data]);
       setMessages(data);
     });

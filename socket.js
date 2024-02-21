@@ -146,14 +146,97 @@ io.on("connection", (socket) => {
   socket.emit("me", socket.id);
   socket.on("disconnect_call", (data) => {
     console.log("🚀 ~ socket.on ~ data:", data);
-    io.to(data.to).emit("callEnded");
+    io.to(data.to).emit("callEnded", { to: data.to });
   });
-  socket.on("callUser", ({ userToCall, signalData, from, name }) => {
-    console.log({ userToCall, signalData, from, name });
-    io.to(userToCall).emit("callUser", { signal: signalData, from, name });
+  socket.on("callUser", ({ userToCall, signalData, from, name, type }) => {
+    console.log({ userToCall, from, name, type });
+    io.to(userToCall).emit("callUser", {
+      signal: signalData,
+      from,
+      name,
+      type,
+    });
   });
   socket.on("answerCall", (data) => {
     io.to(data.to).emit("callAccepted", data.signal);
+  });
+  socket.on("sendEmail", async (data) => {
+    const { from, to, subject, body, type, parentId, files } = data;
+    const transporter = nodeMailer.createTransport({
+      service: "gmail",
+      auth: {
+        host: "smpt.gmail.com",
+        port: "465",
+        user: process.env.EMAIL_FROM_ACC,
+        pass: process.env.EMAIL_FROM_ACC_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: from,
+      to: to,
+      subject: subject,
+      text: body,
+      // html: htmlMessage,
+    };
+    const emailResponse = await transporter.sendMail(mailOptions); // Upload file to S3
+    let emailData;
+    if (type === "email") {
+      emailData = {
+        subject: subject,
+        body: body,
+        sender: emailResponse.envelope.from,
+        reciever: emailResponse.envelope.to,
+      };
+    } else if (type === "reply") {
+      emailData = {
+        subject: subject,
+        body: body,
+        sender: emailResponse.envelope.from,
+        reciever: emailResponse.envelope.to,
+        parent_id: parentId,
+      };
+    }
+    const is_email_added = await db("emails").insert(emailData);
+    if (!is_email_added) {
+      throw new NEW_ERROR_RES(500, "Something went wrong.Error sending email");
+    }
+    if (Array.isArray(files)) {
+      // Multiple files selected
+      files.forEach(async (fileItem, index) => {
+        // Handle each fileItem here
+        const params = {
+          Bucket: process.env.S3_BUCKET,
+          Key: fileItem.name,
+          Body: fileItem.data,
+          ContentType: fileItem.mimetype,
+        };
+
+        const is_added = await new Promise((resolve, reject) => {
+          s3.upload(params, {}, async (err, data) => {
+            if (err) {
+              console.error(err);
+              reject(new Error("Error Uploading File: " + err));
+              throw new NEW_ERROR_RES(500, "Something went wrong.", err);
+            } else {
+              const is_added = await db("email_attachments").insert({
+                file_link: data.Location,
+                size: fileItem.size,
+                email_id: is_email_added[0],
+              });
+              if (!is_added) {
+                reject(new Error("Error Uploading File: " + err));
+                throw new NEW_ERROR_RES(
+                  500,
+                  "Something went wrong while uploading."
+                );
+              }
+              resolve(true);
+            }
+          });
+        });
+      });
+    }
   });
   socket.on("disconnect", async () => {
     connectedDevices--;

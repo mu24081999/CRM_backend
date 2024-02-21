@@ -222,7 +222,7 @@ const VerticalNavbar = () => {
                 </a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="email.html">
+                <Link className="nav-link" to="/emails">
                   <span className="nav-icon-wrap">
                     <span className="svg-icon">
                       <svg
@@ -244,7 +244,7 @@ const VerticalNavbar = () => {
                     </span>
                   </span>
                   <span className="nav-link-text">Email</span>
-                </a>
+                </Link>
               </li>
               <li className="nav-item">
                 <a
@@ -287,9 +287,9 @@ const VerticalNavbar = () => {
                   <li className="nav-item">
                     <ul className="nav flex-column">
                       <li className="nav-item">
-                        <a className="nav-link" href="projects-board.html">
+                        <Link className="nav-link" to="/projects-board">
                           <span className="nav-link-text">All Boards</span>
-                        </a>
+                        </Link>
                       </li>
 
                       <li className="nav-item">

@@ -91,12 +91,14 @@ const ReactSelectField = React.forwardRef((props, ref) => {
         defaultValue={defaultValue}
         render={({ field: { onChange } }) => (
           <>
-            <label
-              for={props?.name}
-              class="block mb-2 text-sm font-bold text-gray-900 dark:text-white"
-            >
-              {label}
-            </label>
+            {label && (
+              <label
+                for={props?.name}
+                class="block mb-2 text-sm font-bold text-gray-900 dark:text-white"
+              >
+                {label}
+              </label>
+            )}
             <Select
               {...field}
               {...others}
@@ -125,14 +127,14 @@ const ReactSelectField = React.forwardRef((props, ref) => {
               }}
               value={field.value}
               menuIsOpen={props.menuIsOpen || undefined}
-              onFocus={() => {
+              onFocus={(e) => {
                 setFocusState(true);
                 if (props.onFocus) {
                   props.onFocus(e);
                 }
               }}
               onBlur={(e) => {
-                field.onBlur;
+                // field.onBlur;
                 setFocusState(false);
                 if (props.onBlur) {
                   props.onBlur(e);
@@ -151,7 +153,7 @@ const ReactSelectField = React.forwardRef((props, ref) => {
         )}
       />
       {props.rules && err && props.rules && err?.message ? (
-        <p className=" text-xs text-red-600 h-3" id="email-error">
+        <p className=" fs-6 p-1 text-danger" id="email-error">
           {props.rules && err && props.rules && err?.message}
         </p>
       ) : (
