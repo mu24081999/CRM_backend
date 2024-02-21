@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 
 const FileField = React.forwardRef((props, ref) => {
   const { field, fieldState } = useController(props);
+  const [fileName, setFileName] = useState("");
   const [focusState, setFocusState] = useState(false);
   const {
     title,
@@ -16,6 +17,7 @@ const FileField = React.forwardRef((props, ref) => {
     customStyle,
     onChange,
     ellipses,
+    multiple,
     label,
     ...others
   } = props;
@@ -51,25 +53,23 @@ const FileField = React.forwardRef((props, ref) => {
                 onBlurCapture={() => setFocusState(false)}
                 onFocus={() => setFocusState(true)}
                 onChange={(e) => {
-                  console.log(
-                    "🚀 ~ FileField ~ e:",
-                    e.target.name,
-                    e.target.value
-                  );
-                  let file = e.target.value;
+                  setFileName(e.target.value);
+                  let file = multiple
+                    ? e.currentTarget.files
+                    : e.currentTarget.files[0];
                   field.onChange(file);
                   if (props.onChange) {
-                    console.log("oye yess oye");
-                    props.onChange(e.currentTarget.files[0], props?.name);
+                    props.onChange(e.currentTarget.files, props?.name);
                   }
                 }}
                 min={type === "number" && !props.min ? 0 : props.min}
                 disabled={props.isDisabled}
                 placeholder={props.placeholder ? props.placeholder : ""}
-                value={field.value}
+                value={fileName}
                 className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ${
                   props.isDisabled && "bg-gray-50 cursor-not-allowed"
                 }  ${isHighLight && " bg-highLight  "}  `}
+                multiple
                 {...others}
               />
             </div>

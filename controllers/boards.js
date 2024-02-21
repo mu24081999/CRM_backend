@@ -35,6 +35,7 @@ exports.deleteBoard = catchAssyncFunc(async function (req, res, next) {
 exports.addBoard = catchAssyncFunc(async function (req, res, next) {
   const { name, visibility, avatar_text, avatar_color, team_members } =
     req.body;
+  console.log(req.body, req.files);
   if (req.files) {
     const { image } = req.files;
     const { name, mimetype, tempFilePath } = image;
@@ -86,6 +87,7 @@ exports.addBoard = catchAssyncFunc(async function (req, res, next) {
     });
   }
 });
+
 exports.updateBoard = catchAssyncFunc(async function (req, res, next) {
   const { board_id } = req.params;
   const { name, visibility, avatar_text, avatar_color, team_members } =

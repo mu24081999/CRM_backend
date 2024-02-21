@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import SideNav from "./components/SideNav";
 import BoardHeader from "./components/BoardHeader";
 import BoardList from "./components/BoardList";
+import AddNewTask from "./components/AddNewTask";
 
 const BoardContent = () => {
   const [toggleType, setToggleType] = useState("board");
@@ -35,105 +36,7 @@ const BoardContent = () => {
               </div>
 
               {/* <!-- Add New Task --> */}
-              <div
-                id="add_new_board"
-                className="modal fade"
-                tabindex="-1"
-                role="dialog"
-                aria-hidden="true"
-              >
-                <div
-                  className="modal-dialog modal-dialog-centered"
-                  role="document"
-                >
-                  <div className="modal-content">
-                    <div className="modal-body">
-                      <button
-                        type="button"
-                        className="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                      >
-                        <span aria-hidden="true">×</span>
-                      </button>
-                      <h5>Add New Board</h5>
-                      <p className="mb-4">
-                        You are granted limited license only for purposes of
-                        viewing the material contained on this Website.
-                      </p>
-                      <form>
-                        <div className="row gx-3">
-                          <div className="col-sm-12">
-                            <div className="form-group">
-                              <label className="form-label">Name</label>
-                              <input
-                                className="form-control task-name"
-                                type="text"
-                              />
-                            </div>
-                          </div>
-                          <div className="col-sm-12">
-                            <div className="form-group">
-                              <label className="form-label">Visibility</label>
-                              <select className="form-control form-select">
-                                <option selected="">Public</option>
-                                <option value="1">Private</option>
-                              </select>
-                              <small className="form-text text-muted">
-                                Public setting will be seen by everybody with
-                                login details.
-                              </small>
-                            </div>
-                          </div>
-                          <div className="col-sm-12">
-                            <div className="form-group">
-                              <label className="form-label">Avatar</label>
-                              <select className="form-control form-select">
-                                <option selected="">Choose Avatar-Text</option>
-                                <option value="1">A</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div className="col-sm-12">
-                            <div className="form-group">
-                              <label className="form-label">Avatar Color</label>
-                              <div className="input-group color-picker">
-                                <div className="input-group-text colorpicker-input-addon">
-                                  <input type="color" />
-                                </div>
-                                <input
-                                  type="text"
-                                  className="form-control colorpicker-value"
-                                  value="#009B84"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div className="col-sm-12">
-                            <div className="form-group">
-                              <div className="dropify-square">
-                                <input type="file" className="dropify-1" />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </form>
-                    </div>
-                    <div className="modal-footer align-items-center">
-                      <button
-                        type="button"
-                        className="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                      >
-                        Cancel
-                      </button>
-                      <button type="button" className="btn btn-primary">
-                        Add
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <AddNewTask />
               {/* <!-- /Add New Task --> */}
 
               {/* <!-- Add New Member --> */}

@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
-import Select from "react-select";
+import React, { useState } from "react";
 import { useController, Controller } from "react-hook-form";
 import _ from "lodash";
-import PropTypes from "prop-types";
 import { TagsInput } from "react-tag-input-component";
 
 const ReactTagInputComponent = React.forwardRef((props, ref) => {
