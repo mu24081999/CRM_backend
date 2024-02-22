@@ -7,7 +7,7 @@ const moment = require("moment");
 
 //Create Session Function
 async function createSession(user, req, res) {
-  const token = jwt.sign({ user_id: user.id }, process.env.JWT_SECRET, {
+  const token = jwt.sign({ user_id: user.id }, config.JWT_SECRET, {
     expiresIn: "30d",
   });
   const exist_session = await db("sessions")

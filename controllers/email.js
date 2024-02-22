@@ -13,8 +13,8 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
     auth: {
       host: "smpt.gmail.com",
       port: "465",
-      user: process.env.EMAIL_FROM_ACC,
-      pass: process.env.EMAIL_FROM_ACC_PASS,
+      user: config.EMAIL_FROM_ACC,
+      pass: config.EMAIL_FROM_ACC_PASS,
     },
   });
 
@@ -62,7 +62,7 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
               }
               // Handle each fileItem here
               const params = {
-                Bucket: process.env.S3_BUCKET,
+                Bucket: config.S3_BUCKET,
                 Key: fileItem.name,
                 Body: data,
                 ContentType: fileItem.mimetype,
@@ -102,7 +102,7 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
               return res.status(500).send("Internal Server Error");
             }
             const params = {
-              Bucket: process.env.S3_BUCKET,
+              Bucket: config.S3_BUCKET,
               Key: name,
               Body: data,
               ContentType: mimetype,
@@ -183,7 +183,7 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
             }
             // Handle each fileItem here
             const params = {
-              Bucket: process.env.S3_BUCKET,
+              Bucket: config.S3_BUCKET,
               Key: fileItem.name,
               Body: data,
               file_type: fileItem.mimetype,
@@ -226,7 +226,7 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
             return res.status(500).send("Internal Server Error");
           }
           const params = {
-            Bucket: process.env.S3_BUCKET,
+            Bucket: config.S3_BUCKET,
             Key: name,
             Body: data,
             ContentType: mimetype,

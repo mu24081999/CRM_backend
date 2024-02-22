@@ -1,5 +1,7 @@
 const express = require("express");
 const path = require("path");
+global.base_path = __dirname;
+global.config = require(base_path + "/config");
 const cors = require("cors");
 var fileUpload = require("express-fileupload");
 const logger = require("./utils/winston");
@@ -13,12 +15,11 @@ const dbConnection = require("./config/database");
 const multer = require("multer");
 
 const AWS = require("aws-sdk");
-
 // Set AWS credentials and region
 AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
+  accessKeyId: config.AWS_ACCESS_KEY,
+  secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
+  region: config.AWS_REGION,
 });
 const connect = new AWS.Connect();
 console.log("🚀 ~ connect:", connect);
@@ -53,7 +54,7 @@ app.use(
 //Setting up sessions
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: config.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
   })
@@ -85,7 +86,7 @@ app.get("/", (req, res) => {
 
 //Routes
 const routes = require("./routes");
-const port = process.env.PORT;
+const port = config.PORT;
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 global.io = new Server(server, {

@@ -1,0 +1,48 @@
+const PORT = 7000;
+const SESSION_SECRET = "12345678$@123";
+
+// # DB Config
+// # DB_HOST=127.0.0.1
+// # DB_PORT = 3306
+// # DB_PASSWORD=''
+// # DB_USER=root
+// # DB_NAME=CRM
+
+const DB_HOST = "database-crm.cle0a4gs64yq.us-west-2.rds.amazonaws.com";
+const DB_PORT = "3306";
+const DB_PASSWORD = "12345678";
+const DB_USER = "admin";
+const DB_NAME = "crm";
+
+// # //JWT config
+const JWT_SECRET = "1212345678$@123";
+
+// # Email configuration
+const EMAIL_FROM_ACC = "mu24081999@gmail.com";
+const EMAIL_FROM_ACC_PASS = "isqzrulwfzdkitpl";
+
+// # AWS configuration
+// # AWS_ACCESS_KEY = AKIAX2CISY6LNJB3XTIK
+// # AWS_SECRET_ACCESS_KEY = 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
+// # S3_BUCKET = jampackcrm
+// # AWS_REGION ="eu-west-2"
+const AWS_ACCESS_KEY = "AKIAU6GDZ3SSI7CWYU75";
+const AWS_SECRET_ACCESS_KEY = "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";
+const S3_BUCKET = "crmbucketahmedasif";
+const AWS_REGION = "eu-west-2";
+module.exports = {
+  AWS_REGION,
+  S3_BUCKET,
+  AWS_SECRET_ACCESS_KEY,
+  AWS_ACCESS_KEY,
+  EMAIL_FROM_ACC_PASS,
+  EMAIL_FROM_ACC,
+  JWT_SECRET,
+  DB_NAME,
+  DB_USER,
+  DB_PASSWORD,
+  DB_PORT,
+  DB_HOST,
+  SESSION_SECRET,
+  PORT,
+};
