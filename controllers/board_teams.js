@@ -43,7 +43,7 @@ exports.addTeam = catchAssyncFunc(async function (req, res, next) {
         return res.status(500).send("Internal Server Error");
       }
       const params = {
-        Bucket: process.env.S3_BUCKET,
+        Bucket: config.S3_BUCKET,
         Key: name,
         Body: data,
         ContentType: mimetype,
@@ -94,7 +94,7 @@ exports.updateTeam = catchAssyncFunc(async function (req, res, next) {
         return res.status(500).send("Internal Server Error");
       }
       const params = {
-        Bucket: process.env.S3_BUCKET,
+        Bucket: config.S3_BUCKET,
         Key: name,
         Body: data,
         ContentType: mimetype,

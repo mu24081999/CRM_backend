@@ -108,7 +108,7 @@ io.on("connection", (socket) => {
       };
     } else if (type === "file") {
       const params = {
-        Bucket: process.env.S3_BUCKET,
+        Bucket: config.S3_BUCKET,
         Key: file_name,
         Body: file_data,
         ContentType: file_type,
@@ -167,8 +167,8 @@ io.on("connection", (socket) => {
       auth: {
         host: "smpt.gmail.com",
         port: "465",
-        user: process.env.EMAIL_FROM_ACC,
-        pass: process.env.EMAIL_FROM_ACC_PASS,
+        user: config.EMAIL_FROM_ACC,
+        pass: config.EMAIL_FROM_ACC_PASS,
       },
     });
 
@@ -206,7 +206,7 @@ io.on("connection", (socket) => {
       files.forEach(async (fileItem, index) => {
         // Handle each fileItem here
         const params = {
-          Bucket: process.env.S3_BUCKET,
+          Bucket: config.S3_BUCKET,
           Key: fileItem.name,
           Body: fileItem.data,
           ContentType: fileItem.mimetype,
