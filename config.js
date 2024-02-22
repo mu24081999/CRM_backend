@@ -1,4 +1,4 @@
-const PORT = 7000;
+const PORT = 80;
 const SESSION_SECRET = "12345678$@123";
 
 // # DB Config
