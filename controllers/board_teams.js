@@ -56,7 +56,7 @@ exports.addTeam = catchAssyncFunc(async function (req, res, next) {
           } else {
             console.log("File uploaded successfully:", data);
 
-            const is_record_inserted = await db("baard_teams").insert({
+            const is_record_inserted = await db("board_teams").insert({
               name: req.body.name,
               email,
               image: data.Location,

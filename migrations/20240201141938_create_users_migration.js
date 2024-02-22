@@ -11,6 +11,8 @@ exports.up = function (knex) {
     table.string("username").notNullable();
     table.string("email").notNullable();
     table.string("password").notNullable();
+    // table.string("socket_id").nullable();
+    // table.boolean("connected").defaultTo(false);
     table.json("tags").nullable();
     table.string("role").nullable();
     table.enum("status", ["active", "blocked"]).defaultTo("active");

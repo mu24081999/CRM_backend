@@ -21,6 +21,7 @@ AWS.config.update({
   region: process.env.AWS_REGION,
 });
 const connect = new AWS.Connect();
+console.log("🚀 ~ connect:", connect);
 global.s3 = new AWS.S3();
 global.upload = multer({ dest: "uploads/" });
 // const { Logger } = require("winston");
