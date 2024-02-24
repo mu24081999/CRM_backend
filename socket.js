@@ -22,7 +22,9 @@ io.on("connection", (socket) => {
         connected: 1,
       });
       const user = await db("users").where("id", user_id).first();
-      io.to(user.socket_id).emit("updated_me", user);
+      if (user) {
+        io.to(user.socket_id).emit("updated_me", user);
+      }
     }
   });
   //chat events

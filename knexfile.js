@@ -1,5 +1,6 @@
 require("dotenv").config();
-
+global.base_path = __dirname;
+global.config = require(base_path + "/config");
 module.exports = {
   client: "mysql2",
   connection: {
