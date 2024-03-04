@@ -21,8 +21,7 @@ AWS.config.update({
   secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
   region: config.AWS_REGION,
 });
-const connect = new AWS.Connect();
-console.log("🚀 ~ connect:", connect);
+global.connect = new AWS.Connect();
 global.s3 = new AWS.S3();
 global.upload = multer({ dest: "uploads/" });
 // const { Logger } = require("winston");
