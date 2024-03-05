@@ -35,6 +35,7 @@ exports.deleteEvent = catchAssyncFunc(async function (req, res, next) {
 exports.addEvent = catchAssyncFunc(async function (req, res, next) {
   const {
     name,
+    type,
     description,
     start_date,
     start_time,
@@ -52,6 +53,7 @@ exports.addEvent = catchAssyncFunc(async function (req, res, next) {
   } = req.body;
   const is_added = await db("calender_events").insert({
     name,
+    type,
     description,
     start_date,
     start_time,
