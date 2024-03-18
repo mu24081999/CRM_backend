@@ -141,6 +141,7 @@ exports.updateContact = catchAsyncFunc(async (req, res, next) => {
     tags: Joi.string().optional(),
     social_links: Joi.string().optional(),
     role: Joi.string().optional(),
+    status: Joi.string().optional(),
   });
 
   const { error, value } = schema.validate(req.body);
@@ -196,6 +197,7 @@ exports.updateContact = catchAsyncFunc(async (req, res, next) => {
       social_links: value.social_links,
       role: value.role,
       // avatar: data.Location,
+      status: value.status,
     });
   if (!is_record_updated) {
     return helper.sendError(

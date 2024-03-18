@@ -5,15 +5,14 @@
 exports.up = function (knex) {
   return knex.schema.createTable("sub_accounts", (table) => {
     table.increments("id").primary();
-    table.string("avatar").nullable();
-    table.string("phone").nullable();
-    table.string("name").notNullable();
-    table.string("username").notNullable();
-    table.string("email").notNullable();
-    table.string("password").notNullable();
-    table.json("tags").nullable();
-    table.string("role").nullable();
-    table.enum("status", ["active", "blocked"]);
+    table.integer("user_id").unsigned().notNullable(); // New field for parent email id
+    table.string("friendlyName").notNullable();
+    table.string("sid").notNullable();
+    table.string("status").notNullable();
+    table.string("authToken").notNullable();
+    table.string("type").notNullable();
+    table.json("subresourceUris").nullable();
+    table.string("uri").nullable();
     table.timestamps(true, true);
   });
 };

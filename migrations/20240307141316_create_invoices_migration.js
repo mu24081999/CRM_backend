@@ -23,10 +23,10 @@ exports.up = function (knex) {
     table.string("from_label").nullable();
     table.string("personal_memo").nullable();
     table.string("note_to_client").nullable();
+    table.enum("status", ["paid", "unpaid", "draft"]).defaultTo("unpaid");
     table
-      .enum("status", ["paid", "unpaid", "draft", "blocked", "archived"])
-      .defaultTo("unpaid");
-    table.enum("activity", ["sent", "done", ""]).nullable();
+      .enum("activity", ["sent", "done", "", "blocked", "archived"])
+      .nullable();
     table.timestamps(true, true);
   });
 };

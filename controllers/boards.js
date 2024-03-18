@@ -29,7 +29,9 @@ exports.readBoard = catchAssyncFunc(async function (req, res, next) {
 });
 exports.deleteBoard = catchAssyncFunc(async function (req, res, next) {
   const { board_id } = req.params;
-  const board = await db("boards").where("id", board_id).del();
+  const board = await db("boards").where("id", board_id).update({
+    visibility: "deleted",
+  });
   return helper.sendSuccess(req, res, {}, "Board deleted successfully.");
 });
 exports.addBoard = catchAssyncFunc(async function (req, res, next) {
@@ -135,6 +137,5 @@ exports.updateBoard = catchAssyncFunc(async function (req, res, next) {
       500
     );
   }
-  resolve(true);
-  return helper.sendSuccess(req, res, {}, "Board successfully created.");
+  return helper.sendSuccess(req, res, {}, "Board successfully updated.");
 });

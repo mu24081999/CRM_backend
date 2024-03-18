@@ -27,12 +27,103 @@ io.on("connection", (socket) => {
       }
     }
   });
-  //chat events
-  socket.on("joinRoom", ({ roomId }) => {
-    console.log("🚀 ~ socket.on ~ roomId:", roomId);
-    socket.join(roomId);
+
+  //Messages Events
+  //Send Message
+  socket.on("send-message", async (data) => {
+    const params = {
+      from: data.from.phone, // Your Twilio phone number
+      to: data.to.phone, // Recipient's phone number
+      // sendAt: new Date(Date.UTC(2021, 10, 30, 20, 36, 27)),
+      // scheduleType: 'fixed'
+      // to: "+923174660027",
+      body: data.message, // Message content
+      // mediaUrl: [
+      //   "https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg",
+      //   "https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg",
+      // ],
+    };
+    twilioClient.messages
+      .create(params)
+      .then(async (message) => {
+        const is_added_to_database = await db("messages").insert({
+          from_name: data.from.name,
+          to_name: data.to.name,
+          from_phone: data.from.phone,
+          to_phone: data.to.phone,
+          message: data.message,
+          sid: message.sid,
+          price: message.price,
+          account_sid: message.accountSid,
+          uri: message.uri,
+          num_media: message.numMedia,
+          media_urls: { urls: [] },
+        });
+        if (!is_added_to_database) {
+          throw new NEW_ERROR_RES(
+            500,
+            "Something went wrong while adding to database."
+          );
+        }
+        const messages = await db("messages")
+          .where("from_phone", data.from.phone)
+          .orWhere("to_phone", data.from.phone)
+          .select();
+        console.log("🚀 ~ .then ~ messages:", messages);
+        io.to(data.from.socket_id).emit("message_sent", messages);
+      })
+      .catch((err) => {
+        console.error(err);
+        throw new NEW_ERROR_RES(500, err);
+      });
   });
 
+  //chat events
+  socket.on("joinRoom", ({ roomId }) => {
+    socket.join(roomId);
+  });
+  //add chat_room
+  socket.on("add-group-chat-room", async (data) => {
+    try {
+      const { user_id, user_name, user_image, group_members, name, room_id } =
+        data;
+      console.log("New group chat", data);
+      const roomData = {
+        user_id,
+        user_name,
+        user_image,
+        group_members,
+        name,
+        room_id,
+      };
+      const userIds = group_members?.members?.map((member) => member.id);
+
+      const is_exist_room = await db("group_chat_rooms")
+        .where("room_id", room_id)
+        .first();
+      if (is_exist_room) {
+        const is_updated_room = await db("group_chat_rooms")
+          .where("room_id", room_id)
+          .update({
+            ...roomData,
+            group_members: JSON.stringify(group_members),
+          });
+        if (!is_updated_room) {
+          throw new NEW_ERROR_RES(500, "Something went wrong." + error);
+        }
+
+        io.emit("group_room_added");
+      } else {
+        const is_room_added = await db("group_chat_rooms").insert(roomData);
+        if (!is_room_added) {
+          throw new NEW_ERROR_RES(500, "Something went wrong." + error);
+        }
+        io.emit("group_room_added");
+      }
+    } catch (error) {
+      throw new NEW_ERROR_RES(500, "Error sending message: " + error);
+    }
+  });
   //add chat_room
   socket.on("add-chat-room", async (data) => {
     try {
@@ -45,8 +136,6 @@ io.on("connection", (socket) => {
         user_name_2,
         name,
       } = data;
-
-      console.log("🚀 ~ socket.on ~ data:", data);
       const roomData = {
         user_id_1,
         user_id_2,
@@ -86,8 +175,8 @@ io.on("connection", (socket) => {
       throw new NEW_ERROR_RES(500, "Error sending message: " + error);
     }
   });
+  //send chat message
   socket.on("chat_message", async function (data) {
-    console.log("🚀 ~ data:", data);
     const {
       sender,
       recipient,
@@ -144,7 +233,7 @@ io.on("connection", (socket) => {
     const room_messages = await db("chats").where({ room: room }).select();
     io.to(room).emit("message_added", room_messages);
   });
-
+  //Me
   socket.emit("me", socket.id);
   socket.on("disconnect_call", (data) => {
     console.log("🚀 ~ socket.on ~ data:", data);
@@ -157,6 +246,7 @@ io.on("connection", (socket) => {
       from,
       name,
       type,
+      userToCall,
     });
   });
   socket.on("answerCall", (data) => {

@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { callUser, listPhoneNumbers } = require("../controllers/call");
+const { callUser, instanceList } = require("../controllers/call");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
-router.get("/call-user", callUser);
-router.get("/list-phone-numbers", listPhoneNumbers);
+router.post("/call-user", callUser);
+router.get("/list-phone-numbers", instanceList);
 
 module.exports = router;
