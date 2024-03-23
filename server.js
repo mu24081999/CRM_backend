@@ -44,6 +44,7 @@ global.db = knex(knexConfig);
 // global.db = knex();
 async function conn() {
   const connection = await dbConnection.connect_database();
+  console.log("🚀 ~ conn ~ connection:", connection);
 }
 conn();
 //Database connection
