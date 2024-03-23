@@ -29,6 +29,7 @@ console.log(process.env.GOOGLE_APPLICATION_CREDENTIALS);
 async function authenticate() {
   const auth = new GoogleAuth();
   const client = await auth.getClient();
+  console.log("🚀 ~ authenticate ~ client:", client);
   // Use the authenticated client to make API requests
 }
 
