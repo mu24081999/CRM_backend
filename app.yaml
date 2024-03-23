@@ -3,4 +3,3 @@ runtime: nodejs
 env: flex
 env_variables:
   GOOGLE_APPLICATION_CREDENTIALS: "./justcall-378101-79e45cb3c455.json"
-  ANOTHER_VARIABLE: "another-value"
