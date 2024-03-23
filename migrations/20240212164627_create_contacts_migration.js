@@ -22,7 +22,13 @@ exports.up = function (knex) {
     table.json("tags").nullable();
     table.json("social_links").nullable();
     table.string("role").nullable();
-    table.enum("status", ["active", "blocked"]);
+    table.enum("status", [
+      "active",
+      "blocked",
+      "pending",
+      "important",
+      "archived",
+    ]);
     table.timestamps(true, true);
   });
 };

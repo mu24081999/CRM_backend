@@ -106,7 +106,30 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     email,
     password: hashedPassword,
   });
+  const user = await db("users").where("username", username).first();
   const new_user = await db("users").where("email", email).first();
+  // Create a subaccount
+  twilioClient.api.accounts.create(
+    {
+      friendlyName: user.username, // Provide a friendly name for the subaccount
+    },
+    async (err, account) => {
+      if (err) {
+        return helper.sendError(req, res, err, 500);
+      } else {
+        const is_added_to_database = await db("sub_accounts").insert({
+          user_id: user.id,
+          authToken: account.authToken,
+          sid: account.sid,
+          friendlyName: account.friendlyName,
+          status: account.status,
+          subresourceUris: account.subresourceUris,
+          type: account.type,
+          uri: account.uri,
+        });
+      }
+    }
+  );
   if (new_user) {
     return createSession(new_user, req, res);
   } else {
