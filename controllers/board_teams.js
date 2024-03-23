@@ -33,7 +33,7 @@ exports.deleteTeam = catchAssyncFunc(async function (req, res, next) {
   return helper.sendSuccess(req, res, {}, "Team deleted successfully.");
 });
 exports.addTeam = catchAssyncFunc(async function (req, res, next) {
-  const { name, email } = req.body;
+  const { email } = req.body;
   if (req.files) {
     const { image } = req.files;
     const { name, mimetype, tempFilePath } = image;
