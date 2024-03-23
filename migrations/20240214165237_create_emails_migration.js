@@ -2,6 +2,7 @@ exports.up = function (knex) {
   return knex.schema.createTable("emails", function (table) {
     table.increments("id").primary();
     table.string("subject").notNullable();
+    table.string("status").notNullable();
     table.text("body").notNullable();
     table.string("sender").notNullable();
     table.string("reciever").notNullable();

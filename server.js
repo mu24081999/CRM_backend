@@ -13,6 +13,18 @@ const knexConfig = require("./knexfile");
 const knex = require("knex");
 const dbConnection = require("./config/database");
 const multer = require("multer");
+const twilio = require("twilio");
+const { Storage } = require("@google-cloud/storage");
+
+//Google Cloud Storage
+global.storage = new Storage({
+  keyFilename: __dirname + "/justcall-378101-79e45cb3c455.json",
+});
+
+//Twillio Connection
+const accountSid = config.TWILLIO_ACCOUNT_SID;
+const authToken = config.TWILLIO_AUTH_TOKEN;
+global.twilioClient = twilio(accountSid, authToken);
 
 const AWS = require("aws-sdk");
 // Set AWS credentials and region
@@ -21,16 +33,20 @@ AWS.config.update({
   secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
   region: config.AWS_REGION,
 });
-const connect = new AWS.Connect();
-console.log("🚀 ~ connect:", connect);
+global.connect = new AWS.Connect();
 global.s3 = new AWS.S3();
 global.upload = multer({ dest: "uploads/" });
 // const { Logger } = require("winston");
 
 //Global variables
 global.db = knex(knexConfig);
+// console.log(dbConnection.connect_database().connectionParams);
+// global.db = knex();
+async function conn() {
+  const connection = await dbConnection.connect_database();
+}
+conn();
 //Database connection
-dbConnection.connect_database();
 
 global.app = express();
 require("dotenv").config({ path: path.join(__dirname, ".env") });
@@ -78,7 +94,23 @@ app.use((error, req, res, next) => {
 
   res.status(status).json({ success: false, msg: message });
 });
+const xmlFilePath = path.join(__dirname, "voice.xml");
+// Define a route to serve XML data
+app.get("/v1/user/calling/voice.xml", (req, res) => {
+  // Read the XML file
+  fs.readFile(xmlFilePath, "utf8", (err, data) => {
+    if (err) {
+      console.error("Error reading XML file:", err);
+      return res.status(500).send("Internal Server Error" + err);
+    }
 
+    // Set the Content-Type header to indicate XML format
+    res.set("Content-Type", "application/xml");
+
+    // Send the XML file content as response
+    res.send(data);
+  });
+});
 //Welcome Api
 app.get("/", (req, res) => {
   res.send("Welcome ...");
@@ -96,6 +128,7 @@ global.io = new Server(server, {
   },
 });
 const socketLogic = require("./socket");
+const { error } = require("console");
 server.listen(port, () => {
   console.log("Server listening on port " + port);
 });
