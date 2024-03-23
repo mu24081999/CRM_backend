@@ -20,6 +20,19 @@ const { Storage } = require("@google-cloud/storage");
 global.storage = new Storage({
   keyFilename: __dirname + "/justcall-378101-79e45cb3c455.json",
 });
+const { GoogleAuth } = require("google-auth-library");
+
+// Set the path to the keyfile using environment variable
+process.env.GOOGLE_APPLICATION_CREDENTIALS =
+  "justcall-378101-79e45cb3c455.json";
+console.log(process.env.GOOGLE_APPLICATION_CREDENTIALS);
+async function authenticate() {
+  const auth = new GoogleAuth();
+  const client = await auth.getClient();
+  // Use the authenticated client to make API requests
+}
+
+authenticate();
 
 //Twillio Connection
 const accountSid = config.TWILLIO_ACCOUNT_SID;
