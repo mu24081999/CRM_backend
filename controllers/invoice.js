@@ -68,34 +68,44 @@ exports.addInvoice = catchAssyncFunc(async function (req, res, next) {
   } = req.body;
   let is_logo_added;
   let logo_url;
-  console.log(req.body);
-  console.log(req.files);
+  console.log("add post", req.body);
+  console.log("add post", req.files);
   if (req.files) {
-    is_logo_added = await new Promise((resolve, reject) => {
+    is_logo_added = await new Promise(async (resolve, reject) => {
       const { logo } = req.files;
       const { name, mimetype, tempFilePath } = logo;
-      fs.readFile(tempFilePath, async (err, data) => {
-        if (err) {
-          console.error("Error reading file:", err);
-          return res.status(500).send("Internal Server Error");
-        }
-        const params = {
-          Bucket: config.S3_BUCKET,
-          Key: "invoices/" + user_name + "/logos/" + name,
-          Body: data,
-          ContentType: mimetype,
-        };
-        s3.upload(params, {}, async (err, data) => {
-          if (err) {
-            console.error(err);
-            reject(new Error("Error Uploading File: " + err));
-          } else {
-            console.log("File uploaded successfully:", data);
-            logo_url = data?.Location;
-            resolve(true);
-          }
+      const [fileData] = await storage
+        .bucket("crm-justcall")
+        .upload(tempFilePath, {
+          // Specify the destination file name in GCS (optional)
+          destination: "invoices/" + user_name + "/logos/" + name,
+          // Set ACL to public-read
+          predefinedAcl: "publicRead",
         });
-      });
+      logo_url = fileData?.publicUrl();
+      resolve(true);
+      // fs.readFile(tempFilePath, async (err, data) => {
+      //   if (err) {
+      //     console.error("Error reading file:", err);
+      //     return res.status(500).send("Internal Server Error");
+      //   }
+      //   const params = {
+      //     Bucket: config.S3_BUCKET,
+      //     Key: "invoices/" + user_name + "/logos/" + name,
+      //     Body: data,
+      //     ContentType: mimetype,
+      //   };
+      //   s3.upload(params, {}, async (err, data) => {
+      //     if (err) {
+      //       console.error(err);
+      //       reject(new Error("Error Uploading File: " + err));
+      //     } else {
+      //       console.log("File uploaded successfully:", data);
+      //       logo_url = data?.Location;
+      //       resolve(true);
+      //     }
+      //   });
+      // });
     });
   }
   const post_data = {

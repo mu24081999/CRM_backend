@@ -3,10 +3,15 @@ const helper = require("../helper/helper");
 const Joi = require("joi");
 const moment = require("moment");
 const twilio = require("twilio");
+const bcrypt = require("bcryptjs");
+
 const { AccessToken } = twilio.jwt;
 const VoiceResponse = twilio.twiml.VoiceResponse;
 exports.getAvailableNumbers = catchAssyncFunc(async function (req, res, next) {
-  const numbers = await twilioClient.availablePhoneNumbers("US").local.list(); //list by country code
+  const { accountSid, authToken } = req.body;
+  const numbers = await twilio(accountSid, authToken)
+    .availablePhoneNumbers("US")
+    .local.list(); //list by country code
   // const numbers = await twilioClient.incomingPhoneNumbers.list();//list claimed numbers
   // const numbers = await twilioClient.availablePhoneNumbers.list();
   return helper.sendSuccess(
@@ -19,7 +24,19 @@ exports.getAvailableNumbers = catchAssyncFunc(async function (req, res, next) {
   );
 });
 exports.createSubAccount = catchAssyncFunc(async function (req, res, next) {
-  const { account_name } = req.body;
+  const { account_name, username, name, email, password } = req.body;
+  const is_exist_user = await db("users").where("email", email).first();
+  if (is_exist_user) {
+    return helper.sendSuccess(
+      req,
+      res,
+      {},
+      "User already exists with this email."
+    );
+  }
+
+  const saltRounds = 10;
+  const hashedPassword = bcrypt.hashSync(password, saltRounds);
   // Create a subaccount
   twilioClient.api.accounts.create(
     {
@@ -38,7 +55,12 @@ exports.createSubAccount = catchAssyncFunc(async function (req, res, next) {
           subresourceUris: account.subresourceUris,
           type: account.type,
           uri: account.uri,
+          name,
+          username,
+          email,
+          password: hashedPassword,
         });
+
         return helper.sendSuccess(
           req,
           res,
@@ -47,6 +69,17 @@ exports.createSubAccount = catchAssyncFunc(async function (req, res, next) {
         );
       }
     }
+  );
+});
+exports.getUserSubAccounts = catchAssyncFunc(async function (req, res, next) {
+  const sub_accounts = await db("sub_accounts")
+    .where("user_id", req.user.id)
+    .select();
+  return helper.sendSuccess(
+    req,
+    res,
+    { subAccountsData: sub_accounts },
+    "success"
   );
 });
 exports.recieveSMS = catchAssyncFunc(async function (req, res, next) {
@@ -163,6 +196,8 @@ exports.searchPhoneNumbers = catchAssyncFunc(async function (req, res, next) {
     sms,
     mms,
     fax,
+    accountSid,
+    authToken,
   } = req.body;
   console.log("🚀 ~ req.body:", req.body);
   const filters = {};
@@ -189,7 +224,7 @@ exports.searchPhoneNumbers = catchAssyncFunc(async function (req, res, next) {
   if (fax) {
     filters.faxEnabled = fax;
   }
-  const numbers = await twilioClient
+  const numbers = await twilio(accountSid, authToken)
     .availablePhoneNumbers(country)
     [numberType].list(filters); //list by country code
   console.log("🚀 ~ numbers:", numbers);
@@ -205,22 +240,65 @@ exports.searchPhoneNumbers = catchAssyncFunc(async function (req, res, next) {
 exports.listenCallStatus = catchAssyncFunc(async function (req, res, next) {
   console.log("status", req.body);
   const To = req.body.To;
+  const From = req.body.from || req.body.Caller;
   const client = new twilio.twiml.VoiceResponse();
-  console.log("🚀 ~ client:", client);
-  const dial = client.dial({ callerId: "+14849993639" });
-  dial.number(To);
-  console.log(client.toString());
+  if (req.body.CallToken) {
+    // client.say("Incoming call");
+    // client.say(
+    //   {
+    //     voice: "man",
+    //     loop: 3,
+    //     rate: -10, // Adjust the rate parameter to slow down the speech
+    //   },
+    //   "Press 1 for contacting with agent"
+    // );
+
+    // Check if DTMF input was received
+    // const userInput = req.body.Digits;
+    // console.log("🚀 ~ userInput:", userInput);
+    // if (userInput === "1") {
+    //   client.dial({ record: true }).client("mu24081999");
+    // } else {
+    //   client.say("Invalid input. Goodbye!"); // Handle invalid input
+    // }
+    client.dial({ record: true }).client("mu24081999");
+  } else {
+    const dial = client.dial({
+      callerId: From,
+      record: true,
+    });
+    dial.number(To);
+  }
+
   res.set("Content-Type", "text/xml");
   res.send(client.toString());
 });
-exports.getCallSteam = catchAssyncFunc(async function (req, res, next) {
-  console.log(req.body);
+exports.getCallLogs = catchAssyncFunc(async function (req, res, next) {
+  const { accountSid, authToken } = req.body;
+  const client = twilio(accountSid, authToken);
+  const calls = await client.calls.list();
+  return helper.sendSuccess(req, res, { callsData: calls }, "success");
+});
+exports.getCallRecordings = catchAssyncFunc(async function (req, res, next) {
+  const { accountSid, authToken } = req.body;
+  console.log("recordings", accountSid, authToken);
+  const client = twilio(accountSid, authToken);
+  const recordings = await client.recordings.list();
+  return helper.sendSuccess(
+    req,
+    res,
+    { recordingsData: recordings },
+    "success"
+  );
 });
 const ClientCapability = twilio.jwt.ClientCapability;
 exports.getCalls = catchAssyncFunc(async function (req, res, next) {
   const response = new VoiceResponse();
   io.emit("callComming", req.body);
-  response.say({ voice: "man", loop: 3 });
+  response.say(
+    { voice: "man", loop: 3 },
+    "Press one for contacting with agent and press 2 for contacting with admin"
+  );
   res.type("text/xml");
   res.send(response.toString());
   console.log("🚀 ~ req.body:", req.body);
@@ -233,37 +311,42 @@ exports.getCallToken = catchAssyncFunc(async function (req, res, next) {
   // capability.addScope(new ClientCapability.IncomingClientScope("joey"));
   // const token = capability.toJwt();
   // res.set("Content-Type", "application/jwt");
-  // res.send(token);
+  // res.json({ token: token });
+  const { from_phone, accountSid, identity, authToken } = req.body;
+  console.log("🚀 ~ identity:", identity);
+
   const accessToken = new AccessToken(
-    config.TWILLIO_ACCOUNT_SID,
+    // config.TWILLIO_ACCOUNT_SID,
+    accountSid,
     config.TWILIO_API_KEY,
     config.TWILIO_VOICE_API_KEY_AUTH_TOKEN,
     {
-      identity: "umar",
+      // identity: "umar",
+      identity: identity,
     }
   );
   const grant = new AccessToken.VoiceGrant({
     outgoingApplicationSid: config.TWILIO_TWIML_SID,
     incomingAllow: true,
-    outgoingApplicationParams: { from: "+14849993639" }, // Set the "from" number here
+    outgoingApplicationParams: { from: from_phone }, // Set the "from" number here
   });
   accessToken.addGrant(grant);
 
   res.json({ token: accessToken.toJwt() });
 });
 exports.routeCall = catchAssyncFunc(async function (req, res, next) {
-  console.log(req.body);
+  console.log("route-call", req.body);
   const response = new VoiceResponse();
   response.dial().client("joey");
-  response.type("text/xml");
-  response.send(response.toString());
+  res.type("text/xml");
+  res.send(response.toString());
 });
 exports.answerCall = catchAssyncFunc(async function (req, res, next) {
   const { callId } = req.body;
   twilio(config.TWILLIO_ACCOUNT_SID, config.TWILLIO_AUTH_TOKEN)
     .calls(callId)
     .update({
-      url: "https://cd36-2404-3100-18b0-9703-79e9-d30b-153a-cf7.ngrok-free.app/v1/user/calling/routeCall",
+      url: "https://6428-37-111-155-42.ngrok-free.app/v1/user/calling/routeCall",
       method: "POST",
     })
     .then((res) => {

@@ -17,7 +17,7 @@ const twilio = require("twilio");
 const { Storage } = require("@google-cloud/storage");
 
 //Google Cloud Storage
-const storage = new Storage({
+global.storage = new Storage({
   keyFilename: __dirname + "/justcall-378101-79e45cb3c455.json",
 });
 

@@ -15,6 +15,7 @@ exports.up = function (knex) {
     // table.boolean("connected").defaultTo(false);
     table.json("tags").nullable();
     table.string("role").nullable();
+    table.string("client_id").nullable();
     table.enum("status", ["active", "blocked"]).defaultTo("active");
     table.timestamps(true, true);
   });

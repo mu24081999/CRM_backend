@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/mu24081999/CRM_backend#readme",
   "dependencies": {
+    "@google-cloud/cloud-sql-connector": "^1.2.4",
     "@google-cloud/storage": "^7.8.0",
     "aws-sdk": "^2.1552.0",
     "bcryptjs": "^2.4.3",
@@ -29,6 +30,7 @@
     "express-fileupload": "^1.4.3",
     "express-session": "^1.18.0",
     "express-validator": "^7.0.1",
+    "google-auth-library": "^9.7.0",
     "http": "^0.0.1-security",
     "http-status-codes": "^2.3.0",
     "joi": "^17.12.1",

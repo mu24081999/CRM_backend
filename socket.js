@@ -183,11 +183,13 @@ io.on("connection", (socket) => {
       message,
       room,
       type,
-      file_name,
-      file_data,
-      file_size,
-      file_type,
+      // file_name,
+      // file_data,
+      // file_size,
+      // file_type,
+      file,
     } = data;
+    console.log("🚀 ~ file:", file);
     let formData;
     if (type === "text") {
       formData = {
@@ -198,33 +200,53 @@ io.on("connection", (socket) => {
         type: "text",
       };
     } else if (type === "file") {
-      const params = {
-        Bucket: config.S3_BUCKET,
-        Key: file_name,
-        Body: file_data,
-        ContentType: file_type,
-      };
-      const is_added = await new Promise((resolve, reject) => {
-        s3.upload(params, {}, (err, data) => {
-          if (err) {
-            console.error(err);
-            reject(new Error("Error Uploading File: " + err));
-          } else {
-            // console.log("File uploaded successfully:", data);
-            formData = {
-              sender: sender,
-              recipient: recipient,
-              message: message,
-              room: room,
-              file_size: file_size,
-              file_url: data.Location,
-              file_key: data.Key,
-              type: "file",
-            };
-            resolve(true);
-          }
+      const [fileData] = await storage
+        .bucket("crm-justcall")
+        .upload(file.tempFilePath, {
+          // Specify the destination file name in GCS (optional)
+          destination: "chats/" + room + "/" + file.name,
+          // Set ACL to public-read
+          predefinedAcl: "publicRead",
         });
-      });
+      const publicUrl = fileData?.publicUrl();
+      formData = {
+        sender: sender,
+        recipient: recipient,
+        message: message,
+        room: room,
+        // file_size: file_size,
+        file_size: file.size,
+        file_url: publicUrl,
+        file_key: file.name,
+        type: "file",
+      };
+      // const params = {
+      //   Bucket: config.S3_BUCKET,
+      //   Key: file_name,
+      //   Body: file_data,
+      //   ContentType: file_type,
+      // };
+      // const is_added = await new Promise((resolve, reject) => {
+      //   s3.upload(params, {}, (err, data) => {
+      //     if (err) {
+      //       console.error(err);
+      //       reject(new Error("Error Uploading File: " + err));
+      //     } else {
+      //       // console.log("File uploaded successfully:", data);
+      //       formData = {
+      //         sender: sender,
+      //         recipient: recipient,
+      //         message: message,
+      //         room: room,
+      //         file_size: file_size,
+      //         file_url: data.Location,
+      //         file_key: data.Key,
+      //         type: "file",
+      //       };
+      //       resolve(true);
+      //     }
+      //   });
+      // });
     }
     const is_message_added = await db("chats").insert(formData);
     if (!is_message_added) {

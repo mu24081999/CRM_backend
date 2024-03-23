@@ -6,6 +6,11 @@ const DB_PORT = 3306;
 const DB_PASSWORD = "";
 const DB_USER = "root";
 const DB_NAME = "CRM";
+// const DB_HOST = "127.0.0.1";
+// const DB_PORT = 3306;
+// const DB_PASSWORD = "12345678";
+// const DB_USER = "root";
+// const DB_NAME = "CRM";
 
 // const DB_HOST = "database-crm.cle0a4gs64yq.us-west-2.rds.amazonaws.com";
 // const DB_PORT = "3306";
