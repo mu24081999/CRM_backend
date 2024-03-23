@@ -4,8 +4,8 @@ global.config = require(base_path + "/config");
 module.exports = {
   client: "mysql2",
   connection: {
-    // host: "35.226.237.203",
-    host: config.DB_HOST,
+    host: "35.226.237.203",
+    // host: config.DB_HOST,
     user: config.DB_USER,
     password: config.DB_PASSWORD,
     database: config.DB_NAME,

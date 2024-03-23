@@ -40,8 +40,13 @@ global.upload = multer({ dest: "uploads/" });
 
 //Global variables
 global.db = knex(knexConfig);
+// console.log(dbConnection.connect_database().connectionParams);
+// global.db = knex();
+async function conn() {
+  const connection = await dbConnection.connect_database();
+}
+conn();
 //Database connection
-dbConnection.connect_database();
 
 global.app = express();
 require("dotenv").config({ path: path.join(__dirname, ".env") });
