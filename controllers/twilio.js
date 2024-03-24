@@ -320,10 +320,10 @@ exports.getCallToken = catchAssyncFunc(async function (req, res, next) {
     accountSid,
     config.TWILIO_API_KEY,
     config.TWILIO_VOICE_API_KEY_AUTH_TOKEN
-    // {
-    //   identity: "umar",
-    //   // identity: identity,
-    // }
+    {
+      // identity: "umar",
+      identity: identity,
+    }
   );
   accessToken.identity = identity;
 
