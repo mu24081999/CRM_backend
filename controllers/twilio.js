@@ -313,18 +313,20 @@ exports.getCallToken = catchAssyncFunc(async function (req, res, next) {
   // res.set("Content-Type", "application/jwt");
   // res.json({ token: token });
   const { from_phone, accountSid, identity, authToken } = req.body;
-  console.log("🚀 ~ identity:", identity);
+  console.log("🚀 ~ identity:", req.body);
 
   const accessToken = new AccessToken(
     // config.TWILLIO_ACCOUNT_SID,
     accountSid,
     config.TWILIO_API_KEY,
-    config.TWILIO_VOICE_API_KEY_AUTH_TOKEN,
-    {
-      identity: "umar",
-      // identity: identity,
-    }
+    config.TWILIO_VOICE_API_KEY_AUTH_TOKEN
+    // {
+    //   identity: "umar",
+    //   // identity: identity,
+    // }
   );
+  accessToken.identity = identity;
+
   const grant = new AccessToken.VoiceGrant({
     outgoingApplicationSid: config.TWILIO_TWIML_SID,
     incomingAllow: true,
