@@ -316,8 +316,8 @@ exports.getCallToken = catchAssyncFunc(async function (req, res, next) {
   console.log("🚀 ~ identity:", req.body);
 
   const accessToken = new AccessToken(
-    // config.TWILLIO_ACCOUNT_SID,
-    accountSid,
+    config.TWILLIO_ACCOUNT_SID,
+    // accountSid,
     config.TWILIO_API_KEY,
     config.TWILIO_VOICE_API_KEY_AUTH_TOKEN,
     {
