@@ -130,6 +130,10 @@ app.get("/v1/user/calling/voice.xml", (req, res) => {
 app.get("/", (req, res) => {
   res.send("Welcome ...");
 });
+// Handle health check requests
+app.get("/_ah/health", (req, res) => {
+  res.status(200).send("Healthy");
+});
 
 //Routes
 const routes = require("./routes");
