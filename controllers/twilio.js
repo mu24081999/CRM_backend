@@ -319,7 +319,7 @@ exports.getCallToken = catchAssyncFunc(async function (req, res, next) {
     // config.TWILLIO_ACCOUNT_SID,
     accountSid,
     config.TWILIO_API_KEY,
-    config.TWILIO_VOICE_API_KEY_AUTH_TOKEN
+    config.TWILIO_VOICE_API_KEY_AUTH_TOKEN,
     {
       // identity: "umar",
       identity: identity,
