@@ -60,7 +60,7 @@ async function conn() {
   const connection = await dbConnection.connect_database();
   console.log("🚀 ~ conn ~ connection:", connection);
 }
-conn();
+// conn();
 //Database connection
 
 global.app = express();
