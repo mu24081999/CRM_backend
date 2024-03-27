@@ -141,7 +141,8 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 global.io = new Server(server, {
   cors: {
-    origin: "https://justcall-one.vercel.app",
+    // origin: "https://justcall-one.vercel.app",
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
