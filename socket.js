@@ -10,6 +10,19 @@ class NEW_SUCCESS_RES {
     this.message = message;
   }
 }
+const fs = require("fs").promises;
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" }); // Configure upload destination (change if needed)
+
+async function createTempFileFromBuffer(bufferData) {
+  const tempFilePath = await fs.mkdtemp("tmp-"); // Create a temporary directory
+  const tempFileName = `${tempFilePath}/${Math.random()
+    .toString(36)
+    .substring(2, 15)}.tmp`; // Generate unique filename
+  await fs.writeFile(tempFileName, bufferData);
+  return tempFileName;
+}
+
 let connectedDevices = 0;
 io.on("connection", (socket) => {
   connectedDevices++;
@@ -183,13 +196,14 @@ io.on("connection", (socket) => {
       message,
       room,
       type,
-      // file_name,
-      // file_data,
-      // file_size,
-      // file_type,
+      file_name,
+      file_data,
+      file_size,
+      file_type,
       file,
     } = data;
-    console.log("🚀 ~ file:", file);
+    console.log("🚀 ~ data:", data);
+
     let formData;
     if (type === "text") {
       formData = {
@@ -200,11 +214,17 @@ io.on("connection", (socket) => {
         type: "text",
       };
     } else if (type === "file") {
+      const myBuffer = Buffer.from(file); // Replace with your buffer data
+      console.log("🚀 ~ myBuffer:", myBuffer);
+
+      // Access the temporary file path and handle the file content
+      const tempFilePath = await createTempFileFromBuffer(myBuffer);
+      console.log("🚀 ~ tempFilePath:", tempFilePath);
       const [fileData] = await storage
         .bucket("crm-justcall")
-        .upload(file.tempFilePath, {
+        .upload(tempFilePath, {
           // Specify the destination file name in GCS (optional)
-          destination: "chats/" + room + "/" + file.name,
+          destination: "chats/" + room + "/" + file_name,
           // Set ACL to public-read
           predefinedAcl: "publicRead",
         });
@@ -215,9 +235,9 @@ io.on("connection", (socket) => {
         message: message,
         room: room,
         // file_size: file_size,
-        file_size: file.size,
+        file_size: file_size,
         file_url: publicUrl,
-        file_key: file.name,
+        file_key: file_name,
         type: "file",
       };
       // const params = {

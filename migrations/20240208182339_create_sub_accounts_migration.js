@@ -10,6 +10,10 @@ exports.up = function (knex) {
     table.string("sid").notNullable();
     table.string("status").notNullable();
     table.string("authToken").notNullable();
+    table.string("name").notNullable();
+    table.string("email").notNullable();
+    table.string("phoneNumber").notNullable();
+    table.string("password").notNullable();
     table.string("type").notNullable();
     table.json("subresourceUris").nullable();
     table.string("uri").nullable();

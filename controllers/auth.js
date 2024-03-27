@@ -76,6 +76,7 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     name: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
+    role: Joi.string().optional(),
   });
   const { error } = schema.validate(req.body);
   if (error) {
@@ -86,8 +87,11 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
       403
     );
   }
-  const { username, name, email, password } = req.body;
-  const is_exist_user = await db("users").where("email", email).first();
+  const { username, name, email, password, phoneNumber } = req.body;
+  const is_exist_user = await db("users")
+    .where("email", email)
+    .orWhere("username", username)
+    .first();
   if (is_exist_user) {
     return helper.sendSuccess(
       req,
@@ -99,23 +103,38 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
 
   const saltRounds = 10;
   const hashedPassword = bcrypt.hashSync(password, saltRounds);
-
-  const is_user_added = await db("users").insert({
+  let publicUrl;
+  if (req.files) {
+    const { avatar } = req.files;
+    const { tempFilePath, name: avatar_name } = avatar;
+    const [fileData] = await storage
+      .bucket("crm-justcall")
+      .upload(tempFilePath, {
+        // Specify the destination file name in GCS (optional)
+        destination: "users/avatars/" + username + "/" + avatar_name,
+        // Set ACL to public-read
+        predefinedAcl: "publicRead",
+      });
+    publicUrl = fileData?.publicUrl();
+  }
+  const userParams = {
     name,
     username,
     email,
     password: hashedPassword,
-  });
+    avatar: req.files && publicUrl ? publicUrl : "",
+  };
+  const is_user_added = await db("users").insert(userParams);
   const user = await db("users").where("username", username).first();
   const new_user = await db("users").where("email", email).first();
   // Create a subaccount
-  twilioClient.api.accounts.create(
+  const twilio_account = twilioClient.api.accounts.create(
     {
       friendlyName: user.username, // Provide a friendly name for the subaccount
     },
     async (err, account) => {
       if (err) {
-        return helper.sendError(req, res, err, 500);
+        console.error("🚀 ~ err:", err);
       } else {
         const is_added_to_database = await db("sub_accounts").insert({
           user_id: user.id,
@@ -126,14 +145,16 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
           subresourceUris: account.subresourceUris,
           type: account.type,
           uri: account.uri,
+          name,
+          phoneNumber,
+          email,
+          password: hashedPassword,
         });
       }
     }
   );
   if (new_user) {
     return createSession(new_user, req, res);
-  } else {
-    helper.sendError(req, res, "Server Error", 500);
   }
 });
 

@@ -38,7 +38,7 @@ const logger = require("../utils/winston");
 require("dotenv");
 const keyFilePath =
   "/Users/macos/Documents/Repositories/CRM_backend/justcall-378101-79e45cb3c455.json";
-console.log("🚀 ~ keyFilePath:", keyFilePath);
+// console.log("🚀 ~ keyFilePath:", keyFilePath);
 
 async function db(params) {
   const connector = new Connector({
@@ -52,7 +52,7 @@ async function db(params) {
     instanceConnectionName: "justcall-378101:us-central1:crm-justcall",
     ipType: "PUBLIC",
   });
-  console.log("🚀 ~ db ~ clientOpts:", clientOpts);
+  // console.log("🚀 ~ db ~ clientOpts:", clientOpts);
   const connectionParams = {
     // connectionLimit: 10,
     ...clientOpts,

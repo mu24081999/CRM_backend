@@ -14,3 +14,60 @@ exports.getUsers = catchAssyncFunc(async function (req, res, next) {
     "success"
   );
 });
+exports.readUser = catchAssyncFunc(async function (req, res, next) {
+  const { user_id } = req.params;
+  const user = await db("users").where("id", user_id).first();
+  return helper.sendSuccess(req, res, { userData: user }, "500");
+});
+exports.softDeleteUser = catchAssyncFunc(async function (req, res, next) {
+  const { user_id } = req.params;
+  const user = await db("users").where("id", user_id).update({
+    status: "blocked",
+  });
+  return helper.sendSuccess(req, res, {}, "User Updated!");
+});
+exports.updateStatus = catchAssyncFunc(async function (req, res, next) {
+  const { user_id } = req.params;
+  const user = await db("users").where("id", user_id).update({
+    status: "blocked",
+  });
+  return helper.sendSuccess(req, res, {}, "User Updated!");
+});
+exports.updateUser = catchAssyncFunc(async function (req, res, next) {
+  const { username, name, email, role, phoneNumber, status } = req.body;
+  console.log(req.body);
+  const is_exist_user = await db("users")
+    .where("email", email)
+    .orWhere("username", username)
+    .first();
+  if (!is_exist_user) {
+    return helper.sendSuccess(req, res, {}, "User not exist");
+  }
+  let publicUrl;
+  if (req.files) {
+    const { avatar } = req.files;
+    const { tempFilePath, name: avatar_name } = avatar;
+    const [fileData] = await storage
+      .bucket("crm-justcall")
+      .upload(tempFilePath, {
+        // Specify the destination file name in GCS (optional)
+        destination: "users/avatars/" + username + "/" + avatar_name,
+        // Set ACL to public-read
+        predefinedAcl: "publicRead",
+      });
+    publicUrl = fileData?.publicUrl();
+  }
+  const userParams = {
+    name,
+    username,
+    email,
+    role,
+    phone: phoneNumber,
+    status: status,
+    avatar: req.files && publicUrl ? publicUrl : "",
+  };
+  const is_user_added = await db("users")
+    .where("username", username)
+    .update(userParams);
+  if (is_user_added) return helper.sendSuccess(req, res, {}, "User Updated!");
+});

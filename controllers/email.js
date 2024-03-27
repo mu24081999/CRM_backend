@@ -737,6 +737,7 @@ exports.updateEmail = catchAssyncFunc(async function (req, res, next) {
 });
 exports.getEmails = catchAssyncFunc(async function (req, res, next) {
   const user = await db("users").where("id", req.user.id).first();
+  console.log("🚀 ~ user:", user);
   const emails = await db("emails")
     .where("sender", user.email)
     .orWhere("reciever", user.email)
