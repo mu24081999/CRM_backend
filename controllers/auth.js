@@ -180,6 +180,9 @@ exports.signIn = catchAssyncFunc(async function (req, res, next) {
   if (!is_exist_user) {
     return helper.sendError(req, res, "Invalid username or password.", 403);
   }
+  if (is_exist_user && is_exist_user.status !== "active") {
+    return helper.sendError(req, res, "Your account is blocked.", 401);
+  }
   const is_password_matched = await bcrypt.compare(
     password,
     is_exist_user?.password

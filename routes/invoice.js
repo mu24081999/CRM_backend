@@ -9,13 +9,48 @@ const {
   updateInvoiceRec,
 } = require("../controllers/invoice");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
-router.post("/post-invoice", IsAuth, addInvoice);
-router.get("/get-invoices", IsAuth, getInvoices);
-router.delete("/delete-invoice/:invoice_id", IsAuth, deleteInvoice);
-router.delete("/delete-invoice/:invoice_id", IsAuth, deleteInvoice);
-router.get("/invoice-details/:invoice_id", IsAuth, readInvoice);
-router.put("/update-activity/:invoice_id", IsAuth, updateActivity);
+router.post(
+  "/post-invoice",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  addInvoice
+);
+router.get(
+  "/get-invoices",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  getInvoices
+);
+router.delete(
+  "/delete-invoice/:invoice_id",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  deleteInvoice
+);
+router.delete(
+  "/delete-invoice/:invoice_id",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  deleteInvoice
+);
+router.get(
+  "/invoice-details/:invoice_id",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  readInvoice
+);
+router.put(
+  "/update-activity/:invoice_id",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  updateActivity
+);
 
-router.put("/invoice-update/:invoice_id", IsAuth, updateInvoiceRec);
+router.put(
+  "/invoice-update/:invoice_id",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  updateInvoiceRec
+);
 
 module.exports = router;

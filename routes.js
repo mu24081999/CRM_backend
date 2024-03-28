@@ -15,6 +15,7 @@ const postRoutes = require("./routes/post");
 const calendarEventRoutes = require("./routes/calendar_events");
 const invoiceRoutes = require("./routes/invoice");
 const twilioRoutes = require("./routes/twilio");
+const agentsRoutes = require("./routes/agents");
 
 app.use("/v1/auth", authRoutes);
 app.use("/v1/user", usersRoutes);
@@ -32,3 +33,4 @@ app.use("/v1/user/post", postRoutes);
 app.use("/v1/user/calendar", calendarEventRoutes);
 app.use("/v1/user/invoice", invoiceRoutes);
 app.use("/v1/user/calling", twilioRoutes);
+app.use("/v1/user/agents", agentsRoutes);

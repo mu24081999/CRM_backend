@@ -7,9 +7,29 @@ const {
   readFile,
 } = require("../controllers/gallery");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
-router.post("/post-file", IsAuth, addFile);
-router.get("/get-files", IsAuth, getAllFiles);
-router.delete("/delete-file/:file_id/:user_name", IsAuth, deleteFile);
-router.get("/file-details/:file_id", IsAuth, readFile);
+router.post(
+  "/post-file",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  addFile
+);
+router.get(
+  "/get-files",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  getAllFiles
+);
+router.delete(
+  "/delete-file/:file_id/:user_name",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  deleteFile
+);
+router.get(
+  "/file-details/:file_id",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  readFile
+);
 
 module.exports = router;

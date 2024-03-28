@@ -1,0 +1,6 @@
+Need to create 
+    1) roles 
+    2) Authorization 
+    3) Permissions 
+    4) Agents 
+    5) AUthentication 

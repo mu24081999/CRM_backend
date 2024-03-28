@@ -8,10 +8,35 @@ const {
   updateTodo,
 } = require("../controllers/todos");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
-router.post("/post-todo", IsAuth, addTodo);
-router.get("/get-todos", IsAuth, getTodos);
-router.delete("/delete-todo/:todo_id", IsAuth, deleteTodo);
-router.get("/todo-details/:todo_id", IsAuth, readTodo);
-router.put("/todo-update/:todo_id", IsAuth, updateTodo);
+router.post(
+  "/post-todo",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  addTodo
+);
+router.get(
+  "/get-todos",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  getTodos
+);
+router.delete(
+  "/delete-todo/:todo_id",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  deleteTodo
+);
+router.get(
+  "/todo-details/:todo_id",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  readTodo
+);
+router.put(
+  "/todo-update/:todo_id",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  updateTodo
+);
 
 module.exports = router;

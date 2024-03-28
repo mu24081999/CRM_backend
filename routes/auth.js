@@ -11,7 +11,12 @@ const {
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post("/signup_user", signUp);
 router.post("/siginin_user", signIn);
-router.post("/signout_user", IsAuth, logout);
+router.post(
+  "/signout_user",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  logout
+);
 router.post("/forgot_password", forgotPassword);
 router.post("/verify_otp", verifyResetPasswordOTP);
 router.post("/reset_password", resetPassword);
@@ -24,6 +29,6 @@ router.post("/reset_password", resetPassword);
 
 // router.post("/verify-otp", verifyotp);
 
-// router.post("/logout_user", IsAuth, logout);
+// router.post("/logout_user", IsAuth, authorizedRole(["SUPER_ADMIN","USER", "ADMIN"]), logout);
 
 module.exports = router;

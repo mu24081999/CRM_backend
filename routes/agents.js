@@ -1,35 +1,42 @@
 const express = require("express");
 const router = express.Router();
 const {
-  addEvent,
-  getEvents,
-  deleteEvent,
-  readEvent,
-} = require("../controllers/calendar_events");
+  getUserAgents,
+  readAgent,
+  softDeleteAgent,
+  updateAgent,
+  addAgent,
+} = require("../controllers/agents");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
-router.post(
-  "/add-event",
+router.get(
+  "/get-agents/:user_id",
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
-  addEvent
+  getUserAgents
 );
 router.get(
-  "/get-events",
+  "/agent-details/:agent_id",
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
-  getEvents
+  readAgent
 );
 router.delete(
-  "/delete-event/:event_id",
+  "/delete-agent/:agent_id",
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
-  deleteEvent
+  softDeleteAgent
 );
-router.get(
-  "/event-details/:event_id",
+router.put(
+  "/update-agent-details/:agent_id",
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
-  readEvent
+  updateAgent
+);
+router.post(
+  "/add-agent",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  addAgent
 );
 
 module.exports = router;

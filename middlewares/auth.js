@@ -14,6 +14,7 @@ const IsAuth = async (req, res, next) => {
     const user = await db("users")
       .select()
       .where("id", decodeToken?.user_id)
+      .andWhere("status", "active")
       .first();
     if (!user) {
       return helper.sendError(req, res, "User not valid.", 500);
@@ -31,12 +32,12 @@ const IsAuth = async (req, res, next) => {
   }
 };
 
-const authorizedRole = function (role) {
-  return (req, res, next) => {
+const authorizedRole = function (roles) {
+  return async (req, res, next) => {
     // Get the user role from the JWT token or wherever you've stored it.
     const userRole = req.user.role; // Replace this with how you retrieve the user's role.
 
-    if (!userRole || userRole !== role) {
+    if (!userRole || !roles?.includes(userRole)) {
       return helper.sendError(req, res, "You are not authorized.", 401);
     }
 

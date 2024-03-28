@@ -11,8 +11,23 @@ const {
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post("/send-email", sendEmail);
 router.put("/update-email/:emailId", updateEmail);
-router.get("/get-emails", IsAuth, getEmails);
-router.post("/get-emails-by-email", IsAuth, getEmailsByEmail);
-router.delete("/delete-email/:email_id", IsAuth, deleteEmail);
+router.get(
+  "/get-emails",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  getEmails
+);
+router.post(
+  "/get-emails-by-email",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  getEmailsByEmail
+);
+router.delete(
+  "/delete-email/:email_id",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  deleteEmail
+);
 
 module.exports = router;
