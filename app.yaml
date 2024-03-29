@@ -1,17 +1,13 @@
-# backend/app.yaml
 runtime: nodejs18
-# env: flex
-automatic_scaling:
-  min_instances: 1
-  max_instances: 10
-  target_cpu_utilization: 0.7
 
-# handlers:
-#   - url: /.*
-#     script: auto
+env: standard
 
-#   - url: /_ah/health
-#     script: auto
-# env: flex
+service: default
+handlers:
+  - url: /
+    static_files: public/index.html
+    upload: public/index.html
+# ... other configuration options (optional)
+
 env_variables:
   GOOGLE_APPLICATION_CREDENTIALS: "./justcall-378101-79e45cb3c455.json"

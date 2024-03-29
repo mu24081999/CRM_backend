@@ -81,6 +81,7 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     client_id: Joi.string().optional(),
     accountSid: Joi.string().optional(),
     authToken: Joi.string().optional(),
+    phone: Joi.string().optional(),
   });
   const { error } = schema.validate(req.body);
   if (error) {
@@ -100,6 +101,7 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     authToken,
     parent_id,
     client_id,
+    phone,
     role,
   } = req.body;
   console.log("🚀 ~ req.body:", req.body);
@@ -143,6 +145,7 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     authToken,
     client_id,
     parent_id,
+    phone,
     role,
   };
   const is_user_added = await db("users").insert(userParams);

@@ -125,9 +125,14 @@ app.get("/v1/user/calling/voice.xml", (req, res) => {
     res.send(data);
   });
 });
-//Welcome Api
+// //Welcome Api
+// app.get("/", (req, res) => {
+//   res.send("Welcome ...");
+// });
+// Define a route for the root URL '/'
 app.get("/", (req, res) => {
-  res.send("Welcome ...");
+  // Send the 'index.html' file when the root URL is accessed
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 // Handle health check requests
 app.get("/_ah/health", (req, res) => {
@@ -136,7 +141,7 @@ app.get("/_ah/health", (req, res) => {
 
 //Routes
 const routes = require("./routes");
-const port = config.PORT;
+const port = process.env.PORT || config.PORT;
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 global.io = new Server(server, {
@@ -148,6 +153,6 @@ global.io = new Server(server, {
 });
 const socketLogic = require("./socket");
 const { error } = require("console");
-server.listen(port, () => {
+app.listen(port, () => {
   console.log("Server listening on port " + port);
 });
