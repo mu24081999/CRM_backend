@@ -11,31 +11,31 @@ const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
   "/add-post",
   IsAuth,
-  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   addPost
 );
 router.get(
   "/get-posts",
   IsAuth,
-  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   getPosts
 );
 router.delete(
   "/delete-post/:post_id",
   IsAuth,
-  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   deletePost
 );
 router.get(
   "/post-details/:post_id",
   IsAuth,
-  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   readPost
 );
 router.put(
   "/post-update/:post_id",
   IsAuth,
-  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   updatePost
 );
 

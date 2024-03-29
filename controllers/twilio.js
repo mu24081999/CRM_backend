@@ -9,6 +9,8 @@ const { AccessToken } = twilio.jwt;
 const VoiceResponse = twilio.twiml.VoiceResponse;
 exports.getAvailableNumbers = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken } = req.body;
+  console.log("🚀 ~ accountSid:", accountSid);
+  console.log("🚀 ~ authToken:", authToken);
   const numbers = await twilio(accountSid, authToken)
     .availablePhoneNumbers("US")
     .local.list(); //list by country code
@@ -19,6 +21,20 @@ exports.getAvailableNumbers = catchAssyncFunc(async function (req, res, next) {
     res,
     {
       availablePhoneNumbers: numbers,
+    },
+    "success"
+  );
+});
+exports.getClaimedNumbers = catchAssyncFunc(async function (req, res, next) {
+  const { accountSid, authToken } = req.body;
+  console.log("🚀 ~ accountSid:", accountSid);
+  console.log("🚀 ~ authToken:", authToken);
+  const numbers = await twilioClient.incomingPhoneNumbers.list(); //list claimed numbers
+  return helper.sendSuccess(
+    req,
+    res,
+    {
+      claimedNumbers: numbers,
     },
     "success"
   );

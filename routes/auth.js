@@ -14,7 +14,7 @@ router.post("/siginin_user", signIn);
 router.post(
   "/signout_user",
   IsAuth,
-  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN"]),
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   logout
 );
 router.post("/forgot_password", forgotPassword);

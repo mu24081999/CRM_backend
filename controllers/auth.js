@@ -76,7 +76,11 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     name: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
-    role: Joi.string().optional(),
+    role: Joi.string().required(),
+    parent_id: Joi.string().optional(),
+    client_id: Joi.string().optional(),
+    accountSid: Joi.string().optional(),
+    authToken: Joi.string().optional(),
   });
   const { error } = schema.validate(req.body);
   if (error) {
@@ -87,7 +91,19 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
       403
     );
   }
-  const { username, name, email, password, phoneNumber } = req.body;
+  const {
+    username,
+    name,
+    email,
+    password,
+    accountSid,
+    authToken,
+    parent_id,
+    client_id,
+    role,
+  } = req.body;
+  console.log("🚀 ~ req.body:", req.body);
+
   const is_exist_user = await db("users")
     .where("email", email)
     .orWhere("username", username)
@@ -123,36 +139,33 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     email,
     password: hashedPassword,
     avatar: req.files && publicUrl ? publicUrl : "",
+    accountSid,
+    authToken,
+    client_id,
+    parent_id,
+    role,
   };
   const is_user_added = await db("users").insert(userParams);
-  const user = await db("users").where("username", username).first();
   const new_user = await db("users").where("email", email).first();
-  // Create a subaccount
-  const twilio_account = twilioClient.api.accounts.create(
-    {
-      friendlyName: user.username, // Provide a friendly name for the subaccount
-    },
-    async (err, account) => {
-      if (err) {
-        console.error("🚀 ~ err:", err);
-      } else {
-        const is_added_to_database = await db("sub_accounts").insert({
-          user_id: user.id,
-          authToken: account.authToken,
-          sid: account.sid,
-          friendlyName: account.friendlyName,
-          status: account.status,
-          subresourceUris: account.subresourceUris,
-          type: account.type,
-          uri: account.uri,
-          name,
-          phoneNumber,
-          email,
-          password: hashedPassword,
-        });
+  if (new_user?.role === "USER") {
+    // Create a subaccount
+    const twilio_account = twilioClient.api.accounts.create(
+      {
+        friendlyName: new_user.username, // Provide a friendly name for the subaccount
+      },
+      async (err, account) => {
+        if (err) {
+          console.error("🚀 ~ err:", err);
+        } else {
+          const is_updated = await db("users").where("email", email).update({
+            authToken: account.authToken,
+            accountSid: account.sid,
+          });
+        }
       }
-    }
-  );
+    );
+  }
+
   if (new_user) {
     return createSession(new_user, req, res);
   }
