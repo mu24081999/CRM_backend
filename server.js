@@ -154,6 +154,6 @@ global.io = new Server(server, {
 });
 const socketLogic = require("./socket");
 const { error } = require("console");
-app.listen(port, () => {
+server.listen(port, () => {
   console.log("Server listening on port " + port);
 });
