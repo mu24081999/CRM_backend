@@ -1,4 +1,4 @@
-const PORT = 51;
+const PORT = 7000;
 const SESSION_SECRET = "12345678$@123";
 // DB Config
 // const DB_HOST = "127.0.0.1";
