@@ -202,7 +202,6 @@ io.on("connection", (socket) => {
       file_type,
       file,
     } = data;
-    console.log("🚀 ~ data:", data);
 
     let formData;
     if (type === "text") {
@@ -214,12 +213,10 @@ io.on("connection", (socket) => {
         type: "text",
       };
     } else if (type === "file") {
-      const myBuffer = Buffer.from(file); // Replace with your buffer data
-      console.log("🚀 ~ myBuffer:", myBuffer);
+      const myBuffer = Buffer.from(file_data); // Replace with your buffer data
 
       // Access the temporary file path and handle the file content
       const tempFilePath = await createTempFileFromBuffer(myBuffer);
-      console.log("🚀 ~ tempFilePath:", tempFilePath);
       const [fileData] = await storage
         .bucket("crm-justcall")
         .upload(tempFilePath, {

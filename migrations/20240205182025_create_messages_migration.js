@@ -6,7 +6,7 @@ exports.up = function (knex) {
   return knex.schema.createTable("chats", function (table) {
     table.increments("id").primary();
     table.string("sender").notNullable();
-    table.string("recipient").notNullable();
+    table.string("recipient").nullable();
     table.string("room").notNullable();
     table.string("message").nullable();
     table.string("file_url").nullable();
