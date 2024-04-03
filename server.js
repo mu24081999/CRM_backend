@@ -92,13 +92,12 @@ app.use(
 
 //Allow requests from the client
 app.use(
-  cors()
-  //   {
-  //   // origin: "http://34.72.165.103",
-  //   origin: "http://203.161.50.83:51",
-  //   // origin: "*",
-  //   methods: ["GET", "POST", "PUT", "DELETE"],
-  // }
+  cors({
+    // origin: "http://34.72.165.103",
+    origin: "http://203.161.50.83:51",
+    // origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
 );
 //error handling middleware
 app.use((error, req, res, next) => {
@@ -147,19 +146,15 @@ const routes = require("./routes");
 const port = process.env.PORT || config.PORT;
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-global.io = new Server(
-  server
-  // ,
-  //  {
-  // cors: {
-  //   // origin: "https://justcall-one.vercel.app",
-  //   origin: "http://203.161.50.83:51",
-  //   // origin: "*",
-  //   // origin: "http://34.72.165.103",
-  //   methods: ["GET", "POST"],
-  // },
-  // }
-);
+global.io = new Server(server, {
+  cors: {
+    // origin: "https://justcall-one.vercel.app",
+    origin: "http://203.161.50.83:51",
+    // origin: "*",
+    // origin: "http://34.72.165.103",
+    methods: ["GET", "POST"],
+  },
+});
 const socketLogic = require("./socket");
 const { error } = require("console");
 server.listen(port, () => {
