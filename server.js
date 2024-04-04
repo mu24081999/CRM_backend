@@ -9,6 +9,7 @@ const { StatusCodes } = require("http-status-codes");
 const session = require("express-session");
 const fs = require("fs");
 const http = require("http");
+const https = require("https");
 const knexConfig = require("./knexfile");
 const knex = require("knex");
 const dbConnection = require("./config/database");
@@ -94,8 +95,8 @@ app.use(
 app.use(
   cors({
     // origin: "http://34.72.165.103",
-    origin: ["http://203.161.50.83", "http://desktopcrm.com"],
-    // origin: "*",
+    // origin: ["http://203.161.50.83", "http://desktopcrm.com"],
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
@@ -145,14 +146,22 @@ app.get("/_ah/health", (req, res) => {
 //Routes
 const routes = require("./routes");
 const port = process.env.PORT || config.PORT;
-const server = http.createServer(app);
+
+const options = {
+  key: fs.readFileSync("desktopcrm.key"),
+  cert: fs.readFileSync("desktopcrm_com.crt"),
+};
+const server = https.createServer(options, app);
+// console.log("🚀 ~ server:", server);
+
+// const server = http.createServer(app);
 const { Server } = require("socket.io");
 global.io = new Server(server, {
   cors: {
     // origin: "https://justcall-one.vercel.app",
-    origin: ["http://203.161.50.83", "http://desktopcrm.com"],
+    // origin: ["http://203.161.50.83", "http://desktopcrm.com"],
     // origin: "http://desktopcrm.com",
-    // origin: "*",
+    origin: "*",
     // origin: "http://34.72.165.103",
     methods: ["GET", "POST"],
   },
@@ -161,5 +170,5 @@ global.io = new Server(server, {
 const socketLogic = require("./socket");
 const { error } = require("console");
 server.listen(port, () => {
-  console.log("Server listening on port " + port);
+  console.log("Server listening on port https://localhost:" + port);
 });

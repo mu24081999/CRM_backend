@@ -16,8 +16,8 @@ router.post(
 );
 router.get(
   "/get-boards",
-  IsAuth,
-  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  // IsAuth,
+  // authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   getBoards
 );
 router.delete(
