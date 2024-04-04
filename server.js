@@ -91,12 +91,27 @@ app.use(
 );
 
 //Allow requests from the client
+// app.use(
+//   cors({
+//     // origin: "http://34.72.165.103",
+//     origin: "http://203.161.50.83",
+//     // origin: "*",
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//   })
+// );
+// Define an array of allowed origins
+const allowedOrigins = ["http://203.161.50.83", "http://desktopcrm.com"];
+
+// Configure CORS with allowed origins
 app.use(
   cors({
-    // origin: "http://34.72.165.103",
-    origin: ["http://203.161.50.83", "http://desktopcrm.com"],
-    // origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
   })
 );
 //error handling middleware
@@ -156,6 +171,7 @@ global.io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+
 const socketLogic = require("./socket");
 const { error } = require("console");
 server.listen(port, () => {
