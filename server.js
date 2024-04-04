@@ -90,30 +90,32 @@ app.use(
   })
 );
 
-//Allow requests from the client
-app.use(
-  cors({
-    // origin: "http://34.72.165.103",
-    origin: "http://203.161.50.83",
-    // origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  })
-);
-// Define an array of allowed origins
-// const allowedOrigins = ["http://203.161.50.83", "http://desktopcrm.com"];
-
-// Configure CORS with allowed origins
+// //Allow requests from the client
 // app.use(
 //   cors({
-//     origin: function (origin, callback) {
-//       if (!origin || allowedOrigins.includes(origin)) {
-//         callback(null, true);
-//       } else {
-//         callback(new Error("Not allowed by CORS"));
-//       }
-//     },
+//     // origin: "http://34.72.165.103",
+//     // origin: "http://203.161.50.83",
+//     // origin: "*",
+//     origin: "http://desktopcrm.com",
+//     methods: ["GET", "POST", "PUT", "DELETE"],
 //   })
 // );
+// Define an array of allowed origins
+const allowedOrigins = ["http://desktopcrm.com", "http://203.161.50.83"];
+
+// Configure CORS middleware
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Check if the requesting origin is in the allowedOrigins array or if it's undefined (e.g., for same-origin requests)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  })
+);
 //error handling middleware
 app.use((error, req, res, next) => {
   logger.error(`Error :: ${req.originalUrl} :: ${error}`);
@@ -161,16 +163,19 @@ const routes = require("./routes");
 const port = process.env.PORT || config.PORT;
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-global.io = new Server(server, {
-  cors: {
-    // origin: "https://justcall-one.vercel.app",
-    // origin: "http://203.161.50.83",
-    origin: "http://203.161.50.83",
-    // origin: "*",
-    // origin: "http://34.72.165.103",
-    methods: ["GET", "POST"],
-  },
-});
+global.io = new Server(
+  server
+  //   , {
+  //   cors: {
+  //     // origin: "https://justcall-one.vercel.app",
+  //     // origin: "http://203.161.50.83",
+  //     origin: "http://desktopcrm.com",
+  //     // origin: "*",
+  //     // origin: "http://34.72.165.103",
+  //     methods: ["GET", "POST"],
+  //   },
+  // }
+);
 
 const socketLogic = require("./socket");
 const { error } = require("console");
