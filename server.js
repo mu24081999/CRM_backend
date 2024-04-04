@@ -90,30 +90,14 @@ app.use(
   })
 );
 
-// //Allow requests from the client
-// app.use(
-//   cors({
-//     // origin: "http://34.72.165.103",
-//     // origin: "http://203.161.50.83",
-//     // origin: "*",
-//     origin: "http://desktopcrm.com",
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//   })
-// );
-
-var allowedDomains = ["http://desktopcrm.com", "http://203.161.50.83"];
+//Allow requests from the client
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // bypass the requests with no origin (like curl requests, mobile apps, etc )
-      if (!origin) return callback(null, true);
-
-      if (allowedDomains.indexOf(origin) === -1) {
-        var msg = `This site ${origin} does not have an access. Only specific domains are allowed to access it.`;
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    },
+    // origin: "http://34.72.165.103",
+    // origin: "http://203.161.50.83",
+    // origin: "*",
+    origin: "http://desktopcrm.com",
+    methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
 
@@ -164,19 +148,16 @@ const routes = require("./routes");
 const port = process.env.PORT || config.PORT;
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-global.io = new Server(
-  server
-  //   , {
-  //   cors: {
-  //     // origin: "https://justcall-one.vercel.app",
-  //     // origin: "http://203.161.50.83",
-  //     origin: "http://desktopcrm.com",
-  //     // origin: "*",
-  //     // origin: "http://34.72.165.103",
-  //     methods: ["GET", "POST"],
-  //   },
-  // }
-);
+global.io = new Server(server, {
+  cors: {
+    // origin: "https://justcall-one.vercel.app",
+    // origin: "http://203.161.50.83",
+    origin: "http://desktopcrm.com",
+    // origin: "*",
+    // origin: "http://34.72.165.103",
+    methods: ["GET", "POST"],
+  },
+});
 
 const socketLogic = require("./socket");
 const { error } = require("console");
