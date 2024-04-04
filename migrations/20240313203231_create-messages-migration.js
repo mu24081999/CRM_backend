@@ -10,7 +10,7 @@ exports.up = function (knex) {
     table.string("from_name").nullable();
     table.string("to_name").nullable();
 
-    table.json("to").notNullable();
+    table.json("to").nullable();
     table.string("message").notNullable();
     table.string("sid").notNullable();
     table.double("price").nullable();

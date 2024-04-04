@@ -265,7 +265,7 @@ exports.forgotPassword = catchAssyncFunc(async (req, res, next) => {
     return helper.sendSuccess(
       req,
       res,
-      {},
+      { userData: is_user_exist },
       "OTP FOR RESET PASSWORD successfully sent."
     );
   }
@@ -335,11 +335,17 @@ exports.resetPassword = catchAssyncFunc(async (req, res, next) => {
   const is_user_exist_update = await db("users").where("email", email).update({
     password: newPassword,
   });
+  const is_user_exist = await db("users").where("email", email).first();
   if (is_user_exist_update) {
     const del_otp = await db("otps").where("email", email).del();
     if (!del_otp)
       return helper.sendError(req, res, "Something went wrong", 403);
-    return helper.sendSuccess(req, res, {}, "Reset password success.");
+    return helper.sendSuccess(
+      req,
+      res,
+      { userData: is_user_exist },
+      "Reset password success."
+    );
   }
   return helper.sendError(req, res, "Reset password failed.", 500);
 });
