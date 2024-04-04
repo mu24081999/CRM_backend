@@ -152,7 +152,6 @@ const options = {
   cert: fs.readFileSync("desktopcrm_com.crt"),
 };
 const server = https.createServer(options, app);
-// console.log("🚀 ~ server:", server);
 
 // const server = http.createServer(app);
 const { Server } = require("socket.io");
