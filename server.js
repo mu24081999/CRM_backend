@@ -94,7 +94,7 @@ app.use(
 app.use(
   cors({
     // origin: "http://34.72.165.103",
-    origin: "http://203.161.50.83",
+    origin: ["http://203.161.50.83", "http://desktopcrm.com"],
     // origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
@@ -149,7 +149,8 @@ const { Server } = require("socket.io");
 global.io = new Server(server, {
   cors: {
     // origin: "https://justcall-one.vercel.app",
-    origin: "http://203.161.50.83",
+    // origin: "http://203.161.50.83",
+    origin: ["http://203.161.50.83", "http://desktopcrm.com"],
     // origin: "*",
     // origin: "http://34.72.165.103",
     methods: ["GET", "POST"],
