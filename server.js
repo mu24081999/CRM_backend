@@ -101,21 +101,20 @@ app.use(
 //   })
 // );
 // Define an array of allowed origins
-const allowedOrigins = ["http://desktopcrm.com", "http://203.161.50.83"];
 
 // Configure CORS middleware
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // Check if the requesting origin is in the allowedOrigins array or if it's undefined (e.g., for same-origin requests)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-  })
-);
+app.use((req, res, next) => {
+  const allowedOrigins = ["http://desktopcrm.com", "http://203.161.50.83"];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  //res.header('Access-Control-Allow-Origin', 'http://127.0.0.1:8020');
+  res.header("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", true);
+  return next();
+});
 //error handling middleware
 app.use((error, req, res, next) => {
   logger.error(`Error :: ${req.originalUrl} :: ${error}`);
