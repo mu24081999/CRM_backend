@@ -73,7 +73,7 @@ router.get(
 router.post("/recieve-sms", recieveSMS);
 router.get("/message-details", getMessageDetails);
 router.post("/inbound-messages", inboundMessages);
-router.get("/listen-call", listenCallStatus);
+router.post("/listen-call", listenCallStatus);
 router.post(
   "/get-call-token",
   IsAuth,
