@@ -151,6 +151,7 @@ const port = process.env.PORT || config.PORT;
 const options = {
   key: fs.readFileSync("desktopcrm.key"),
   cert: fs.readFileSync("desktopcrm_com.crt"),
+  ca: fs.readFileSync("desktopcrm.ca-bundle"),
 };
 const server = https.createServer(options, app);
 
