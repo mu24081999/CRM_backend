@@ -110,6 +110,7 @@ var whitelist = [
   "https://desktopcrm.com",
   "https://www.desktopcrm.com",
   "https://app.desktopcrm.com",
+  "https://localhost:3000",
 ];
 
 var corsOptions = {
