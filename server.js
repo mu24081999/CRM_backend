@@ -97,7 +97,12 @@ app.use(
     // origin: "http://34.72.165.103",
     // origin: ["https://203.161.50.83", "https://desktopcrm.com"],
     // origin: "https://desktopcrm.com",
-    origin: "*",
+    // origin: "*",
+    origin: [
+      "https://desktopcrm.com",
+      "https://www.desktopcrm.com",
+      "https://desktopcrm.com",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
@@ -162,8 +167,12 @@ global.io = new Server(server, {
     // origin: "https://justcall-one.vercel.app",
     // origin: ["https://203.161.50.83", "https://desktopcrm.com"],
     // origin: "http://desktopcrm.com",
-    // origin: "https://desktopcrm.com",
-    origin: "*",
+    origin: [
+      "https://desktopcrm.com",
+      "https://www.desktopcrm.com",
+      "https://desktopcrm.com",
+    ],
+    // origin: "*",
     // origin: "http://34.72.165.103",
     methods: ["GET", "POST"],
   },
