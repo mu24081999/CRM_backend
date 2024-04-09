@@ -111,20 +111,24 @@ var allowedDomains = [
   "https://www.desktopcrm.com",
   "https://desktopcrm.com",
 ];
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // bypass the requests with no origin (like curl requests, mobile apps, etc )
-      if (!origin) return callback(null, true);
 
-      if (allowedDomains.indexOf(origin) === -1) {
-        var msg = `This site ${origin} does not have an access. Only specific domains are allowed to access it.`;
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    },
-  })
-);
+const corsOptionsDelegate = (req, callback) => {
+  let corsOptions;
+
+  let isDomainAllowed = allowedDomains.indexOf(req.header("Origin")) !== -1;
+  let isExtensionAllowed = req.path.endsWith(".jpg");
+
+  if (isDomainAllowed && isExtensionAllowed) {
+    // Enable CORS for this request
+    corsOptions = { origin: true };
+  } else {
+    // Disable CORS for this request
+    corsOptions = { origin: false };
+  }
+  callback(null, corsOptions);
+};
+
+app.use(cors(corsOptionsDelegate));
 
 //error handling middleware
 app.use((error, req, res, next) => {
