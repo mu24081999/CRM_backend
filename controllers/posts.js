@@ -51,7 +51,6 @@ exports.addPost = catchAssyncFunc(async function (req, res, next) {
     user_name,
     user_image,
   } = req.body;
-  console.log(req.files);
   const slider_images_json = [];
   let preview_image_url;
   let is_preview_added;

@@ -5,7 +5,7 @@ const fs = require("fs");
 const moment = require("moment");
 
 exports.getBoards = catchAssyncFunc(async function (req, res, next) {
-  const boards = await db("boards").select();
+  const boards = await db("boards").where("user_id", req.user.id).select();
   return helper.sendSuccess(
     req,
     res,

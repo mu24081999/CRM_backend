@@ -7,6 +7,7 @@ const {
   readContact,
   updateContact,
   uploadFile,
+  getContactsByBoard,
 } = require("../controllers/contacts");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
@@ -20,6 +21,12 @@ router.get(
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   getContacts
+);
+router.get(
+  "/get-contacts-by-board/:board_id",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  getContactsByBoard
 );
 router.post("/upload-file", uploadFile);
 router.get(

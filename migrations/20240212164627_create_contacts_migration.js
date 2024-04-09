@@ -5,6 +5,8 @@
 exports.up = function (knex) {
   return knex.schema.createTable("contacts", (table) => {
     table.increments("id").primary();
+    table.bigInteger("board_id").unsigned().notNullable();
+    table.bigInteger("user_id").unsigned().notNullable();
     table.string("avatar").nullable();
     table.string("phone").nullable();
     table.string("firstname").notNullable();
@@ -26,6 +28,8 @@ exports.up = function (knex) {
       "active",
       "blocked",
       "pending",
+      "in-progress",
+      "completed",
       "important",
       "archived",
     ]);

@@ -155,6 +155,7 @@ exports.addContact = catchAsyncFunc(async (req, res, next) => {
     website: Joi.string().required(),
     work_phone: Joi.number().integer().required(),
     // tags: Joi.array().items(tagSchema).optional(),
+    board_id: Joi.number().integer().optional(),
     tags: Joi.string().optional(),
     social_links: Joi.string().optional(),
     role: Joi.string().optional(),
@@ -187,6 +188,8 @@ exports.addContact = catchAsyncFunc(async (req, res, next) => {
     publicUrl = fileData.publicUrl();
   }
   const is_record_inserted = await db("contacts").insert({
+    user_id: req.user.id,
+    board_id: value.board_id,
     firstname: value.firstname,
     middlename: value.middlename,
     lastname: value.lastname,
@@ -412,6 +415,7 @@ exports.deleteContact = catchAsyncFunc(async (req, res, next) => {
 exports.getContacts = catchAsyncFunc(async (req, res, next) => {
   const contacts = await db("contacts")
     // .where("status", "active")
+    .where("user_id", req.user.id)
     .orderBy("created_at", "desc")
     .select();
 
@@ -425,7 +429,23 @@ exports.getContacts = catchAsyncFunc(async (req, res, next) => {
   }
   return helper.sendSuccess(req, res, { contactsData: contacts }, "success");
 });
+exports.getContactsByBoard = catchAsyncFunc(async (req, res, next) => {
+  const { board_id } = req.params;
+  const contacts = await db("contacts")
+    .where("board_id", board_id)
+    .orderBy("created_at", "desc")
+    .select();
 
+  if (!contacts) {
+    return helper.sendError(
+      req,
+      res,
+      "Something went wrong, while searching for contacts.",
+      500
+    );
+  }
+  return helper.sendSuccess(req, res, { contactsData: contacts }, "success");
+});
 exports.searchUser = catchAsyncFunc(async (req, res, next) => {
   const {
     id_card_number,

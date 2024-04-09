@@ -5,6 +5,7 @@
 exports.up = function (knex) {
   return knex.schema.createTable("boards", function (table) {
     table.increments("id").primary();
+    table.integer("user_id").unsigned().notNullable();
     table.string("name").notNullable();
     table.enum("visibility", ["public", "private"]).defaultTo("public");
     table.string("avatar_text").nullable();
