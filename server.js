@@ -92,18 +92,37 @@ app.use(
 );
 
 //Allow requests from the client
+// app.use(
+//   cors({
+//     // origin: "http://34.72.165.103",
+//     // origin: ["https://203.161.50.83", "https://desktopcrm.com"],
+//     // origin: "https://desktopcrm.com",
+//     // origin: "*",
+//     origin: [
+//       "https://desktopcrm.com",
+//       "https://www.desktopcrm.com",
+//       "https://desktopcrm.com",
+//     ],
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//   })
+// );
+var allowedDomains = [
+  "https://desktopcrm.com",
+  "https://www.desktopcrm.com",
+  "https://desktopcrm.com",
+];
 app.use(
   cors({
-    // origin: "http://34.72.165.103",
-    // origin: ["https://203.161.50.83", "https://desktopcrm.com"],
-    // origin: "https://desktopcrm.com",
-    // origin: "*",
-    origin: [
-      "https://desktopcrm.com",
-      "https://www.desktopcrm.com",
-      "https://desktopcrm.com",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: function (origin, callback) {
+      // bypass the requests with no origin (like curl requests, mobile apps, etc )
+      if (!origin) return callback(null, true);
+
+      if (allowedDomains.indexOf(origin) === -1) {
+        var msg = `This site ${origin} does not have an access. Only specific domains are allowed to access it.`;
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
   })
 );
 
