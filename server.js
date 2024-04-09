@@ -106,29 +106,22 @@ app.use(
 //     methods: ["GET", "POST", "PUT", "DELETE"],
 //   })
 // );
-var allowedDomains = [
+var whitelist = [
   "https://desktopcrm.com",
   "https://www.desktopcrm.com",
-  "https://desktopcrm.com",
+  "https://app.desktopcrm.com",
 ];
 
-const corsOptionsDelegate = (req, callback) => {
-  let corsOptions;
-
-  let isDomainAllowed = allowedDomains.indexOf(req.header("Origin")) !== -1;
-  let isExtensionAllowed = req.path.endsWith(".jpg");
-
-  if (isDomainAllowed && isExtensionAllowed) {
-    // Enable CORS for this request
-    corsOptions = { origin: true };
-  } else {
-    // Disable CORS for this request
-    corsOptions = { origin: false };
-  }
-  callback(null, corsOptions);
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
 };
-
-app.use(cors(corsOptionsDelegate));
+app.use(cors(corsOptions));
 
 //error handling middleware
 app.use((error, req, res, next) => {
