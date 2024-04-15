@@ -7,7 +7,9 @@ exports.up = function (knex) {
     table.increments("id").primary();
     table.integer("user_id").unsigned().notNullable();
     table.string("name").notNullable();
-    table.enum("visibility", ["public", "private"]).defaultTo("public");
+    table
+      .enum("visibility", ["public", "private", "stared", "deleted"])
+      .defaultTo("public");
     table.string("avatar_text").nullable();
     table.string("avatar_color").nullable();
     table.string("image").nullable();

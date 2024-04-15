@@ -107,6 +107,7 @@ exports.addBoard = catchAssyncFunc(async function (req, res, next) {
     publicUrl = fileData.publicUrl();
   }
   const is_record_inserted = await db("boards").insert({
+    user_id: req.user.id,
     name: req.body.name,
     visibility,
     avatar_text,

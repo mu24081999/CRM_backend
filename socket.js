@@ -128,6 +128,7 @@ io.on("connection", (socket) => {
         io.emit("group_room_added");
       } else {
         const is_room_added = await db("group_chat_rooms").insert(roomData);
+        console.log("🚀 ~ socket.on ~ is_room_added:", is_room_added);
         if (!is_room_added) {
           throw new NEW_ERROR_RES(500, "Something went wrong." + error);
         }

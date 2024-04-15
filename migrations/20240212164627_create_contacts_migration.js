@@ -33,6 +33,7 @@ exports.up = function (knex) {
       "important",
       "archived",
     ]);
+    table.enum("board_status", ["pending", "in-progress", "completed"]);
     table.timestamps(true, true);
   });
 };

@@ -22,6 +22,7 @@ exports.getGroupChatRooms = catchAssyncFunc(async function (req, res, next) {
     .whereRaw('JSON_CONTAINS(group_members->"$.members[*].id", ?)', [
       `${req.user.id}`,
     ])
+    .orWhere("user_id", req.user.id)
     .select();
   return helper.sendSuccess(
     req,

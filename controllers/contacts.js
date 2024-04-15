@@ -155,7 +155,7 @@ exports.addContact = catchAsyncFunc(async (req, res, next) => {
     website: Joi.string().required(),
     work_phone: Joi.number().integer().required(),
     // tags: Joi.array().items(tagSchema).optional(),
-    board_id: Joi.number().integer().optional(),
+    board_id: Joi.number().integer().required(),
     tags: Joi.string().optional(),
     social_links: Joi.string().optional(),
     role: Joi.string().optional(),
@@ -341,6 +341,7 @@ exports.updateContact = catchAsyncFunc(async (req, res, next) => {
     social_links: Joi.string().optional(),
     role: Joi.string().optional(),
     status: Joi.string().optional(),
+    board_status: Joi.string().optional(),
   });
 
   const { error, value } = schema.validate(req.body);
@@ -383,6 +384,7 @@ exports.updateContact = catchAsyncFunc(async (req, res, next) => {
       social_links: value.social_links,
       role: value.role,
       // avatar: data.Location,
+      board_status: value.board_status,
       status: value.status,
     });
   if (!is_record_updated) {

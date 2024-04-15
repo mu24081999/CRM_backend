@@ -6,6 +6,7 @@ const {
   getEmails,
   deleteEmail,
   getEmailsByEmail,
+  getEmailsByAccount,
 } = require("../controllers/email");
 
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
@@ -16,6 +17,12 @@ router.get(
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   getEmails
+);
+router.get(
+  "/get-emails-by-account",
+  // IsAuth,
+  // authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  getEmailsByAccount
 );
 router.post(
   "/get-emails-by-email",

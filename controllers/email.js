@@ -4,7 +4,96 @@ const Joi = require("joi");
 const moment = require("moment");
 const nodeMailer = require("nodemailer");
 const fs = require("fs");
+const Imap = require("node-imap");
+const { simpleParser } = require("mailparser");
 
+exports.getEmailsByAccount = catchAssyncFunc(async (req, res, next) => {
+  const config = {
+    user: "mu24081999@gmail.com",
+    password: "isqzrulwfzdkitpl",
+    host: "imap.gmail.com",
+    port: 993,
+    tls: true,
+  };
+
+  const imap = new Imap(config);
+  const emails = [];
+
+  // Function to fetch emails and return a promise
+  const fetchEmails = () => {
+    return new Promise((resolve, reject) => {
+      imap.once("ready", () => {
+        imap.openBox("INBOX", true, (err, box) => {
+          if (err) {
+            return reject(err);
+          }
+
+          const fetchOptions = {
+            bodies: ["HEADER.FIELDS (FROM TO SUBJECT DATE)"], // Fetch headers and body
+            struct: true,
+          };
+
+          const fetcher = imap.fetch("1:*", fetchOptions);
+
+          fetcher.on("message", (msg, seqno) => {
+            console.log("🚀 ~ fetcher.on ~ seqno:", seqno);
+            const emailData = {};
+            msg.on("body", (stream, info) => {
+              if (info.which === "HEADER.FIELDS (FROM TO SUBJECT DATE)") {
+                // Parse headers
+                simpleParser(stream, (err, mail) => {
+                  if (err) {
+                    console.error(err);
+                  } else {
+                    emailData.from = mail.from.text;
+                    emailData.to = mail.to.text;
+                    emailData.subject = mail.subject;
+                    emailData.date = mail.date;
+                  }
+                });
+              } else if (info.which === "TEXT") {
+                // Parse body
+                let body = "";
+                stream.on("data", (chunk) => {
+                  body += chunk.toString();
+                });
+                stream.on("end", () => {
+                  emailData.body = body;
+                });
+              }
+            });
+
+            msg.once("end", () => {
+              emails.push(emailData);
+            });
+          });
+
+          fetcher.on("end", () => {
+            resolve(true);
+            imap.end();
+          });
+        });
+      });
+
+      imap.once("error", (err) => {
+        reject(err);
+      });
+
+      imap.connect();
+    });
+  };
+
+  try {
+    // Wait for fetchEmails to complete
+    await fetchEmails();
+
+    // Once fetching is complete, send the success response
+    helper.sendSuccess(req, res, { emailsData: emails }, "success");
+  } catch (err) {
+    // Handle errors if fetching fails
+    next(err);
+  }
+});
 // exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
 //   const { from, to, subject, body, type, parent_id } = req.body;
 //   console.log("🚀 ~ to:", req.body);
@@ -509,12 +598,10 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
     }
   };
   const sendEmail = async (mailOptions) => {
-    console.log("🚀 ~ sendEmail ~ mailOptions:", mailOptions);
     const emailResponse = await transporter.sendMail(mailOptions); // Upload file to S3
     return emailResponse;
   };
   const saveEmail = async (emailData) => {
-    console.log("🚀 ~ saveEmail ~ emailData:", emailData);
     const is_email_added = await db("emails").insert(emailData);
     if (!is_email_added) {
       return helper.sendError(req, res, "Error sending email.", 500);
@@ -542,6 +629,8 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
             );
             mailOptions = {
               from: from,
+
+              // from: `\"Desktop CRM\" <${from}>`,
               to: toEmail,
               subject: subject,
               // text: body,

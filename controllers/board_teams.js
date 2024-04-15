@@ -5,7 +5,7 @@ const fs = require("fs");
 const moment = require("moment");
 
 exports.getTeams = catchAssyncFunc(async function (req, res, next) {
-  const teams = await db("board_teams").select();
+  const teams = await db("board_teams").where("user_id", req.user.id).select();
   return helper.sendSuccess(
     req,
     res,
@@ -99,6 +99,7 @@ exports.addTeam = catchAssyncFunc(async function (req, res, next) {
     publicUrl = fileData.publicUrl();
   }
   const is_record_inserted = await db("board_teams").insert({
+    user_id: req.user.id,
     name: req.body.name,
     email,
     image: req.files ? publicUrl : "",

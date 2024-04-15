@@ -17,7 +17,7 @@ exports.up = function (knex) {
       .unsigned()
       .references("id")
       .inTable("todos_categories")
-      .notNullable();
+      .nullable();
     table
       .enum("status", ["to-do", "on-hold", "in-progress", "done", "pending"])
       .defaultTo("to-do");
