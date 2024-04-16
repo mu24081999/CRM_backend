@@ -1,7 +1,7 @@
 const catchAssyncFunc = require("../middlewares/catchAsyncFunc");
 const helper = require("../helper/helper");
 const Joi = require("joi");
-const moment = require("moment");
+const bcrypt = require("bcryptjs");
 
 exports.getUsers = catchAssyncFunc(async function (req, res, next) {
   const users = await db("users").select();
@@ -34,15 +34,30 @@ exports.updateStatus = catchAssyncFunc(async function (req, res, next) {
   return helper.sendSuccess(req, res, {}, "User Updated!");
 });
 exports.updateUser = catchAssyncFunc(async function (req, res, next) {
-  const { username, name, email, role, phoneNumber, status } = req.body;
+  const { user_id } = req.params;
+  const {
+    username,
+    name,
+    email,
+    role,
+    phoneNumber,
+    status,
+    bio,
+    location,
+    phone,
+    password,
+  } = req.body;
   console.log(req.body);
   const is_exist_user = await db("users")
-    .where("email", email)
-    .orWhere("username", username)
+    .where("id", user_id)
+    // .orWhere("username", username)
     .first();
   if (!is_exist_user) {
     return helper.sendSuccess(req, res, {}, "User not exist");
   }
+  const saltRounds = 10;
+  const hashedPassword =
+    password !== undefined && bcrypt.hashSync(password, saltRounds);
   let publicUrl;
   if (req.files) {
     const { avatar } = req.files;
@@ -63,11 +78,16 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
     email,
     role,
     phone: phoneNumber,
+    bio,
+    location,
     status: status,
+    phone,
+    password: password !== undefined && hashedPassword,
     avatar: req.files && publicUrl ? publicUrl : "",
   };
   const is_user_added = await db("users")
-    .where("username", username)
+    .where("id", user_id)
     .update(userParams);
+
   if (is_user_added) return helper.sendSuccess(req, res, {}, "User Updated!");
 });

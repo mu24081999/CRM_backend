@@ -8,7 +8,7 @@ exports.up = function (knex) {
     table.bigInteger("board_id").unsigned().notNullable();
     table.bigInteger("user_id").unsigned().notNullable();
     table.string("avatar").nullable();
-    table.string("phone").nullable();
+    table.string("phone").notNullable();
     table.string("firstname").notNullable();
     table.string("middlename").nullable();
     table.string("lastname").nullable();
@@ -16,11 +16,11 @@ exports.up = function (knex) {
     table.string("country").nullable();
     table.string("state").nullable();
     table.string("city").nullable();
-    table.string("company_name").notNullable();
-    table.string("designation").notNullable();
-    table.string("website").notNullable();
-    table.string("work_phone").notNullable();
-    table.text("biography").notNullable();
+    table.string("company_name").nullable();
+    table.string("designation").nullable();
+    table.string("website").nullable();
+    table.string("work_phone").nullable();
+    table.text("biography").nullable();
     table.json("tags").nullable();
     table.json("social_links").nullable();
     table.string("role").nullable();

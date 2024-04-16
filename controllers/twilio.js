@@ -9,8 +9,6 @@ const { AccessToken } = twilio.jwt;
 const VoiceResponse = twilio.twiml.VoiceResponse;
 exports.getAvailableNumbers = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken } = req.body;
-  console.log("🚀 ~ accountSid:", accountSid);
-  console.log("🚀 ~ authToken:", authToken);
   const numbers = await twilio(accountSid, authToken)
     .availablePhoneNumbers("US")
     .local.list(); //list by country code
@@ -27,9 +25,11 @@ exports.getAvailableNumbers = catchAssyncFunc(async function (req, res, next) {
 });
 exports.getClaimedNumbers = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken } = req.body;
-  console.log("🚀 ~ accountSid:", accountSid);
-  console.log("🚀 ~ authToken:", authToken);
-  const numbers = await twilioClient.incomingPhoneNumbers.list(); //list claimed numbers
+
+  const numbers = await twilio(
+    accountSid,
+    authToken
+  ).incomingPhoneNumbers.list(); //list claimed numbers
   return helper.sendSuccess(
     req,
     res,
@@ -277,7 +277,9 @@ exports.listenCallStatus = catchAssyncFunc(async function (req, res, next) {
     // } else {
     //   client.say("Invalid input. Goodbye!"); // Handle invalid input
     // }
-    client.dial({ record: true }).client("mu24081999");
+    const user = await db("users").where("phone", To).first();
+    console.log("🚀 ~ user:", user);
+    client.dial({ record: true }).client(user?.username);
   } else {
     const dial = client.dial({
       callerId: From,
