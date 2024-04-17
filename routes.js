@@ -16,6 +16,8 @@ const calendarEventRoutes = require("./routes/calendar_events");
 const invoiceRoutes = require("./routes/invoice");
 const twilioRoutes = require("./routes/twilio");
 const agentsRoutes = require("./routes/agents");
+const paymentRoutes = require("./routes/payments");
+const cardRoutes = require("./routes/cards");
 
 app.use("/v1/auth", authRoutes);
 app.use("/v1/user", usersRoutes);
@@ -34,3 +36,5 @@ app.use("/v1/user/calendar", calendarEventRoutes);
 app.use("/v1/user/invoice", invoiceRoutes);
 app.use("/v1/user/calling", twilioRoutes);
 app.use("/v1/user/agents", agentsRoutes);
+app.use("/v1/user/payments", paymentRoutes);
+app.use("/v1/user/cards", cardRoutes);

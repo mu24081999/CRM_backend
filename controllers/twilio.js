@@ -278,7 +278,6 @@ exports.listenCallStatus = catchAssyncFunc(async function (req, res, next) {
     //   client.say("Invalid input. Goodbye!"); // Handle invalid input
     // }
     const user = await db("users").where("phone", To).first();
-    console.log("🚀 ~ user:", user);
     client.dial({ record: true }).client(user?.username);
   } else {
     const dial = client.dial({

@@ -3,7 +3,7 @@
  * @returns { Promise<void> }
  */
 exports.up = function (knex) {
-  return knex.schema.createSchema("agents", (table) => {
+  return knex.schema.createTable("agents", (table) => {
     table.increments("id").primary();
     table.integer("user_id").unsigned().notNullable(); // New field for parent email id
     table.string("sid").notNullable();

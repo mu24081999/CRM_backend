@@ -279,14 +279,15 @@ io.on("connection", (socket) => {
     console.log("🚀 ~ socket.on ~ data:", data);
     io.to(data.to).emit("callEnded", { to: data.to });
   });
-  socket.on("callUser", ({ userToCall, signalData, from, name, type }) => {
-    console.log({ userToCall, from, name, type });
+  socket.on("callUser", ({ userToCall, signalData, from, name, type, to }) => {
+    console.log(userToCall, from, name, type, to);
     io.to(userToCall).emit("callUser", {
       signal: signalData,
       from,
       name,
       type,
       userToCall,
+      to,
     });
   });
   socket.on("answerCall", (data) => {
