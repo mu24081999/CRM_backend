@@ -18,6 +18,7 @@ const twilioRoutes = require("./routes/twilio");
 const agentsRoutes = require("./routes/agents");
 const paymentRoutes = require("./routes/payments");
 const cardRoutes = require("./routes/cards");
+const subscriptionRoutes = require("./routes/subscriptions");
 
 app.use("/v1/auth", authRoutes);
 app.use("/v1/user", usersRoutes);
@@ -38,3 +39,4 @@ app.use("/v1/user/calling", twilioRoutes);
 app.use("/v1/user/agents", agentsRoutes);
 app.use("/v1/user/payments", paymentRoutes);
 app.use("/v1/user/cards", cardRoutes);
+app.use("/v1/user/subscriptions", subscriptionRoutes);
