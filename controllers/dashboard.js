@@ -24,10 +24,9 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
     ...new Set(inboundMessageChartCategories),
   ];
   newInboundMessageChartCategories.forEach((date) => {
-    const series_value = calls?.filter(
-      (call) => moment(call?.dateCreated).format("YYYY-MM-DD") === date
+    const series_value = messages?.filter(
+      (msg) => moment(msg?.created_at).format("YYYY-MM-DD") === date
     ).length;
-    console.log(series_value, date);
     inboundMessageChartSeries.push(series_value);
   });
 
@@ -36,6 +35,21 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
   const outgoingEmails = emails?.filter(
     (email) => email.reciever === user_email
   );
+  const inboundEmailChartSeries = [];
+  const inboundEmailChartCategories = [];
+  await emails?.forEach((email) => {
+    const date_created = moment(email?.created_at).format("YYYY-MM-DD");
+    inboundEmailChartCategories.push(date_created);
+  });
+  let newInboundEmailChartCategories = [
+    ...new Set(inboundEmailChartCategories),
+  ];
+  newInboundEmailChartCategories.forEach((date) => {
+    const series_value = emails?.filter(
+      (msg) => moment(msg?.created_at).format("YYYY-MM-DD") === date
+    ).length;
+    inboundEmailChartSeries.push(series_value);
+  });
 
   const numbers = await client.incomingPhoneNumbers.list(); //list claimed numbers
   const sub_accounts = await db("sub_accounts")
@@ -75,10 +89,14 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
         messages: {
           number_of_recieved_sms: inboundMessages?.length,
           number_of_sent_sms: outboundMessages?.length,
+          chart_categories: newInboundMessageChartCategories,
+          chart_series: inboundMessageChartSeries,
         },
         emails: {
           number_of_send_emails: incomingEmails?.length,
           number_of_emails_recieved: outgoingEmails?.length,
+          chart_categories: newInboundEmailChartCategories,
+          chart_series: inboundEmailChartSeries,
         },
         numbers,
         sub_accounts,
@@ -88,9 +106,9 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
           chart_categories: newInboundChartCategories,
           chart_series: inboundChartSeries,
         },
-        invoices,
-        leads,
-        subscriptions,
+        number_of_invoices_sent: invoices?.length,
+        number_of_leads: leads?.length,
+        number_of_subscriptions: subscriptions?.length,
       },
     },
     "success"
