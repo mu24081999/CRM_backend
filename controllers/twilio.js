@@ -9,6 +9,7 @@ const { AccessToken } = twilio.jwt;
 const VoiceResponse = twilio.twiml.VoiceResponse;
 exports.getAvailableNumbers = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken } = req.body;
+  console.log("🚀 ~ req.body:", req.body);
   const numbers = await twilio(accountSid, authToken)
     .availablePhoneNumbers("US")
     .local.list(); //list by country code

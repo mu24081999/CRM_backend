@@ -150,24 +150,24 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
   };
   const is_user_added = await db("users").insert(userParams);
   const new_user = await db("users").where("email", email).first();
-  if (new_user?.role === "USER") {
-    // Create a subaccount
-    const twilio_account = twilioClient.api.accounts.create(
-      {
-        friendlyName: new_user.username, // Provide a friendly name for the subaccount
-      },
-      async (err, account) => {
-        if (err) {
-          console.error("🚀 ~ err:", err);
-        } else {
-          const is_updated = await db("users").where("email", email).update({
-            authToken: account.authToken,
-            accountSid: account.sid,
-          });
-        }
-      }
-    );
-  }
+  // if (new_user?.role === "USER") {
+  //   // Create a subaccount
+  //   const twilio_account = twilioClient.api.accounts.create(
+  //     {
+  //       friendlyName: new_user.username, // Provide a friendly name for the subaccount
+  //     },
+  //     async (err, account) => {
+  //       if (err) {
+  //         console.error("🚀 ~ err:", err);
+  //       } else {
+  //         const is_updated = await db("users").where("email", email).update({
+  //           authToken: account.authToken,
+  //           accountSid: account.sid,
+  //         });
+  //       }
+  //     }
+  //   );
+  // }
 
   if (new_user) {
     return createSession(new_user, req, res);

@@ -437,15 +437,18 @@ exports.getEmailsByAccount = catchAssyncFunc(async (req, res, next) => {
 // });
 
 exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
-  const { from, to, subject, body, type, parent_id } = req.body;
-  console.log("🚀 ~ to:", req.body);
+  const { from, to, subject, body, type, parent_id, google_app_password } =
+    req.body;
+  console.log(req.body, config.EMAIL_FROM_ACC, config.EMAIL_FROM_ACC_PASS);
   const transporter = nodeMailer.createTransport({
     service: "gmail",
     auth: {
-      host: "smpt.gmail.com",
-      port: "465",
-      user: config.EMAIL_FROM_ACC,
-      pass: config.EMAIL_FROM_ACC_PASS,
+      // host: "smpt.gmail.com",
+      // port: "465",
+      // user: config.EMAIL_FROM_ACC,
+      // pass: config.EMAIL_FROM_ACC_PASS,
+      user: from,
+      pass: google_app_password,
     },
   });
   const saveAttachments = async (data) => {
@@ -598,6 +601,7 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
     }
   };
   const sendEmail = async (mailOptions) => {
+    console.log("🚀 ~ sendEmail ~ mailOptions:", mailOptions);
     const emailResponse = await transporter.sendMail(mailOptions); // Upload file to S3
     return emailResponse;
   };
@@ -628,9 +632,8 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
               is_email_attachments_added?.attachments
             );
             mailOptions = {
-              from: from,
-
-              // from: `\"Desktop CRM\" <${from}>`,
+              // from: from,
+              from: `"Desktop-CRM" <${from}>`,
               to: toEmail,
               subject: subject,
               // text: body,
@@ -642,19 +645,14 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
               //     // use URL as an attachment
               //     filename: "license.txt",
               //     path: "https://raw.github.com/nodemailer/nodemailer/master/LICENSE",
-              //   },
-              //   {
-              //     // use URL as an attachment
-              //     filename: "license.txt",
-              //     path: "https://raw.github.com/nodemailer/nodemailer/master/LICENSE",
-              //   },
+              //   }
               // ],
 
               html: body,
             };
           } else {
             mailOptions = {
-              from: from,
+              from: `"Desktop-CRM" <${from}>`,
               to: toEmail,
               subject: subject,
               // text: body,
@@ -689,10 +687,6 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
           ) {
             is_attachments_saved = await Promise.all(
               is_email_attachments_added?.attachments?.map((file, inex) => {
-                console.log(
-                  "🚀 ~ is_email_attachments_added?.attachments?.map ~ file:",
-                  file
-                );
                 return new Promise(async (resolve, reject) => {
                   const is_added = await saveAttachments({
                     email_id: email_response[0],
@@ -739,7 +733,8 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
         is_email_attachments_added?.attachments
       );
       mailOptions = {
-        from: from,
+        // from: from,
+        from: `"Desktop-CRM" <${from}>`,
         to: to,
         subject: subject,
         // text: body,
@@ -749,7 +744,8 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
       };
     } else {
       mailOptions = {
-        from: from,
+        // from: from,
+        from: `"Desktop-CRM" <${from}>`,
         to: to,
         subject: subject,
         // text: body,
@@ -784,10 +780,6 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
     ) {
       is_attachments_saved = await Promise.all(
         is_email_attachments_added?.attachments?.map((file, inex) => {
-          console.log(
-            "🚀 ~ is_email_attachments_added?.attachments?.map ~ file:",
-            file
-          );
           return new Promise(async (resolve, reject) => {
             const is_added = await saveAttachments({
               email_id: email_response[0],

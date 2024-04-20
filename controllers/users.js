@@ -46,6 +46,7 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
     location,
     phone,
     password,
+    google_app_password,
   } = req.body;
   console.log(req.body);
   const is_exist_user = await db("users")
@@ -84,6 +85,7 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
     phone,
     password: password !== undefined && hashedPassword,
     avatar: req.files && publicUrl ? publicUrl : "",
+    google_app_password,
   };
   const is_user_added = await db("users")
     .where("id", user_id)
