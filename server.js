@@ -171,11 +171,12 @@ const routes = require("./routes");
 const port = process.env.PORT || config.PORT;
 
 const options = {
-  key: fs.readFileSync("app.desktopcrm.com.key"),
-  cert: fs.readFileSync("app_desktopcrm_com.crt"),
-  // cert: fs.readFileSync("desktopcrm_com.crt"),
-  ca: fs.readFileSync("app_desktopcrm_com.ca-bundle"),
-  // ca: fs.readFileSync("desktopcrm.ca-bundle"),
+  key: fs.readFileSync("desktopcrm.key"),
+  // key: fs.readFileSync("app.desktopcrm.com.key"),
+  // cert: fs.readFileSync("app_desktopcrm_com.crt"),
+  cert: fs.readFileSync("desktopcrm_com.crt"),
+  // ca: fs.readFileSync("app_desktopcrm_com.ca-bundle"),
+  ca: fs.readFileSync("desktopcrm.ca-bundle"),
 };
 const server = https.createServer(options, app);
 
