@@ -16,7 +16,7 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
   );
   const inboundMessageChartSeries = [];
   const inboundMessageChartCategories = [];
-  await messages?.forEach((message) => {
+  await inboundMessages?.forEach((message) => {
     const date_created = moment(message?.created_at).format("YYYY-MM-DD");
     inboundMessageChartCategories.push(date_created);
   });
@@ -24,10 +24,25 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
     ...new Set(inboundMessageChartCategories),
   ];
   newInboundMessageChartCategories.forEach((date) => {
-    const series_value = messages?.filter(
+    const series_value = inboundMessages?.filter(
       (msg) => moment(msg?.created_at).format("YYYY-MM-DD") === date
     ).length;
     inboundMessageChartSeries.push(series_value);
+  });
+  const outboundMessageChartSeries = [];
+  const outboundMessageChartCategories = [];
+  await outboundMessages?.forEach((message) => {
+    const date_created = moment(message?.created_at).format("YYYY-MM-DD");
+    outboundMessageChartCategories.push(date_created);
+  });
+  let newOutboundMessageChartCategories = [
+    ...new Set(outboundMessageChartCategories),
+  ];
+  newOutboundMessageChartCategories.forEach((date) => {
+    const series_value = outboundMessages?.filter(
+      (msg) => moment(msg?.created_at).format("YYYY-MM-DD") === date
+    ).length;
+    outboundMessageChartSeries.push(series_value);
   });
 
   const emails = await db("emails").select();
@@ -37,7 +52,7 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
   );
   const inboundEmailChartSeries = [];
   const inboundEmailChartCategories = [];
-  await emails?.forEach((email) => {
+  await incomingEmails?.forEach((email) => {
     const date_created = moment(email?.created_at).format("YYYY-MM-DD");
     inboundEmailChartCategories.push(date_created);
   });
@@ -45,10 +60,25 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
     ...new Set(inboundEmailChartCategories),
   ];
   newInboundEmailChartCategories.forEach((date) => {
-    const series_value = emails?.filter(
+    const series_value = incomingEmails?.filter(
       (msg) => moment(msg?.created_at).format("YYYY-MM-DD") === date
     ).length;
     inboundEmailChartSeries.push(series_value);
+  });
+  const outboundEmailChartSeries = [];
+  const outboundEmailChartCategories = [];
+  await outgoingEmails?.forEach((email) => {
+    const date_created = moment(email?.created_at).format("YYYY-MM-DD");
+    outboundEmailChartCategories.push(date_created);
+  });
+  let newOutboundEmailChartCategories = [
+    ...new Set(outboundEmailChartCategories),
+  ];
+  newOutboundEmailChartCategories.forEach((date) => {
+    const series_value = incomingEmails?.filter(
+      (msg) => moment(msg?.created_at).format("YYYY-MM-DD") === date
+    ).length;
+    outboundEmailChartSeries.push(series_value);
   });
 
   const numbers = await client.incomingPhoneNumbers.list(); //list claimed numbers
@@ -65,17 +95,30 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
   );
   const inboundChartSeries = [];
   const inboundChartCategories = [];
-  await calls?.forEach((call) => {
+  await inboundCalls?.forEach((call) => {
     const date_created = moment(call?.dateCreated).format("YYYY-MM-DD");
     inboundChartCategories.push(date_created);
   });
   let newInboundChartCategories = [...new Set(inboundChartCategories)];
   newInboundChartCategories.forEach((date) => {
-    const series_value = calls?.filter(
+    const series_value = inboundCalls?.filter(
       (call) => moment(call?.dateCreated).format("YYYY-MM-DD") === date
     ).length;
-    console.log(series_value, date);
     inboundChartSeries.push(series_value);
+  });
+
+  const outboundChartSeries = [];
+  const outboundChartCategories = [];
+  await outboundCalls?.forEach((call) => {
+    const date_created = moment(call?.dateCreated).format("YYYY-MM-DD");
+    outboundChartCategories.push(date_created);
+  });
+  let newOutboundChartCategories = [...new Set(outboundChartCategories)];
+  newOutboundChartCategories.forEach((date) => {
+    const series_value = outboundCalls?.filter(
+      (call) => moment(call?.dateCreated).format("YYYY-MM-DD") === date
+    ).length;
+    outboundChartSeries.push(series_value);
   });
 
   const invoices = await db("invoices").select();
@@ -91,10 +134,30 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
           number_of_sent_sms: outboundMessages?.length,
           chart_categories: newInboundMessageChartCategories,
           chart_series: inboundMessageChartSeries,
+          chart: {
+            categories: newInboundMessageChartCategories,
+            series: [
+              {
+                name: "inbound-messages",
+                data: inboundMessageChartSeries,
+              },
+              { name: "outbound-messages", data: outboundMessageChartSeries },
+            ],
+          },
         },
         emails: {
           number_of_send_emails: incomingEmails?.length,
           number_of_emails_recieved: outgoingEmails?.length,
+          chart: {
+            categories: newInboundEmailChartCategories,
+            series: [
+              {
+                name: "inbound-emails",
+                data: inboundEmailChartSeries,
+              },
+              { name: "outbound-emails", data: outboundEmailChartSeries },
+            ],
+          },
           chart_categories: newInboundEmailChartCategories,
           chart_series: inboundEmailChartSeries,
         },
@@ -103,8 +166,16 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
         calls: {
           number_of_inbound_call: inboundCalls?.length,
           number_of_outbound_call: outboundCalls?.length,
-          chart_categories: newInboundChartCategories,
-          chart_series: inboundChartSeries,
+          chart: {
+            categories: newInboundChartCategories,
+            series: [
+              {
+                name: "inbound-calls",
+                data: inboundChartSeries,
+              },
+              { name: "outbound-calls", data: outboundChartSeries },
+            ],
+          },
         },
         number_of_invoices_sent: invoices?.length,
         number_of_leads: leads?.length,
