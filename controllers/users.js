@@ -48,7 +48,6 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
     password,
     google_app_password,
   } = req.body;
-  console.log(req.body);
   const is_exist_user = await db("users")
     .where("id", user_id)
     // .orWhere("username", username)
