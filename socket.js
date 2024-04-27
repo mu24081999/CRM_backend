@@ -83,11 +83,11 @@ io.on("connection", (socket) => {
           .where("from_phone", data.from.phone)
           .orWhere("to_phone", data.from.phone)
           .select();
-        console.log("🚀 ~ .then ~ messages:", messages);
         io.to(data.from.socket_id).emit("message_sent", messages);
       })
       .catch((err) => {
         console.error(err);
+        io.to(data.from.socket_id).emit("message_error", err);
         throw new NEW_ERROR_RES(500, err);
       });
   });

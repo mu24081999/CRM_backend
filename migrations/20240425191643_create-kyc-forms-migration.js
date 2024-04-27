@@ -16,6 +16,10 @@ exports.up = function (knex) {
     table.string("martial_status").nullable();
     table.string("gender").nullable();
     table.string("nationality").nullable();
+    table.string("company_details").nullable();
+    table.string("company_do").nullable();
+    table.string("company_size").nullable();
+    table.string("company_type").nullable();
     table.date("date_of_birth").nullable();
     table.string("email").nullable();
     table.string("phone").nullable();

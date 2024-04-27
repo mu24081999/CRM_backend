@@ -145,7 +145,7 @@ exports.addContact = catchAsyncFunc(async (req, res, next) => {
     middlename: Joi.string().optional(),
     lastname: Joi.string().optional(),
     biography: Joi.string().optional(),
-    phone: Joi.number().integer().required(),
+    phone: Joi.string().required(),
     email: Joi.string().required(),
     country: Joi.string().optional(),
     city: Joi.string().optional(),
@@ -155,7 +155,7 @@ exports.addContact = catchAsyncFunc(async (req, res, next) => {
     website: Joi.string().optional(),
     work_phone: Joi.number().integer().optional(),
     // tags: Joi.array().items(tagSchema).optional(),
-    board_id: Joi.number().integer().required(),
+    board_id: Joi.number().integer().optional(),
     tags: Joi.string().optional(),
     social_links: Joi.string().optional(),
     role: Joi.string().optional(),
@@ -321,13 +321,12 @@ exports.readContact = catchAsyncFunc(async (req, res, next) => {
 //   return helper.sendSuccess(req, res, {}, "Contact successfully updated.");
 // });
 exports.updateContact = catchAsyncFunc(async (req, res, next) => {
-  console.log(req.body);
   const schema = Joi.object({
     firstname: Joi.string().optional(),
     middlename: Joi.string().optional(),
     lastname: Joi.string().optional(),
     biography: Joi.string().optional(),
-    phone: Joi.number().integer().optional(),
+    phone: Joi.string().optional(),
     email: Joi.string().optional(),
     country: Joi.string().optional(),
     city: Joi.string().optional(),

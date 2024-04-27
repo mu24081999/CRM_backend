@@ -12,6 +12,17 @@ exports.getKYCForms = catchAssyncFunc(async function (req, res, next) {
     "success"
   );
 });
+exports.getUserKYCForms = catchAssyncFunc(async function (req, res, next) {
+  const form = await db("kyc-forms").where("user_id", req.user.id).first();
+  return helper.sendSuccess(
+    req,
+    res,
+    {
+      kycData: form,
+    },
+    "success"
+  );
+});
 
 exports.readKYCForm = catchAssyncFunc(async function (req, res, next) {
   const { form_id } = req.params;
@@ -30,18 +41,23 @@ exports.deleteKYCForm = catchAssyncFunc(async function (req, res, next) {
   const form = await db("kyc-forms").where("id", form_id).update({
     status: "deleted",
   });
-  return helper.sendSuccess(req, res, {}, "Card deleted successfully.");
+  return helper.sendSuccess(req, res, {}, "Form deleted successfully.");
 });
 exports.addKYCForm = catchAssyncFunc(async function (req, res, next) {
   const {
     firstname,
     lastname,
     martial_status,
+    company_do,
+    company_size,
+    company_details,
+    company_type,
     gender,
     nationality,
     date_of_birth,
     email,
     phone,
+    state,
     city,
     address,
     zip_code,
@@ -51,6 +67,44 @@ exports.addKYCForm = catchAssyncFunc(async function (req, res, next) {
     signature_data,
     status,
   } = req.body;
+  const is_exist_user_form = await db("kyc-forms")
+    .where("user_id", req.user.id)
+    .first();
+  if (is_exist_user_form) {
+    const is_record_updated = await db("kyc-forms")
+      .where("user_id", req.user.id)
+      .update({
+        firstname,
+        lastname,
+        martial_status,
+        gender,
+        nationality,
+        date_of_birth,
+        company_do,
+        company_size,
+        company_details,
+        company_type,
+        email,
+        phone,
+        state,
+        city,
+        address,
+        zip_code,
+        document_type,
+        document_url,
+        is_policy_accepted,
+        signature_data,
+        status,
+      });
+    if (is_record_updated) {
+      return helper.sendSuccess(
+        req,
+        res,
+        {},
+        "KYC information updated successfully!"
+      );
+    }
+  }
   const is_record_inserted = await db("kyc-forms").insert({
     user_id: req.user.id,
     firstname,
@@ -58,6 +112,10 @@ exports.addKYCForm = catchAssyncFunc(async function (req, res, next) {
     martial_status,
     gender,
     nationality,
+    company_do,
+    company_size,
+    company_details,
+    company_type,
     date_of_birth,
     email,
     phone,
@@ -91,6 +149,11 @@ exports.updateKYCForm = catchAssyncFunc(async function (req, res, next) {
     gender,
     nationality,
     date_of_birth,
+    company_do,
+    company_size,
+    company_details,
+    company_type,
+    state,
     email,
     phone,
     city,
@@ -109,6 +172,10 @@ exports.updateKYCForm = catchAssyncFunc(async function (req, res, next) {
     gender,
     nationality,
     date_of_birth,
+    company_do,
+    company_size,
+    company_details,
+    company_type,
     email,
     phone,
     state,

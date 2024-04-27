@@ -6,6 +6,7 @@ const {
   deleteKYCForm,
   readKYCForm,
   updateKYCForm,
+  getUserKYCForms,
 } = require("../controllers/kyc");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
@@ -19,6 +20,12 @@ router.get(
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   getKYCForms
+);
+router.get(
+  "/get-user-kycs",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  getUserKYCForms
 );
 router.delete(
   "/delete-kyc/:form_id",
