@@ -198,18 +198,10 @@ global.io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
-// Define a middleware to set the global hostname
-app.use((req, res, next) => {
-  // Set the hostname as a global variable
-  global.hostname_new = req.hostname;
-  next();
-});
 const os = require("os");
 console.log(os.hostname());
 
 const socketLogic = require("./socket");
-const { error } = require("console");
-const { hostname } = require("os");
 server.listen(port, () => {
   console.log("Server listening on port https://localhost:" + port);
 });
