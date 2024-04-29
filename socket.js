@@ -43,7 +43,61 @@ io.on("connection", (socket) => {
 
   //Messages Events
   //Send Message
+  // socket.on("send-message", async (data) => {
+  //   console.log("🚀 ~ socket.on ~ data:", data);
+  //   const params = {
+  //     from: data.from.phone, // Your Twilio phone number
+  //     // from: "+14849993639",
+  //     to: data.to.phone, // Recipient's phone number
+  //     // sendAt: new Date(Date.UTC(2021, 10, 30, 20, 36, 27)),
+  //     // scheduleType: 'fixed'
+  //     // to: "+923174660027",
+  //     body: data.message, // Message content
+  //     // mediaUrl: [
+  //     //   "https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg",
+  //     //   "https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg",
+  //     // ],
+  //   };
+  //   twilioClient.messages
+  //     .create(params)
+  //     .then(async (message) => {
+  //       const is_added_to_database = await db("messages").insert({
+  //         from_name: data.from.name,
+  //         to_name: data.to.name,
+  //         from_phone: data.from.phone,
+  //         to_phone: data.to.phone,
+  //         message: data.message,
+  //         sid: message.sid,
+  //         price: message.price,
+  //         account_sid: message.accountSid,
+  //         uri: message.uri,
+  //         num_media: message.numMedia,
+  //         media_urls: { urls: [] },
+  //       });
+  //       console.log(
+  //         "🚀 ~ constis_added_to_database=awaitdb ~ is_added_to_database:",
+  //         message
+  //       );
+  //       if (!is_added_to_database) {
+  //         throw new NEW_ERROR_RES(
+  //           500,
+  //           "Something went wrong while adding to database."
+  //         );
+  //       }
+  //       const messages = await db("messages")
+  //         .where("from_phone", data.from.phone)
+  //         .orWhere("to_phone", data.from.phone)
+  //         .select();
+  //       io.to(data.from.socket_id).emit("message_sent", messages);
+  //     })
+  //     .catch((err) => {
+  //       console.error(err);
+  //       io.to(data.from.socket_id).emit("message_error", err);
+  //       throw new NEW_ERROR_RES(500, err);
+  //     });
+  // });
   socket.on("send-message", async (data) => {
+    console.log("🚀 ~ socket.on ~ data:", data);
     const params = {
       from: data.from.phone, // Your Twilio phone number
       // from: "+14849993639",
@@ -57,23 +111,59 @@ io.on("connection", (socket) => {
       //   "https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg",
       // ],
     };
+    const is_added_to_database = await db("messages").insert({
+      from_name: data.from.name,
+      to_name: data.to.name,
+      from_phone: data.from.phone,
+      to_phone: data.to.phone,
+      message: data.message,
+      // sid: message.sid,
+      // price: message.price,
+      account_sid: data.from.accountSid,
+      // uri: message.uri,
+      // num_media: message.numMedia,
+      // media_urls: { urls: [] },
+    });
+    const messages = await db("messages")
+      .where("from_phone", data.from.phone)
+      .orWhere("to_phone", data.from.phone)
+      .select();
+    io.to(data.from.socket_id).emit("message_sent", messages);
+    console.log(
+      "🚀 ~ constis_added_to_database=awaitdb ~ is_added_to_database:",
+      is_added_to_database
+    );
+    if (!is_added_to_database) {
+      throw new NEW_ERROR_RES(
+        500,
+        "Something went wrong while adding to database."
+      );
+    }
     twilioClient.messages
       .create(params)
       .then(async (message) => {
-        const is_added_to_database = await db("messages").insert({
-          from_name: data.from.name,
-          to_name: data.to.name,
-          from_phone: data.from.phone,
-          to_phone: data.to.phone,
-          message: data.message,
-          sid: message.sid,
-          price: message.price,
-          account_sid: message.accountSid,
-          uri: message.uri,
-          num_media: message.numMedia,
-          media_urls: { urls: [] },
-        });
-        if (!is_added_to_database) {
+        const message_id = is_added_to_database[0];
+        console.log("🚀 ~ .then ~ message_id:", message_id);
+        const is_updated_to_database = await db("messages")
+          .where("id", message_id)
+          .update({
+            // from_name: data.from.name,
+            // to_name: data.to.name,
+            // from_phone: data.from.phone,
+            // to_phone: data.to.phone,
+            // message: data.message,
+            sid: message.sid,
+            price: message.price,
+            // account_sid: message.accountSid,
+            uri: message.uri,
+            num_media: message.numMedia,
+            media_urls: { urls: [] },
+          });
+        console.log(
+          "🚀 ~ constis_added_to_database=awaitdb ~ is_added_to_database:",
+          message
+        );
+        if (!is_updated_to_database) {
           throw new NEW_ERROR_RES(
             500,
             "Something went wrong while adding to database."
@@ -91,7 +181,6 @@ io.on("connection", (socket) => {
         throw new NEW_ERROR_RES(500, err);
       });
   });
-
   //chat events
   socket.on("joinRoom", ({ roomId }) => {
     socket.join(roomId);
