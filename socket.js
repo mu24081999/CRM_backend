@@ -129,10 +129,6 @@ io.on("connection", (socket) => {
       .orWhere("to_phone", data.from.phone)
       .select();
     io.to(data.from.socket_id).emit("message_sent", messages);
-    console.log(
-      "🚀 ~ constis_added_to_database=awaitdb ~ is_added_to_database:",
-      is_added_to_database
-    );
     if (!is_added_to_database) {
       throw new NEW_ERROR_RES(
         500,
@@ -145,7 +141,7 @@ io.on("connection", (socket) => {
         const message_id = is_added_to_database[0];
         console.log("🚀 ~ .then ~ message_id:", message_id);
         const is_updated_to_database = await db("messages")
-          .where("id", message_id)
+          .where("id", parseInt(message_id))
           .update({
             // from_name: data.from.name,
             // to_name: data.to.name,
@@ -176,9 +172,9 @@ io.on("connection", (socket) => {
         io.to(data.from.socket_id).emit("message_sent", messages);
       })
       .catch((err) => {
-        console.error(err);
+        console.log("Error", err);
         io.to(data.from.socket_id).emit("message_error", err);
-        throw new NEW_ERROR_RES(500, err);
+        // throw new NEW_ERROR_RES(500, err);
       });
   });
   //chat events

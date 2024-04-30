@@ -28,7 +28,7 @@ exports.softDeleteAgent = catchAssyncFunc(async function (req, res, next) {
   return helper.sendSuccess(req, res, {}, "Agent Deleted!");
 });
 exports.addAgent = catchAssyncFunc(async function (req, res, next) {
-  const { username, name, email, phoneNumber, status, accountSid, authToken } =
+  const { username, name, email, phone, status, accountSid, authToken } =
     req.body;
   console.log(req.body);
   const is_exist_agent = await db("agents")
@@ -49,7 +49,7 @@ exports.addAgent = catchAssyncFunc(async function (req, res, next) {
     username,
     email,
     role,
-    phone: phoneNumber,
+    phone: phone,
     status: status,
     accountSid,
     authToken,
