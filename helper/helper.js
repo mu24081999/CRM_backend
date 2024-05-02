@@ -36,7 +36,7 @@ module.exports = {
       });
 
       const mailOptions = {
-        from: config.EMAIL_FROM_ACC,
+        from: `"Desktop-CRM" <${config.EMAIL_FROM_ACC}>`,
         to: toEmail,
         subject: subject,
         text: textMessage,
