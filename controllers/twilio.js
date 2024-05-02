@@ -200,7 +200,22 @@ exports.claimPhoneNumber = catchAssyncFunc(async function (req, res, next) {
   const incomingPhoneNumber = await client.incomingPhoneNumbers.create({
     phoneNumber: phoneNumber,
   });
-  return helper.sendSuccess(req, res, incomingPhoneNumber, "success");
+  const number_config = await client
+    .incomingPhoneNumbers(incomingPhoneNumber.sid)
+    .update({
+      voiceUrl: "https://desktopcrm.com:51/v1/user/calling/listen-call", // URL for handling incoming voice calls
+      voiceMethod: "POST", // HTTP method for handling incoming voice calls
+      smsUrl: "https://desktopcrm.com:51/v1/user/calling/recieve-sms",
+      smsMethod: "POST",
+      // statusCallback: "https://desktopcrm.com:51/v1/user/calling/listen-call-status", // URL for handling voice call status callbacks
+      // statusCallbackMethod: "POST", // HTTP method for voice call status callbacks
+    });
+  return helper.sendSuccess(
+    req,
+    res,
+    incomingPhoneNumber,
+    "Phone Number claimed and configured successfully!"
+  );
 });
 exports.searchPhoneNumbers = catchAssyncFunc(async function (req, res, next) {
   const {

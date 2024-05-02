@@ -55,9 +55,7 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
   if (!is_exist_user) {
     return helper.sendSuccess(req, res, {}, "User not exist");
   }
-  const saltRounds = 10;
-  const hashedPassword =
-    password !== undefined && bcrypt.hashSync(password, saltRounds);
+
   let publicUrl;
   if (req.files) {
     const { avatar } = req.files;
@@ -72,20 +70,41 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
       });
     publicUrl = fileData?.publicUrl();
   }
-  const userParams = {
-    name,
-    username,
-    email,
-    role,
-    phone: phoneNumber,
-    bio,
-    location,
-    status: status,
-    phone,
-    password: password !== undefined && hashedPassword,
-    avatar: req.files && publicUrl ? publicUrl : "",
-    google_app_password,
-  };
+  var userParams;
+  if (password) {
+    const saltRounds = 10;
+    const hashedPassword =
+      password !== undefined && bcrypt.hashSync(password, saltRounds);
+    userParams = {
+      name,
+      username,
+      email,
+      role,
+      phone: phoneNumber,
+      bio,
+      location,
+      status: status,
+      phone,
+      password: password !== undefined && password !== "" && hashedPassword,
+      avatar: req.files && publicUrl ? publicUrl : "",
+      google_app_password,
+    };
+  } else {
+    userParams = {
+      name,
+      username,
+      email,
+      role,
+      phone: phoneNumber,
+      bio,
+      location,
+      status: status,
+      phone,
+      avatar: req.files && publicUrl ? publicUrl : "",
+      google_app_password,
+    };
+  }
+
   const is_user_added = await db("users")
     .where("id", user_id)
     .update(userParams);

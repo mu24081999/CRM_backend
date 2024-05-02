@@ -167,7 +167,7 @@ exports.addContact = catchAsyncFunc(async (req, res, next) => {
   }
   const is_exist = await db("contacts")
     .where("email", value.email)
-    .orWhere("phone", value.phone)
+    // .orWhere("phone", value.phone)
     .first();
   if (is_exist) {
     return helper.sendError(req, res, " Contact already exist.", 401);

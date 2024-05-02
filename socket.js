@@ -135,11 +135,11 @@ io.on("connection", (socket) => {
         "Something went wrong while adding to database."
       );
     }
+    const message_id = is_added_to_database[0];
+
     twilioClient.messages
       .create(params)
       .then(async (message) => {
-        const message_id = is_added_to_database[0];
-        console.log("🚀 ~ .then ~ message_id:", message_id);
         const is_updated_to_database = await db("messages")
           .where("id", parseInt(message_id))
           .update({
@@ -153,12 +153,8 @@ io.on("connection", (socket) => {
             // account_sid: message.accountSid,
             uri: message.uri,
             num_media: message.numMedia,
-            media_urls: { urls: [] },
+            // media_urls: { urls: [] },
           });
-        console.log(
-          "🚀 ~ constis_added_to_database=awaitdb ~ is_added_to_database:",
-          message
-        );
         if (!is_updated_to_database) {
           throw new NEW_ERROR_RES(
             500,
@@ -171,9 +167,24 @@ io.on("connection", (socket) => {
           .select();
         io.to(data.from.socket_id).emit("message_sent", messages);
       })
-      .catch((err) => {
-        console.log("Error", err);
+      .catch(async (err) => {
+        console.log("Error", err.message);
         io.to(data.from.socket_id).emit("message_error", err);
+        const is_updated_to_database = await db("messages")
+          .where("id", parseInt(message_id))
+          .update({
+            status: "Failed",
+            message_error: err.message,
+          });
+        console.log(
+          "🚀 ~ socket.on ~ is_updated_to_database:",
+          is_updated_to_database
+        );
+        const messages = await db("messages")
+          .where("from_phone", data.from.phone)
+          .orWhere("to_phone", data.from.phone)
+          .select();
+        io.to(data.from.socket_id).emit("message_sent", messages);
         // throw new NEW_ERROR_RES(500, err);
       });
   });

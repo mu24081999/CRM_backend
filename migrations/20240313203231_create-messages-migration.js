@@ -18,6 +18,8 @@ exports.up = function (knex) {
     table.string("uri").notNullable();
     table.integer("num_media").nullable();
     table.json("media_urls").nullable();
+    table.string("status").nullable();
+    table.string("message_error").nullable();
     table.timestamps(true, true);
   });
 };

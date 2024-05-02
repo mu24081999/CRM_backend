@@ -71,7 +71,6 @@ async function createSession(user, req, res) {
 }
 
 exports.signUp = catchAssyncFunc(async function (req, res, next) {
-  console.log("🚀 ~ signUp:", "signUp");
   const schema = Joi.object({
     username: Joi.string().required(),
     name: Joi.string().required(),
@@ -171,7 +170,40 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
   }
 
   if (new_user) {
-    return createSession(new_user, req, res);
+    // return createSession(new_user, req, res);
+    var otp_code = Math.floor(Math.random() * 900000);
+
+    const htmlMessage =
+      "<h1>OTP for <b>DesktopCRM</b> App</h1><br></br><p>Hello " +
+      new_user?.name +
+      ",</p><p>We have generated a one-time password (OTP) for your  <b>DesktopCRM</b> account. Please use the following OTP to verify your identity:</p><h2 style='background-color: #f2f2f2; padding: 10px; border-radius: 4px; font-size: 24px; display: inline-block;'>[" +
+      otp_code +
+      "]</h2><p>This OTP is valid for a limited time period and can only be used once.</p><p>If you did not initiate this action or have any concerns regarding your account security, please contact our support team immediately at [Support Email/Phone Number].</p><br><a href='http://localhost:3000/reset-password-verification/" +
+      new_user?.email +
+      "' >Reset Password</a><p>Thank you,<br>The <b>DesktopCRM</b> Team</p>";
+
+    const sendResetOTP = await helper.sendEmail(
+      req,
+      res,
+      "OTP FOR RESET PASSWORD.",
+      email,
+      "",
+      htmlMessage
+    );
+    const dbOTP = await db("otps").insert({
+      email: email,
+      otp: otp_code,
+      messageSid: sendResetOTP?.messageId,
+      expires_at: moment().add(2, "hours").format("YYYY-MM-DD HH:mm:ss"),
+    });
+    if (dbOTP) {
+      return helper.sendSuccess(
+        req,
+        res,
+        { userData: new_user },
+        "OTP for email verification successfully sent."
+      );
+    }
   }
 });
 
@@ -240,13 +272,13 @@ exports.forgotPassword = catchAssyncFunc(async (req, res, next) => {
   var otp_code = Math.floor(Math.random() * 900000);
 
   const htmlMessage =
-    "<h1>OTP for <b>JAMPACK</b> App</h1><br></br><p>Hello " +
+    "<h1>OTP for <b>DesktopCRM</b> App</h1><br></br><p>Hello " +
     is_user_exist.name +
-    ",</p><p>We have generated a one-time password (OTP) for your  <b>JAMPACK</b> account. Please use the following OTP to verify your identity:</p><h2 style='background-color: #f2f2f2; padding: 10px; border-radius: 4px; font-size: 24px; display: inline-block;'>[" +
+    ",</p><p>We have generated a one-time password (OTP) for your  <b>DesktopCRM</b> account. Please use the following OTP to verify your identity:</p><h2 style='background-color: #f2f2f2; padding: 10px; border-radius: 4px; font-size: 24px; display: inline-block;'>[" +
     otp_code +
     "]</h2><p>This OTP is valid for a limited time period and can only be used once.</p><p>If you did not initiate this action or have any concerns regarding your account security, please contact our support team immediately at [Support Email/Phone Number].</p><br><a href='http://localhost:3000/reset-password-verification/" +
     is_user_exist?.email +
-    "' >Reset Password</a><p>Thank you,<br>The <b>JAMPACK</b> Team</p>";
+    "' >Reset Password</a><p>Thank you,<br>The <b>DesktopCRM</b> Team</p>";
 
   const sendResetOTP = await helper.sendEmail(
     req,
