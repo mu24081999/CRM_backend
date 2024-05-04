@@ -196,13 +196,9 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
       messageSid: sendResetOTP?.messageId,
       expires_at: moment().add(2, "hours").format("YYYY-MM-DD HH:mm:ss"),
     });
+    console.log(sendResetOTP);
     if (dbOTP) {
-      return helper.sendSuccess(
-        req,
-        res,
-        { userData: new_user },
-        "OTP for email verification successfully sent."
-      );
+      return helper.sendSuccess(req, res, { userData: new_user }, "Success");
     }
   }
 });

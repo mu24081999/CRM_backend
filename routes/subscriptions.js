@@ -5,6 +5,7 @@ const {
   deleteSubscription,
   readSubscriptions,
   getAllSubscriptions,
+  getUserSubscriptions,
 } = require("../controllers/subscriptions");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
@@ -18,6 +19,12 @@ router.get(
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   getAllSubscriptions
+);
+router.get(
+  "/get-user-subscriptions",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  getUserSubscriptions
 );
 router.delete(
   "/delete-subscription/:subscription_id",

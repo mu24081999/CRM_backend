@@ -19,10 +19,17 @@ exports.getChatRooms = catchAssyncFunc(async function (req, res, next) {
 });
 exports.getGroupChatRooms = catchAssyncFunc(async function (req, res, next) {
   const chatRooms = await db("group_chat_rooms")
-    .whereRaw('JSON_CONTAINS(group_members->"$.members[*].id", ?)', [
-      `${req.user.id}`,
-    ])
-    .orWhere("user_id", req.user.id)
+    // .whereRaw('JSON_CONTAINS(group_members->"$.members[*].id", ?)', [
+    //   `${req.user.id}`,
+    // ])
+    // .orWhere("user_id", req.user.id)
+    .where((builder) => {
+      builder
+        .whereJsonSupersetOf("group_members", {
+          members: [{ id: req.user.id }],
+        })
+        .orWhere("user_id", req.user.id);
+    })
     .select();
   return helper.sendSuccess(
     req,

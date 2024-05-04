@@ -7,7 +7,9 @@ exports.up = function (knex) {
     // Define columns for the subscription table
     table.increments("id").primary(); // Primary key: ID column
     table.integer("customer_id").unsigned().notNullable(); // Customer ID (Foreign key to customer table)
-    table.enum("plan", ["monthly", "yearly"]).notNullable(); // Subscription plan (e.g., basic, premium)
+    table.enum("plan_type", ["monthly", "yearly"]).notNullable(); // Subscription plan (e.g., basic, premium)
+    table.string("plan").notNullable();
+    table.string("amount_payed").notNullable();
     table.date("start_date").notNullable(); // Start date of the subscription
     table.date("end_date"); // End date of the subscription (nullable, open-ended)
     table.boolean("active").defaultTo(true); // Is the subscription active?

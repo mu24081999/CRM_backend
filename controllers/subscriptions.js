@@ -12,6 +12,19 @@ exports.getAllSubscriptions = catchAssyncFunc(async function (req, res, next) {
     "success"
   );
 });
+exports.getUserSubscriptions = catchAssyncFunc(async function (req, res, next) {
+  const subscriptions = await db("subscriptions")
+    .where("customer_id", req.user.id)
+    .select();
+  return helper.sendSuccess(
+    req,
+    res,
+    {
+      subscriptionsData: subscriptions,
+    },
+    "success"
+  );
+});
 
 exports.readSubscriptions = catchAssyncFunc(async function (req, res, next) {
   const { subscription_id } = req.params;
@@ -29,18 +42,23 @@ exports.readSubscriptions = catchAssyncFunc(async function (req, res, next) {
 });
 exports.deleteSubscription = catchAssyncFunc(async function (req, res, next) {
   const { subscription_id } = req.params;
-  const subscription = await db("boards").where("id", subscription_id).update({
-    visibility: "deleted",
-  });
+  const subscription = await db("subscriptions")
+    .where("id", subscription_id)
+    .update({
+      visibility: "deleted",
+    });
   return helper.sendSuccess(req, res, {}, "Subscription deleted successfully.");
 });
 exports.addSubscription = catchAssyncFunc(async function (req, res, next) {
-  const { customer_id, plan, start_date, end_date } = req.body;
-  const is_record_inserted = await db("boards").insert({
+  const { customer_id, plan, start_date, end_date, plan_type, amount_payed } =
+    req.body;
+  const is_record_inserted = await db("subscriptions").insert({
     customer_id,
     plan,
     start_date,
     end_date,
+    plan_type,
+    amount_payed,
   });
   if (!is_record_inserted) {
     return helper.sendError(
