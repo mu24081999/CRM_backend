@@ -7,6 +7,7 @@ const {
   verifyResetPasswordOTP,
   resetPassword,
   logout,
+  emailVerification,
 } = require("../controllers/auth");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post("/signup_user", signUp);
@@ -20,6 +21,7 @@ router.post(
 router.post("/forgot_password", forgotPassword);
 router.post("/verify_otp", verifyResetPasswordOTP);
 router.post("/reset_password", resetPassword);
+router.post("/verify_email", emailVerification);
 // router.post("/login_user_email", loginUserEmail);
 // router.post("/signin_freelancer", loginFreelancer);
 // router.post("/sendotp", sendotp);

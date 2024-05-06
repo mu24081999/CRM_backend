@@ -42,7 +42,14 @@ module.exports = {
         text: textMessage,
         html: htmlMessage,
       };
-      const emailResponse = await transporter.sendMail(mailOptions);
+      const emailResponse = await transporter
+        .sendMail(mailOptions)
+        .then((email_response) => {
+          console.log(email_response);
+        })
+        .catch((error) => {
+          console.log("Email Error:", error);
+        });
       return emailResponse;
     } catch (error) {
       res.send({

@@ -12,10 +12,10 @@ exports.up = function (knex) {
 
     table.json("to").nullable();
     table.string("message").notNullable();
-    table.string("sid").notNullable();
+    table.string("sid").nullable();
     table.double("price").nullable();
     table.string("account_sid").notNullable();
-    table.string("uri").notNullable();
+    table.string("uri").nullable();
     table.integer("num_media").nullable();
     table.json("media_urls").nullable();
     table.string("status").nullable();

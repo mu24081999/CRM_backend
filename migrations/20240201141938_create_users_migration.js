@@ -17,9 +17,12 @@ exports.up = function (knex) {
     table.string("accountSid").nullable();
     table.string("authToken").nullable();
     table.string("parent_id").nullable();
+    table.string("api_key_sid").nullable();
+    table.string("api_key_secret").nullable();
+    table.string("twiml_app_sid").nullable();
 
     // table.string("socket_id").nullable();
-    // table.boolean("connected").defaultTo(false);
+    table.boolean("verified").defaultTo(false);
     table.json("tags").nullable();
     table.json("twilio_numbers").nullable();
     table.string("role").nullable();

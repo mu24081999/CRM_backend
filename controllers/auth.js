@@ -10,10 +10,7 @@ async function createSession(user, req, res) {
   const token = jwt.sign({ user_id: user.id }, config.JWT_SECRET, {
     expiresIn: "30d",
   });
-  const exist_session = await db("sessions")
-    .select()
-    .where("user_id", user.id)
-    .first();
+  const exist_session = await db("sessions").where("user_id", user?.id).first();
   if (exist_session) {
     const session = await db("sessions")
       .select()
@@ -104,7 +101,6 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     phone,
     role,
   } = req.body;
-  console.log("🚀 ~ req.body:", req.body);
 
   const is_exist_user = await db("users")
     .where("email", email)
@@ -160,10 +156,36 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
         if (err) {
           console.error("🚀 ~ err:", err);
         } else {
+          const client = require("twilio")(account.sid, account.authToken);
           const is_updated = await db("users").where("email", email).update({
             authToken: account.authToken,
             accountSid: account.sid,
           });
+          const key = await client.newKeys
+            .create({
+              friendlyName: "justcall",
+            })
+            .then(async (key) => {
+              const is_updated = await db("users")
+                .where("email", email)
+                .update({
+                  api_key_sid: key.sid,
+                  api_key_secret: key.secret,
+                });
+            });
+          const app = await client.applications
+            .create({
+              friendlyName: "justcall",
+              voiceUrl: "https://desktopcrm.com:51/v1/user/calling/listen-call",
+              smsUrl: "https://desktopcrm.com:51/v1/user/calling/recieve-sms",
+            })
+            .then(async (app) => {
+              const is_updated = await db("users")
+                .where("email", email)
+                .update({
+                  twiml_app_sid: app.sid,
+                });
+            });
         }
       }
     );
@@ -196,7 +218,6 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
       messageSid: sendResetOTP?.messageId,
       expires_at: moment().add(2, "hours").format("YYYY-MM-DD HH:mm:ss"),
     });
-    console.log(sendResetOTP);
     if (dbOTP) {
       return helper.sendSuccess(req, res, { userData: new_user }, "Success");
     }
@@ -260,10 +281,6 @@ exports.forgotPassword = catchAssyncFunc(async (req, res, next) => {
   if (!is_user_exist) {
     return helper.sendSuccess(req, res, {}, "No user found.");
   }
-  console.log(
-    "🚀 ~ exports.forgotPassword=catchAssyncFunc ~ is_user_exist:",
-    is_user_exist
-  );
 
   var otp_code = Math.floor(Math.random() * 900000);
 
@@ -287,7 +304,7 @@ exports.forgotPassword = catchAssyncFunc(async (req, res, next) => {
   const dbOTP = await db("otps").insert({
     email: email,
     otp: otp_code,
-    messageSid: sendResetOTP.messageId,
+    messageSid: sendResetOTP?.messageId,
     expires_at: moment().add(2, "hours").format("YYYY-MM-DD HH:mm:ss"),
   });
   if (dbOTP) {
@@ -295,7 +312,7 @@ exports.forgotPassword = catchAssyncFunc(async (req, res, next) => {
       req,
       res,
       { userData: is_user_exist },
-      "OTP FOR RESET PASSWORD successfully sent."
+      "OTP successfully sent."
     );
   }
   return helper.sendError(
@@ -304,6 +321,49 @@ exports.forgotPassword = catchAssyncFunc(async (req, res, next) => {
     "Something went wrong while trying to send otp.",
     500
   );
+});
+exports.emailVerification = catchAssyncFunc(async (req, res, next) => {
+  const schema = Joi.object({
+    otp: Joi.number()
+      .integer()
+      .positive()
+      .greater(100000)
+      .less(1000000)
+      .required(),
+    email: Joi.string().email().required(),
+    // password: Joi.string().required(),
+  });
+  const { error } = schema.validate(req.body);
+  const { otp, email } = req.body;
+  const currentTime = moment().format("YYYY-MM-DD HH:mm:ss");
+  if (error) {
+    return helper.sendError(
+      req,
+      res,
+      "Validation failed " + error.message,
+      403
+    );
+  }
+  const is_exist = await db("otps")
+    .where("otp", otp)
+    .andWhere("email", email)
+    .andWhere("expires_at", ">", currentTime)
+    .first();
+  if (!is_exist)
+    return helper.sendError(req, res, "No otp found.Please try again.", 403);
+  const user = await db("users").where("email", email).update({
+    verified: true,
+  });
+  const exist_user = await db("users").where("email", email).first();
+  const is_deleted = await db("otps")
+    .select()
+    .where("otp", otp)
+    .andWhere("email", email)
+    .andWhere("expires_at", ">", currentTime)
+    .del();
+  return helper.sendSuccess(req, res, { userData: exist_user }, "success");
+  // if (exist_user && user && is_deleted)
+  // return createSession(exist_user, req, res);
 });
 exports.verifyResetPasswordOTP = catchAssyncFunc(async (req, res, next) => {
   const schema = Joi.object({

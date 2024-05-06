@@ -13,7 +13,7 @@ class NEW_SUCCESS_RES {
 const fs = require("fs").promises;
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" }); // Configure upload destination (change if needed)
-
+const twilio = require("twilio");
 async function createTempFileFromBuffer(bufferData) {
   const tempFilePath = await fs.mkdtemp("tmp-"); // Create a temporary directory
   const tempFileName = `${tempFilePath}/${Math.random()
@@ -111,6 +111,7 @@ io.on("connection", (socket) => {
       //   "https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg",
       // ],
     };
+    const client = twilio(data?.from?.accountSid, data?.from?.authToken);
     const is_added_to_database = await db("messages").insert({
       from_name: data.from.name,
       to_name: data.to.name,
@@ -137,7 +138,7 @@ io.on("connection", (socket) => {
     }
     const message_id = is_added_to_database[0];
 
-    twilioClient.messages
+    client.messages
       .create(params)
       .then(async (message) => {
         const is_updated_to_database = await db("messages")

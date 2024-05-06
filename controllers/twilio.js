@@ -345,14 +345,25 @@ exports.getCallToken = catchAssyncFunc(async function (req, res, next) {
   // const token = capability.toJwt();
   // res.set("Content-Type", "application/jwt");
   // res.json({ token: token });
-  const { from_phone, accountSid, identity, authToken } = req.body;
+  const {
+    from_phone,
+    accountSid,
+    identity,
+    authToken,
+    twiml_app_sid,
+    api_key_sid,
+    api_key_secret,
+  } = req.body;
   console.log("🚀 ~ identity:", req.body);
 
   const accessToken = new AccessToken(
-    config.TWILLIO_ACCOUNT_SID,
+    // config.TWILLIO_ACCOUNT_SID,
     // accountSid,
-    config.TWILIO_API_KEY,
-    config.TWILIO_VOICE_API_KEY_AUTH_TOKEN,
+    // config.TWILIO_API_KEY,
+    // config.TWILIO_VOICE_API_KEY_AUTH_TOKEN,
+    accountSid,
+    api_key_sid,
+    api_key_secret,
     {
       // identity: "umar",
       identity: identity,
@@ -361,7 +372,8 @@ exports.getCallToken = catchAssyncFunc(async function (req, res, next) {
   accessToken.identity = identity;
 
   const grant = new AccessToken.VoiceGrant({
-    outgoingApplicationSid: config.TWILIO_TWIML_SID,
+    // outgoingApplicationSid: config.TWILIO_TWIML_SID,
+    outgoingApplicationSid: twiml_app_sid,
     incomingAllow: true,
     outgoingApplicationParams: { from: from_phone }, // Set the "from" number here
   });
