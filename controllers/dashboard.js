@@ -135,7 +135,8 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
           chart_categories: newInboundMessageChartCategories,
           chart_series: inboundMessageChartSeries,
           chart: {
-            categories: newInboundMessageChartCategories,
+            // categories: newInboundMessageChartCategories,
+            categories: newOutboundMessageChartCategories,
             series: [
               {
                 name: "inbound-messages",
