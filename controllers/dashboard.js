@@ -123,7 +123,9 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
 
   const invoices = await db("invoices").select();
   const leads = await db("contacts").select();
-  const subscriptions = await db("subscriptions").select();
+  const subscriptions = await db("subscriptions")
+    .where("user_id", req.user.id)
+    .select();
   return helper.sendSuccess(
     req,
     res,

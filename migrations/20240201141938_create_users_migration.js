@@ -9,6 +9,7 @@ exports.up = function (knex) {
     table.string("location").nullable();
     table.text("bio").nullable();
     table.string("phone").nullable();
+    table.string("personal_phone").nullable();
     table.string("name").notNullable();
     table.string("username").notNullable();
     table.string("email").notNullable();

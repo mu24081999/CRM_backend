@@ -6,13 +6,13 @@ const SESSION_SECRET = "12345678$@123";
 // const DB_PASSWORD = "";
 // const DB_USER = "root";
 // const DB_NAME = "CRM";
-// const DB_HOST = "mysql-161306-0.cloudclusters.net";
-const DB_HOST = "203.161.50.83";
-// const DB_PORT = 19530;
-const DB_PORT = 3306;
+const DB_HOST = "mysql-161306-0.cloudclusters.net";
+// const DB_HOST = "203.161.50.83";
+const DB_PORT = 19530;
+// const DB_PORT = 3306;
 const DB_PASSWORD = "umar001liaqat";
-// const DB_USER = "admin";
-const DB_USER = "root";
+const DB_USER = "admin";
+// const DB_USER = "root";
 const DB_NAME = "CRM";
 
 // const DB_HOST = "database-crm.cle0a4gs64yq.us-west-2.rds.amazonaws.com";
@@ -48,8 +48,8 @@ const TWILIO_API_KEY = "SKb57d557256c5005ddd8f6b0662b9817f";
 const TWILIO_TWIML_SID = "APde731d63e525cdb48761eace9d336cf8";
 
 const STRIPE_API_KEY =
-  "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";
-// "sk_test_51Ofz4pJKrp7ymIs2yKrlvb8Ain26IPzeK7fbZCxnATm5MrDdxJxnXjiocrPIkPgR85Gb6vSOZ1G7V7oahGNJJ5Nj00iHcoI4Ui";
+  "sk_test_51Ofz4pJKrp7ymIs2yKrlvb8Ain26IPzeK7fbZCxnATm5MrDdxJxnXjiocrPIkPgR85Gb6vSOZ1G7V7oahGNJJ5Nj00iHcoI4Ui";
+// "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";
 module.exports = {
   AWS_REGION,
   S3_BUCKET,
