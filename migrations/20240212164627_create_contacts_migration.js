@@ -5,7 +5,7 @@
 exports.up = function (knex) {
   return knex.schema.createTable("contacts", (table) => {
     table.increments("id").primary();
-    table.bigInteger("board_id").unsigned().notNullable();
+    table.bigInteger("board_id").unsigned().nullable();
     table.bigInteger("user_id").unsigned().notNullable();
     table.string("avatar").nullable();
     table.string("phone").notNullable();
