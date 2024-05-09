@@ -68,6 +68,8 @@ async function createSession(user, req, res) {
 }
 
 exports.signUp = catchAssyncFunc(async function (req, res, next) {
+  console.log(req.body);
+
   const schema = Joi.object({
     username: Joi.string().required(),
     name: Joi.string().required(),
@@ -78,6 +80,10 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     client_id: Joi.string().optional(),
     accountSid: Joi.string().optional(),
     authToken: Joi.string().optional(),
+    api_key_sid: Joi.string().optional(),
+    api_key_secret: Joi.string().optional(),
+    twiml_app_sid: Joi.string().optional(),
+    twilio_numbers: Joi.object().optional(),
     phone: Joi.string().optional(),
     location: Joi.string().optional(),
     personal_phone: Joi.string().optional(),
@@ -98,14 +104,17 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     password,
     accountSid,
     authToken,
+    twiml_app_sid,
+    api_key_secret,
+    api_key_sid,
     parent_id,
     client_id,
     phone,
     personal_phone,
     role,
     location,
+    twilio_numbers,
   } = req.body;
-
   const is_exist_user = await db("users")
     .where("email", email)
     .orWhere("username", username)
@@ -143,12 +152,16 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     avatar: req.files && publicUrl ? publicUrl : "",
     accountSid,
     authToken,
+    twiml_app_sid,
+    api_key_secret,
+    api_key_sid,
     client_id,
     parent_id,
     phone,
     location,
     role,
     personal_phone,
+    twilio_numbers,
   };
   const is_user_added = await db("users").insert(userParams);
   const new_user = await db("users").where("email", email).first();

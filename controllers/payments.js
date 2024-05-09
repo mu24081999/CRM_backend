@@ -56,6 +56,7 @@ exports.addPayment = catchAssyncFunc(async function (req, res, next) {
     policy_accepted,
     description,
   } = req.body;
+  console.log(req.body);
   const is_record_inserted = await db("payments").insert({
     user_id,
     card_holder_name,

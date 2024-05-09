@@ -5,7 +5,9 @@ const fs = require("fs");
 const moment = require("moment");
 
 exports.getEvents = catchAssyncFunc(async function (req, res, next) {
-  const events = await db("calender_events").select();
+  const events = await db("calender_events")
+    .where("user_id", req.user.id)
+    .select();
   return helper.sendSuccess(
     req,
     res,
