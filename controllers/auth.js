@@ -463,5 +463,6 @@ exports.logout = catchAssyncFunc(async (req, res, next) => {
   if (result) {
     return helper.sendSuccess(req, res, {}, "User logged out.");
   }
+  d;
   return helper.sendError(req, res, "Something went wrong.", 500);
 });
