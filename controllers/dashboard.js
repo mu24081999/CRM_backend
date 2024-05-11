@@ -8,6 +8,7 @@ async function getSubAccountsData(subaccounts) {
   const callsArray = [];
   const activeNumbersArray = [];
   const emailsArray = [];
+  const leadsArray = [];
 
   await Promise.all(
     subaccounts.map(async (acc, index) => {
@@ -21,11 +22,12 @@ async function getSubAccountsData(subaccounts) {
         .where("sender", acc?.email)
         .orWhere("reciever", acc?.email)
         .select();
-
+      const leads = await db("contacts").where("user_id", acc?.id).select();
       messagesArray.push(...messagesData);
       activeNumbersArray.push(...numbers);
       callsArray.push(...callsData);
       emailsArray.push(...emails);
+      leadsArray.push(...leads);
     })
   );
   //calls
@@ -143,6 +145,7 @@ async function getSubAccountsData(subaccounts) {
     // activeNumbersArray,
     // emailsArray,
     numbers: activeNumbersArray,
+    number_of_leads: leadsArray?.length,
     messages: {
       number_of_recieved_sms: inboundMessages?.length,
       number_of_sent_sms: outboundMessages?.length,
@@ -195,6 +198,7 @@ async function getSubAccountsData(subaccounts) {
 
 exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken, user_phone, user_email, user_id } = req.body;
+  const user = await db("users").where("id", user_id).first();
   const client = accountSid && authToken && twilio(accountSid, authToken);
   const sub_accounts = await db("users").where("parent_id", user_id).select();
   const sub_accounts_data =
@@ -208,11 +212,17 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
     .where("customer_id", req.user.id)
     .select();
   const outboundMessages = messages?.filter(
-    (message) => message?.from_phone === user_phone
+    (message) => message.user_id === user_id && message.direction === "outbound"
   );
+  // user?.role === "AGENT"
+  //   ? messages?.filter((message) => message?.from_phone === user_phone)
+  //   : messages?.filter((message) => message?.direction === "outbound");
   const inboundMessages = messages?.filter(
-    (message) => message?.to_phone === user_phone
+    (message) => message.user_id === user_id && message.direction === "inbound"
   );
+  // user?.role === "AGENT"
+  //   ? messages?.filter((message) => message?.to_phone === user_phone)
+  //   : messages?.filter((message) => message?.direction === "inbound");
   const inboundMessageChartSeries = [];
   const inboundMessageChartCategories = [];
   await inboundMessages?.forEach((message) => {
@@ -286,14 +296,23 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
   const calls =
     accountSid && authToken
       ? await client.calls.list({
-          limit: 10,
+          // limit: 10,
           status: "completed",
         })
       : [];
-  const inboundCalls = calls?.filter((call) => call?.direction === "inbound");
-  const outboundCalls = calls?.filter(
-    (call) => call?.direction === "outbound-dial"
-  );
+  const inboundCalls =
+    user?.role === "AGENT"
+      ? calls?.filter(
+          (call) => call?.direction === "inbound" && call?.from === user_phone
+        )
+      : calls?.filter((call) => call?.direction === "inbound");
+  const outboundCalls =
+    user?.role === "AGENT"
+      ? calls?.filter(
+          (call) =>
+            call?.direction === "outbound-dial" && call?.from === user_phone
+        )
+      : calls?.filter((call) => call?.direction === "outbound-dial");
   const inboundChartSeries = [];
   const inboundChartCategories = [];
   await inboundCalls?.forEach((call) => {

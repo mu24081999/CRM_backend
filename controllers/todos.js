@@ -5,7 +5,7 @@ const fs = require("fs");
 const moment = require("moment");
 
 exports.getTodos = catchAssyncFunc(async function (req, res, next) {
-  const todos = await db("todos").select();
+  const todos = await db("todos").orderBy("created_at", "desc").select();
   return helper.sendSuccess(
     req,
     res,
@@ -98,8 +98,6 @@ exports.updateTodo = catchAssyncFunc(async function (req, res, next) {
     asign_to: JSON.stringify({ members: asign_to }),
     labels: JSON.stringify({ labels: labels }),
   };
-  console.log(formData, req.body);
-
   const is_updated = await db("todos").where("id", todo_id).update(formData);
   if (!is_updated) {
     return helper.sendError(req, res, "Something went wrong", 500);

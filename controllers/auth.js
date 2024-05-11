@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
 
-//Create Session Function
+// Create Session Function
 async function createSession(user, req, res) {
   const token = jwt.sign({ user_id: user.id }, config.JWT_SECRET, {
     expiresIn: "30d",

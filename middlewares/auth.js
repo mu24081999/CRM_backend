@@ -11,18 +11,17 @@ const IsAuth = async (req, res, next) => {
       });
 
     const decodeToken = jwt.verify(token, config.JWT_SECRET);
+    const session = await db("sessions")
+      .where("user_id", decodeToken?.user_id)
+      .andWhere("token", token)
+      .first();
     const user = await db("users")
-      .select()
       .where("id", decodeToken?.user_id)
       .andWhere("status", "active")
       .first();
-    if (!user) {
+    if (!session || !user) {
       return helper.sendError(req, res, "User not valid.", 500);
     }
-    const session = await db("sessions")
-      .select()
-      .where("user_id", user.id)
-      .first();
 
     req.user = user;
     req.userSession = session;

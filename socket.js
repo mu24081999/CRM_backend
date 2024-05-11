@@ -113,14 +113,15 @@ io.on("connection", (socket) => {
     };
     const client = twilio(data?.from?.accountSid, data?.from?.authToken);
     const is_added_to_database = await db("messages").insert({
-      from_name: data.from.name,
-      to_name: data.to.name,
-      from_phone: data.from.phone,
-      to_phone: data.to.phone,
-      message: data.message,
+      user_id: data?.user_id,
+      from_name: data?.from?.name,
+      to_name: data?.to?.name,
+      from_phone: data?.from?.phone,
+      to_phone: data?.to?.phone,
+      message: data?.message,
       // sid: message.sid,
       // price: message.price,
-      account_sid: data.from.accountSid,
+      account_sid: data?.from?.accountSid,
       // uri: message.uri,
       // num_media: message.numMedia,
       // media_urls: { urls: [] },
