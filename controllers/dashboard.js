@@ -109,6 +109,7 @@ async function getSubAccountsData(subaccounts) {
   const outgoingEmails = emailsArray?.filter(
     (email) => email.reciever === user_email
   );
+  console.log("🚀 ~ getSubAccountsData ~ outgoingEmails:", outgoingEmails);
   const inboundEmailChartSeries = [];
   const inboundEmailChartCategories = [];
   await incomingEmails?.forEach((email) => {
@@ -134,7 +135,7 @@ async function getSubAccountsData(subaccounts) {
     ...new Set(outboundEmailChartCategories),
   ];
   newOutboundEmailChartCategories.forEach((date) => {
-    const series_value = incomingEmails?.filter(
+    const series_value = outgoingEmails?.filter(
       (msg) => moment(msg?.created_at).format("YYYY-MM-DD") === date
     ).length;
     outboundEmailChartSeries.push(series_value);
@@ -255,10 +256,11 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
   });
 
   const emails = await db("emails").select();
-  const incomingEmails = emails?.filter((email) => email.sender === user_email);
-  const outgoingEmails = emails?.filter(
+  const incomingEmails = emails?.filter(
     (email) => email.reciever === user_email
   );
+  const outgoingEmails = emails?.filter((email) => email.sender === user_email);
+  console.log("🚀 ~ outgoingEmails:", outgoingEmails);
   const inboundEmailChartSeries = [];
   const inboundEmailChartCategories = [];
   await incomingEmails?.forEach((email) => {
@@ -284,7 +286,7 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
     ...new Set(outboundEmailChartCategories),
   ];
   newOutboundEmailChartCategories.forEach((date) => {
-    const series_value = incomingEmails?.filter(
+    const series_value = outgoingEmails?.filter(
       (msg) => moment(msg?.created_at).format("YYYY-MM-DD") === date
     ).length;
     outboundEmailChartSeries.push(series_value);
@@ -365,8 +367,8 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
           },
         },
         emails: {
-          number_of_send_emails: incomingEmails?.length,
-          number_of_emails_recieved: outgoingEmails?.length,
+          number_of_send_emails: outgoingEmails?.length,
+          number_of_emails_recieved: incomingEmails?.length,
           chart: {
             categories: newInboundEmailChartCategories,
             series: [

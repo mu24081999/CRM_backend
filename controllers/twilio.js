@@ -152,6 +152,8 @@ exports.recieveSMS = catchAssyncFunc(async function (req, res, next) {
   console.log(req.body);
 });
 exports.listenSMS = catchAssyncFunc(async function (req, res, next) {
+  const messageSid = req.body.MessageSid;
+  const messageStatus = req.body.MessageStatus;
   // const user = await db("users").where("phone", message.to).first();
   // const messages = await db("messages")
   //   .where("from_phone", user?.phone)
@@ -159,9 +161,6 @@ exports.listenSMS = catchAssyncFunc(async function (req, res, next) {
   //   .select();
   // console.log("🚀 ~ messages:", messages);
   // io.to(user.socket_id).emit("message_received", messages);
-  const messageSid = req.body.MessageSid;
-  const messageStatus = req.body.MessageStatus;
-
   // Handle the message status update
   console.log(`Message SID: ${messageSid}, Status: ${messageStatus}`);
   console.log(req.body);

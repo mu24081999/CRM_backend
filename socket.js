@@ -97,14 +97,11 @@ io.on("connection", (socket) => {
   //     });
   // });
   socket.on("send-message", async (data) => {
-    console.log("🚀 ~ socket.on ~ data:", data);
     const params = {
       from: data.from.phone, // Your Twilio phone number
-      // from: "+14849993639",
       to: data.to.phone, // Recipient's phone number
       // sendAt: new Date(Date.UTC(2021, 10, 30, 20, 36, 27)),
       // scheduleType: 'fixed'
-      // to: "+923174660027",
       body: data.message, // Message content
       // mediaUrl: [
       //   "https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg",
@@ -119,12 +116,7 @@ io.on("connection", (socket) => {
       from_phone: data?.from?.phone,
       to_phone: data?.to?.phone,
       message: data?.message,
-      // sid: message.sid,
-      // price: message.price,
       account_sid: data?.from?.accountSid,
-      // uri: message.uri,
-      // num_media: message.numMedia,
-      // media_urls: { urls: [] },
     });
     const messages = await db("messages")
       .where("from_phone", data.from.phone)
@@ -138,24 +130,17 @@ io.on("connection", (socket) => {
       );
     }
     const message_id = is_added_to_database[0];
-
+    const country_code = data?.to?.phone?.slice(0, 2);
     client.messages
       .create(params)
       .then(async (message) => {
         const is_updated_to_database = await db("messages")
           .where("id", parseInt(message_id))
           .update({
-            // from_name: data.from.name,
-            // to_name: data.to.name,
-            // from_phone: data.from.phone,
-            // to_phone: data.to.phone,
-            // message: data.message,
             sid: message.sid,
             price: message.price,
-            // account_sid: message.accountSid,
             uri: message.uri,
             num_media: message.numMedia,
-            // media_urls: { urls: [] },
           });
         if (!is_updated_to_database) {
           throw new NEW_ERROR_RES(
@@ -189,6 +174,42 @@ io.on("connection", (socket) => {
         io.to(data.from.socket_id).emit("message_sent", messages);
         // throw new NEW_ERROR_RES(500, err);
       });
+    if (country_code === "+1") {
+      client.messages.list({ to: data.to.phone }).then(async (messages) => {
+        const latestMessage = messages[0];
+
+        console.log("Latest Message Status:", latestMessage);
+        // Check if message status indicates it's not complete
+        if (
+          latestMessage.status !== "delivered" ||
+          (latestMessage.status === "sent" && latestMessage.price === null)
+        ) {
+          console.log("Message not complete. Status:", latestMessage.status);
+          io.to(data.from.socket_id).emit(
+            "message_error",
+            "A2P Verification required"
+          );
+          const is_updated_to_database = await db("messages")
+            .where("id", parseInt(message_id))
+            .update({
+              status: "Failed",
+              message_error: "A2P Verification required",
+            });
+          console.log(
+            "🚀 ~ socket.on ~ is_updated_to_database:",
+            is_updated_to_database
+          );
+          const messages = await db("messages")
+            .where("from_phone", data.from.phone)
+            .orWhere("to_phone", data.from.phone)
+            .select();
+          io.to(data.from.socket_id).emit("message_sent", messages);
+          // Take appropriate actions here
+        } else {
+          console.log("Message delivered successfully.");
+        }
+      });
+    }
   });
   //chat events
   socket.on("joinRoom", ({ roomId }) => {

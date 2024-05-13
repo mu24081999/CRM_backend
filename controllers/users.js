@@ -40,7 +40,6 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
     name,
     email,
     role,
-    phoneNumber,
     status,
     bio,
     location,
@@ -81,11 +80,10 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
       username,
       email,
       role,
-      // phone: phoneNumber,
+      phone,
       bio,
       location,
-      status: status,
-      phone,
+      status,
       personal_phone,
       password: password !== undefined && password !== "" && hashedPassword,
       avatar: req.files && publicUrl ? publicUrl : "",
@@ -97,10 +95,10 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
       username,
       email,
       role,
-      // phone: phoneNumber,
+      phone,
       bio,
       location,
-      status: status,
+      status,
       phone,
       personal_phone,
       avatar: req.files && publicUrl ? publicUrl : "",
@@ -108,9 +106,9 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
     };
   }
 
-  const is_user_added = await db("users")
+  const is_user_updated = await db("users")
     .where("id", user_id)
     .update(userParams);
 
-  if (is_user_added) return helper.sendSuccess(req, res, {}, "User Updated!");
+  if (is_user_updated) return helper.sendSuccess(req, res, {}, "User Updated!");
 });
