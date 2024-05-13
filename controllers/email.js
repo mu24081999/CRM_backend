@@ -606,6 +606,7 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
     return emailResponse;
   };
   const saveEmail = async (emailData) => {
+    console.log("🚀 ~ saveEmail ~ emailData:", emailData);
     const is_email_added = await db("emails").insert(emailData);
     if (!is_email_added) {
       return helper.sendError(req, res, "Error sending email.", 500);

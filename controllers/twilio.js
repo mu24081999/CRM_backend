@@ -151,6 +151,21 @@ exports.recieveSMS = catchAssyncFunc(async function (req, res, next) {
 
   console.log(req.body);
 });
+exports.listenSMS = catchAssyncFunc(async function (req, res, next) {
+  // const user = await db("users").where("phone", message.to).first();
+  // const messages = await db("messages")
+  //   .where("from_phone", user?.phone)
+  //   .orWhere("to_phone", user?.phone)
+  //   .select();
+  // console.log("🚀 ~ messages:", messages);
+  // io.to(user.socket_id).emit("message_received", messages);
+  const messageSid = req.body.MessageSid;
+  const messageStatus = req.body.MessageStatus;
+
+  // Handle the message status update
+  console.log(`Message SID: ${messageSid}, Status: ${messageStatus}`);
+  console.log(req.body);
+});
 exports.getMessageDetails = catchAssyncFunc(async function (req, res, next) {
   const message = await twilioClient
     .messages("SM5be06050a67bdb9510fd1b3bc2b50534")

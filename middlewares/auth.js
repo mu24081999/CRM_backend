@@ -20,7 +20,12 @@ const IsAuth = async (req, res, next) => {
       .andWhere("status", "active")
       .first();
     if (!session || !user) {
-      return helper.sendError(req, res, "User not valid.", 500);
+      return helper.sendError(
+        req,
+        res,
+        "Your session is expired, please login again.",
+        500
+      );
     }
 
     req.user = user;

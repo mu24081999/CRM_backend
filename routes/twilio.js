@@ -21,6 +21,7 @@ const {
   getUserSubAccounts,
   getClaimedNumbers,
   getMainClaimedNumbers,
+  listenSMS,
 } = require("../controllers/twilio");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
@@ -78,6 +79,7 @@ router.get(
   userMessages
 );
 router.post("/recieve-sms", recieveSMS);
+router.post("/listen-sms-status", listenSMS);
 router.get("/message-details", getMessageDetails);
 router.post("/inbound-messages", inboundMessages);
 router.post("/listen-call", listenCallStatus);
