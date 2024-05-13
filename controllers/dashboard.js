@@ -168,7 +168,10 @@ async function getSubAccountsData(subaccounts) {
       number_of_send_emails: incomingEmails?.length,
       number_of_emails_recieved: outgoingEmails?.length,
       chart: {
-        categories: newInboundEmailChartCategories,
+        categories:
+          newInboundEmailChartCategories.length > 0
+            ? newInboundEmailChartCategories
+            : newOutboundChartCategories,
         series: [
           {
             name: "inbound-emails",
@@ -370,7 +373,10 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
           number_of_send_emails: outgoingEmails?.length,
           number_of_emails_recieved: incomingEmails?.length,
           chart: {
-            categories: newInboundEmailChartCategories,
+            categories:
+              newInboundEmailChartCategories.length > 0
+                ? newInboundEmailChartCategories
+                : newOutboundChartCategories,
             series: [
               {
                 name: "inbound-emails",
