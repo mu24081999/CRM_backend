@@ -103,12 +103,8 @@ async function getSubAccountsData(subaccounts) {
     outboundMessageChartSeries.push(series_value);
   });
   //emails
-  const incomingEmails = emailsArray?.filter(
-    (email) => email.sender === user_email
-  );
-  const outgoingEmails = emailsArray?.filter(
-    (email) => email.reciever === user_email
-  );
+  const incomingEmails = emailsArray;
+  const outgoingEmails = emailsArray;
   console.log("🚀 ~ getSubAccountsData ~ outgoingEmails:", outgoingEmails);
   const inboundEmailChartSeries = [];
   const inboundEmailChartCategories = [];

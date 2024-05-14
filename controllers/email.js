@@ -437,9 +437,16 @@ exports.getEmailsByAccount = catchAssyncFunc(async (req, res, next) => {
 // });
 
 exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
-  const { from, to, subject, body, type, parent_id, google_app_password } =
-    req.body;
-  console.log(req.body, config.EMAIL_FROM_ACC, config.EMAIL_FROM_ACC_PASS);
+  const {
+    from,
+    to,
+    subject,
+    body,
+    type,
+    parent_id,
+    google_app_password,
+    from_name,
+  } = req.body;
   const transporter = nodeMailer.createTransport({
     service: "gmail",
     auth: {
@@ -634,7 +641,7 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
             );
             mailOptions = {
               // from: from,
-              from: `"Desktop-CRM" <${from}>`,
+              from: `${from_name} <${from}>`,
               to: toEmail,
               subject: subject,
               // text: body,
@@ -653,7 +660,7 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
             };
           } else {
             mailOptions = {
-              from: `"Desktop-CRM" <${from}>`,
+              from: `${from_name} <${from}>`,
               to: toEmail,
               subject: subject,
               // text: body,
@@ -735,7 +742,7 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
       );
       mailOptions = {
         // from: from,
-        from: `"Desktop-CRM" <${from}>`,
+        from: `${from_name} <${from}>`,
         to: to,
         subject: subject,
         // text: body,
@@ -746,7 +753,7 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
     } else {
       mailOptions = {
         // from: from,
-        from: `"Desktop-CRM" <${from}>`,
+        from: `${from_name} <${from}>`,
         to: to,
         subject: subject,
         // text: body,
