@@ -825,12 +825,18 @@ exports.updateEmail = catchAssyncFunc(async function (req, res, next) {
   return helper.sendSuccess(req, res, {}, "Success.");
 });
 exports.getEmails = catchAssyncFunc(async function (req, res, next) {
-  const user = await db("users").where("id", req.user.id).first();
-  console.log("🚀 ~ user:", user);
+  const user_email = req.params.user_email;
+  const page = parseInt(req.params.page) || 1;
+  const pageSize = parseInt(req.params.page_size) || 10;
+  const offset = (page - 1) * pageSize;
+  console.log(req.params);
   const emails = await db("emails")
-    .where("sender", user.email)
-    .orWhere("reciever", user.email)
-    .select();
+    .where("sender", user_email)
+    .orWhere("reciever", user_email)
+    .limit(pageSize)
+    .offset(offset)
+    .select()
+    .orderBy("created_at", "desc");
 
   for (const element of emails) {
     element.files = await db("email_attachments")

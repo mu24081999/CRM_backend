@@ -8,6 +8,8 @@ async function getSubAccountsData(subaccounts) {
   const callsArray = [];
   const activeNumbersArray = [];
   const emailsArray = [];
+  const incomingEmails = [];
+  const outgoingEmails = [];
   const leadsArray = [];
 
   await Promise.all(
@@ -23,9 +25,18 @@ async function getSubAccountsData(subaccounts) {
         .orWhere("reciever", acc?.email)
         .select();
       const leads = await db("contacts").where("user_id", acc?.id).select();
+      const incoming_emails = emails?.filter(
+        (email) => email.reciever === acc.email
+      );
+      const outgoing_emails = emails?.filter(
+        (email) => email.sender === acc.email
+      );
       messagesArray.push(...messagesData);
       activeNumbersArray.push(...numbers);
       callsArray.push(...callsData);
+      emailsArray.push(...emails);
+      incomingEmails.push(...incoming_emails);
+      outgoingEmails.push(...outgoing_emails);
       emailsArray.push(...emails);
       leadsArray.push(...leads);
     })
@@ -103,9 +114,8 @@ async function getSubAccountsData(subaccounts) {
     outboundMessageChartSeries.push(series_value);
   });
   //emails
-  const incomingEmails = emailsArray;
-  const outgoingEmails = emailsArray;
-  console.log("🚀 ~ getSubAccountsData ~ outgoingEmails:", outgoingEmails);
+  // const incomingEmails = emailsArray;
+  // const outgoingEmails = emailsArray;
   const inboundEmailChartSeries = [];
   const inboundEmailChartCategories = [];
   await incomingEmails?.forEach((email) => {
@@ -161,8 +171,8 @@ async function getSubAccountsData(subaccounts) {
       },
     },
     emails: {
-      number_of_send_emails: incomingEmails?.length,
-      number_of_emails_recieved: outgoingEmails?.length,
+      number_of_send_emails: outgoingEmails?.length,
+      number_of_emails_recieved: incomingEmails?.length,
       chart: {
         categories:
           newInboundEmailChartCategories.length > 0
@@ -195,12 +205,22 @@ async function getSubAccountsData(subaccounts) {
     },
   };
 }
-
 exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken, user_phone, user_email, user_id } = req.body;
   const user = await db("users").where("id", user_id).first();
+  const users = await db("users").select();
   const client = accountSid && authToken && twilio(accountSid, authToken);
-  const sub_accounts = await db("users").where("parent_id", user_id).select();
+  const sub_accounts =
+    user?.parent_id === null &&
+    user?.client_id === null &&
+    user?.role === "USER"
+      ? users?.filter((usr) => parseInt(usr.parent_id) === user.id)
+      : user?.parent_id === null &&
+        user?.client_id === null &&
+        user?.role === "ADMIN" &&
+        users?.filter(
+          (usr) => usr.parent_id !== null && usr.client_id === null
+        );
   const sub_accounts_data =
     sub_accounts?.length > 0 && (await getSubAccountsData(sub_accounts));
   const messages =
@@ -208,21 +228,16 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
     (await db("messages").where("account_sid", accountSid).select());
   const invoices = await db("invoices").select();
   const leads = await db("contacts").where("user_id", req.user.id).select();
-  const subscriptions = await db("subscriptions")
-    .where("customer_id", req.user.id)
-    .select();
+  const subscriptions =
+    user?.role === "ADMIN"
+      ? await db("subscriptions").select()
+      : await db("subscriptions").where("customer_id", req.user.id).select();
   const outboundMessages = messages?.filter(
     (message) => message.user_id === user_id && message.direction === "outbound"
   );
-  // user?.role === "AGENT"
-  //   ? messages?.filter((message) => message?.from_phone === user_phone)
-  //   : messages?.filter((message) => message?.direction === "outbound");
   const inboundMessages = messages?.filter(
     (message) => message.user_id === user_id && message.direction === "inbound"
   );
-  // user?.role === "AGENT"
-  //   ? messages?.filter((message) => message?.to_phone === user_phone)
-  //   : messages?.filter((message) => message?.direction === "inbound");
   const inboundMessageChartSeries = [];
   const inboundMessageChartCategories = [];
   await inboundMessages?.forEach((message) => {
@@ -259,7 +274,6 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
     (email) => email.reciever === user_email
   );
   const outgoingEmails = emails?.filter((email) => email.sender === user_email);
-  console.log("🚀 ~ outgoingEmails:", outgoingEmails);
   const inboundEmailChartSeries = [];
   const inboundEmailChartCategories = [];
   await incomingEmails?.forEach((email) => {

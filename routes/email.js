@@ -13,7 +13,7 @@ const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post("/send-email", sendEmail);
 router.put("/update-email/:emailId", updateEmail);
 router.get(
-  "/get-emails",
+  "/get-emails/:user_email/:page_size/:page",
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   getEmails
