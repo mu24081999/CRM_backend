@@ -22,6 +22,7 @@ const {
   getClaimedNumbers,
   getMainClaimedNumbers,
   listenSMS,
+  getAdminClaimedNumbers,
 } = require("../controllers/twilio");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
@@ -35,6 +36,12 @@ router.get(
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   getMainClaimedNumbers
+);
+router.get(
+  "/admin-claimed-numbers",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  getAdminClaimedNumbers
 );
 router.post(
   "/claimed-numbers",

@@ -66,6 +66,29 @@ exports.getMainClaimedNumbers = catchAssyncFunc(async function (
     "success"
   );
 });
+exports.getAdminClaimedNumbers = catchAssyncFunc(async function (
+  req,
+  res,
+  next
+) {
+  const activeNumbersArray = [];
+  const sub_accounts = await db("users").whereNotNull("parent_id").select();
+  await Promise.all(
+    sub_accounts.map(async (acc, index) => {
+      const client = twilio(acc?.accountSid, acc?.authToken);
+      const numbers = await client.incomingPhoneNumbers.list(); //list claimed number
+      activeNumbersArray.push(...numbers);
+    })
+  );
+  return helper.sendSuccess(
+    req,
+    res,
+    {
+      claimedNumbers: activeNumbersArray,
+    },
+    "success"
+  );
+});
 exports.createSubAccount = catchAssyncFunc(async function (req, res, next) {
   const { account_name, username, name, email, password } = req.body;
   const is_exist_user = await db("users").where("email", email).first();

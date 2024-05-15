@@ -447,6 +447,7 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
     google_app_password,
     from_name,
   } = req.body;
+  console.log(to);
   const transporter = nodeMailer.createTransport({
     service: "gmail",
     auth: {
