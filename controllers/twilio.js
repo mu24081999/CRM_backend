@@ -295,7 +295,6 @@ exports.searchPhoneNumbers = catchAssyncFunc(async function (req, res, next) {
     accountSid,
     authToken,
   } = req.body;
-  console.log("🚀 ~ req.body:", req.body);
   const filters = {};
   if (area_code) {
     filters.areaCode = area_code;
@@ -323,7 +322,6 @@ exports.searchPhoneNumbers = catchAssyncFunc(async function (req, res, next) {
   const numbers = await twilio(accountSid, authToken)
     .availablePhoneNumbers(country)
     [numberType].list(filters); //list by country code
-  console.log("🚀 ~ numbers:", numbers);
   return helper.sendSuccess(
     req,
     res,

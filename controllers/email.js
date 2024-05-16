@@ -609,7 +609,6 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
     }
   };
   const sendEmail = async (mailOptions) => {
-    console.log("🚀 ~ sendEmail ~ mailOptions:", mailOptions);
     const emailResponse = await transporter.sendMail(mailOptions); // Upload file to S3
     return emailResponse;
   };

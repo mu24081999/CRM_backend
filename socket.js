@@ -175,40 +175,38 @@ io.on("connection", (socket) => {
         // throw new NEW_ERROR_RES(500, err);
       });
     if (country_code === "+1") {
-      client.messages.list({ to: data.to.phone }).then(async (messages) => {
-        const latestMessage = messages[0];
-
-        console.log("Latest Message Status:", latestMessage);
-        // Check if message status indicates it's not complete
-        if (
-          latestMessage.status !== "delivered" ||
-          (latestMessage.status === "sent" && latestMessage.price === null)
-        ) {
-          console.log("Message not complete. Status:", latestMessage.status);
-          io.to(data.from.socket_id).emit(
-            "message_error",
-            "A2P Verification required"
-          );
-          const is_updated_to_database = await db("messages")
-            .where("id", parseInt(message_id))
-            .update({
-              status: "Failed",
-              message_error: "A2P Verification required",
-            });
-          console.log(
-            "🚀 ~ socket.on ~ is_updated_to_database:",
-            is_updated_to_database
-          );
-          const messages = await db("messages")
-            .where("from_phone", data.from.phone)
-            .orWhere("to_phone", data.from.phone)
-            .select();
-          io.to(data.from.socket_id).emit("message_sent", messages);
-          // Take appropriate actions here
-        } else {
-          console.log("Message delivered successfully.");
-        }
-      });
+      setTimeout(() => {
+        client.messages.list({ to: data.to.phone }).then(async (messages) => {
+          const latestMessage = messages[0];
+          if (
+            latestMessage.status !== "delivered" ||
+            (latestMessage.status === "sent" && latestMessage.price === null)
+          ) {
+            console.log("Message not complete. Status:", latestMessage.status);
+            io.to(data.from.socket_id).emit(
+              "message_error",
+              "A2P Verification required"
+            );
+            const is_updated_to_database = await db("messages")
+              .where("id", parseInt(message_id))
+              .update({
+                status: "Failed",
+                message_error:
+                  latestMessage?.status === "failed"
+                    ? "Failed to send the message."
+                    : "A2P Verification required",
+              });
+            const messages = await db("messages")
+              .where("from_phone", data.from.phone)
+              .orWhere("to_phone", data.from.phone)
+              .select();
+            io.to(data.from.socket_id).emit("message_sent", messages);
+            // Take appropriate actions here
+          } else {
+            console.log("Message delivered successfully.");
+          }
+        });
+      }, 5000);
     }
   });
   //chat events
