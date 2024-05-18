@@ -22,6 +22,7 @@ const subscriptionRoutes = require("./routes/subscriptions");
 const dashboardRoutes = require("./routes/dashboard");
 const billingRoutes = require("./routes/billings");
 const kycRoutes = require("./routes/kyc");
+const ticketRoutes = require("./routes/tickets");
 
 app.use("/v1/auth", authRoutes);
 app.use("/v1/user", usersRoutes);
@@ -46,3 +47,4 @@ app.use("/v1/user/subscriptions", subscriptionRoutes);
 app.use("/v1/user/dashboard", dashboardRoutes);
 app.use("/v1/user/billing", billingRoutes);
 app.use("/v1/user/kyc", kycRoutes);
+app.use("/v1/user/ticket", ticketRoutes);

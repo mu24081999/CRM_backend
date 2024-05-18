@@ -7,10 +7,12 @@ const {
   deleteEmail,
   getEmailsByEmail,
   getEmailsByAccount,
+  sendEmailBulk,
 } = require("../controllers/email");
 
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post("/send-email", sendEmail);
+router.post("/send-email-bulk", sendEmailBulk);
 router.put("/update-email/:emailId", updateEmail);
 router.get(
   "/get-emails/:user_email/:page_size/:page",

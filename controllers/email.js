@@ -6,6 +6,7 @@ const nodeMailer = require("nodemailer");
 const fs = require("fs");
 const Imap = require("node-imap");
 const { simpleParser } = require("mailparser");
+const { emailQueue } = require("../Queue/BulkEmails");
 
 exports.getEmailsByAccount = catchAssyncFunc(async (req, res, next) => {
   const config = {
@@ -447,16 +448,21 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
     google_app_password,
     from_name,
   } = req.body;
-  console.log(to);
   const transporter = nodeMailer.createTransport({
     service: "gmail",
     auth: {
-      // host: "smpt.gmail.com",
-      // port: "465",
-      // user: config.EMAIL_FROM_ACC,
-      // pass: config.EMAIL_FROM_ACC_PASS,
+      // host: "smtp.ethereal.email",
+      // port: 587,
+      secure: true, // Use `true` for port 465, `false` for all other ports
+      host: "smpt.gmail.com",
+      port: "465",
+      pool: true,
       user: from,
       pass: google_app_password,
+      tls: {
+        // do not fail on invalid certs
+        rejectUnauthorized: false,
+      },
     },
   });
   const saveAttachments = async (data) => {
@@ -608,12 +614,16 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
       };
     }
   };
+  // Function to simulate delay
+  function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
   const sendEmail = async (mailOptions) => {
     const emailResponse = await transporter.sendMail(mailOptions); // Upload file to S3
+    await delay(30000);
     return emailResponse;
   };
   const saveEmail = async (emailData) => {
-    console.log("🚀 ~ saveEmail ~ emailData:", emailData);
     const is_email_added = await db("emails").insert(emailData);
     if (!is_email_added) {
       return helper.sendError(req, res, "Error sending email.", 500);
@@ -736,10 +746,6 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
     }
     let mailOptions = {};
     if (req.files && is_email_attachments_added) {
-      console.log(
-        "Uploading email attachments",
-        is_email_attachments_added?.attachments
-      );
       mailOptions = {
         // from: from,
         from: `${from_name} <${from}>`,
@@ -812,6 +818,34 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
       return helper.sendSuccess(req, res, {}, "Emails sent successfully.");
     }
   }
+  transporter.close();
+});
+exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
+  const {
+    from,
+    to,
+    subject,
+    body,
+    type,
+    parent_id,
+    google_app_password,
+    from_name,
+  } = req.body;
+
+  // Construct mailOptions
+  const mailOptions = {
+    from: `${from_name} <${from}>`,
+    to: Array.isArray(to) ? to.join(", ") : to,
+    subject: subject,
+    html: body,
+  };
+
+  // Enqueue email job
+  await emailQueue
+    .createJob({ from, google_app_password, mailOptions, subject, body })
+    // .delayUntil(Date.now() + 20000) // 30 seconds delay
+    .save();
+  return helper.sendSuccess(req, res, {}, "Email enqueued successfully.");
 });
 
 exports.updateEmail = catchAssyncFunc(async function (req, res, next) {
