@@ -8,6 +8,7 @@ const {
   updateContact,
   uploadFile,
   getContactsByBoard,
+  permanentDeleteContact,
 } = require("../controllers/contacts");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
@@ -34,6 +35,12 @@ router.get(
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   deleteContact
+);
+router.delete(
+  "/permanent-delete-contact/:contact_id",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  permanentDeleteContact
 );
 router.get(
   "/contact-details/:contact_id",
