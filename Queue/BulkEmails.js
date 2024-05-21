@@ -51,7 +51,6 @@ emailQueue.process(async (job) => {
   const { from, google_app_password, mailOptions, subject, body } = job.data;
   const transporter = createTransporter(from, google_app_password);
   const emailResponse = await sendEmail(transporter, mailOptions);
-  console.log("🚀 ~ emailQueue.process ~ emailResponse:", emailResponse);
   let emailData = {}; // Initialize emailData to an empty object
   if (emailResponse) {
     emailData = {
@@ -62,7 +61,6 @@ emailQueue.process(async (job) => {
     };
   }
   await saveEmail(emailData);
-  //   await delay(3000);
 });
 // Event listeners for better logging
 emailQueue.on("succeeded", (job, result) => {

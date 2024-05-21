@@ -11,6 +11,8 @@ exports.createPayment = catchAssyncFunc(async (req, res, next) => {
 });
 exports.getAllPayments = catchAssyncFunc(async function (req, res, next) {
   const payments = await db("payments").select();
+  // const payments = await stripe.paymentIntents.list({ limit: 10 });
+
   return helper.sendSuccess(
     req,
     res,

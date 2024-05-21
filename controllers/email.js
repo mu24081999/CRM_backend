@@ -843,7 +843,8 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
   // Enqueue email job
   await emailQueue
     .createJob({ from, google_app_password, mailOptions, subject, body })
-    // .delayUntil(Date.now() + 20000) // 30 seconds delay
+    .delayUntil(Date.now() + 10000) // 10 seconds delay
+    // .timeout(10000)
     .save();
   return helper.sendSuccess(req, res, {}, "Email enqueued successfully.");
 });
