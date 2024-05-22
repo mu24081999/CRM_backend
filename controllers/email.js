@@ -831,22 +831,57 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
     google_app_password,
     from_name,
   } = req.body;
-
+  console.log(req.body.to);
   // Construct mailOptions
-  const mailOptions = {
-    from: `${from_name} <${from}>`,
-    to: Array.isArray(to) ? to.join(", ") : to,
-    subject: subject,
-    html: body,
-  };
+  // const mailOptions = {
+  //   from: `${from_name} <${from}>`,
+  //   to: Array.isArray(to) ? to.join(", ") : to,
+  //   subject: subject,
+  //   html: body,
+  // };
+  const transporter = nodeMailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: from,
+      pass: google_app_password,
+    },
+  });
+  if (Array.isArray(to)) {
+    const is_all_enqueued = await Promise.all(
+      to?.map(async (email, index) => {
+        return new Promise(async (resolve, reject) => {
+          const mailOptions = {
+            from: `${from_name} <${from}>`,
+            to: email,
+            subject: subject,
+            html: body,
+          };
+          // Enqueue email job
+          await emailQueue
+            .createJob({
+              from,
+              google_app_password,
+              mailOptions,
+              subject,
+              body,
+            })
 
-  // Enqueue email job
-  await emailQueue
-    .createJob({ from, google_app_password, mailOptions, subject, body })
-    .delayUntil(Date.now() + 10000) // 10 seconds delay
-    // .timeout(10000)
-    .save();
+            .delayUntil(Date.now() + 15000) // Delay for 15 seconds
+            .save()
+            .then(() => resolve(true))
+            .catch((err) => reject(err));
+          resolve(true);
+        });
+      })
+    );
+  }
   return helper.sendSuccess(req, res, {}, "Email enqueued successfully.");
+  // // Enqueue email job
+  // await emailQueue
+  //   .createJob({ from, google_app_password, mailOptions, subject, body })
+  //   .delayUntil(10000)
+  //   .save();
+  // return helper.sendSuccess(req, res, {}, "Email enqueued successfully.");
 });
 
 exports.updateEmail = catchAssyncFunc(async function (req, res, next) {
@@ -864,7 +899,6 @@ exports.getEmails = catchAssyncFunc(async function (req, res, next) {
   const page = parseInt(req.params.page) || 1;
   const pageSize = parseInt(req.params.page_size) || 10;
   const offset = (page - 1) * pageSize;
-  console.log(req.params);
   const emails = await db("emails")
     .where("sender", user_email)
     .orWhere("reciever", user_email)

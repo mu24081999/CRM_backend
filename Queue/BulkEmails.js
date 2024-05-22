@@ -2,6 +2,7 @@
 
 const nodemailer = require("nodemailer");
 const Queue = require("bee-queue");
+const { getTransporter } = require("../helper/transporter");
 
 // Redis configuration (customize if needed)
 const redisConfig = {
@@ -15,15 +16,15 @@ const emailQueue = new Queue("email", {
   redis: redisConfig,
 });
 // Create Nodemailer transporter
-const createTransporter = (from, google_app_password) => {
-  return nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: from,
-      pass: google_app_password,
-    },
-  });
-};
+// const createTransporter = (from, google_app_password) => {
+//   return nodemailer.createTransport({
+//     service: "gmail",
+//     auth: {
+//       user: from,
+//       pass: google_app_password,
+//     },
+//   });
+// };
 
 // Function to send email
 const sendEmail = async (transporter, mailOptions) => {
@@ -49,7 +50,14 @@ function delay(ms) {
 // Process queue jobs
 emailQueue.process(async (job) => {
   const { from, google_app_password, mailOptions, subject, body } = job.data;
-  const transporter = createTransporter(from, google_app_password);
+  // const transporter = createTransporter(from, google_app_password);
+  const credentials = {
+    user: from,
+    pass: google_app_password,
+  };
+  const transporter = getTransporter(credentials);
+  console.log("🚀 ~ emailQueue.process ~ transporter:", transporter);
+
   const emailResponse = await sendEmail(transporter, mailOptions);
   let emailData = {}; // Initialize emailData to an empty object
   if (emailResponse) {
