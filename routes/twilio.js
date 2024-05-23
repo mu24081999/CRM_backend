@@ -23,6 +23,8 @@ const {
   getMainClaimedNumbers,
   listenSMS,
   getAdminClaimedNumbers,
+  transferCall,
+  updateBalanceAfterCall,
 } = require("../controllers/twilio");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
@@ -88,8 +90,10 @@ router.get(
 router.post("/recieve-sms", recieveSMS);
 router.post("/listen-sms-status", listenSMS);
 router.get("/message-details", getMessageDetails);
-router.post("/inbound-messages", inboundMessages);
+router.post("/user-messages-logs", inboundMessages);
 router.post("/listen-call", listenCallStatus);
+router.post("/update-balance", updateBalanceAfterCall);
+router.post("/transfer-call", transferCall);
 router.post(
   "/get-call-token",
   IsAuth,

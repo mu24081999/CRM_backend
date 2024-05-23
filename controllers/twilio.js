@@ -23,6 +23,29 @@ exports.getAvailableNumbers = catchAssyncFunc(async function (req, res, next) {
     "success"
   );
 });
+exports.updateBalanceAfterCall = catchAssyncFunc(async function (
+  req,
+  res,
+  next
+) {
+  const { accountSid, authToken, user_id, callSid } = req.body;
+  const client = twilio(accountSid, authToken);
+  const call = await client.calls.list({ limit: 1 });
+  console.log("🚀 ~ call:", call);
+
+  if (call?.status === "completed" && call?.price !== null) {
+    const is_exist_balance = await db("balance")
+      .where("user_id", user_id)
+      .first();
+    const is_balance_updated = await db("balance")
+      .where("user_id", user_id)
+      .update({
+        credit:
+          parseFloat(is_exist_balance?.credit) + parseFloat(call.price) * 100,
+      });
+  }
+  return helper.sendSuccess(req, res, {}, "balance updated successfully");
+});
 exports.getClaimedNumbers = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken } = req.body;
 
@@ -215,16 +238,16 @@ exports.getMessageDetails = catchAssyncFunc(async function (req, res, next) {
   // }
 });
 exports.inboundMessages = catchAssyncFunc(async function (req, res, next) {
-  const { phoneNumber, subAccountSid, subAuthToken } = req.body;
-  const client = twilio(subAccountSid, subAuthToken);
+  const { phoneNumber, accountSid, authToken } = req.body;
+  const client = twilio(accountSid, authToken);
   const messages = await client.messages.list({
-    to: phoneNumber, // Filter by recipient's phone number
-    direction: "inbound", // Filter for inbound messages
-    limit: 20, // Limit the number of messages to retrieve (adjust as needed)
+    // to: phoneNumber, // Filter by recipient's phone number
+    // direction: "inbound", // Filter for inbound messages
+    // limit: 20, // Limit the number of messages to retrieve (adjust as needed)
   });
 
   // Process the received messages or return them as needed
-  return helper.sendSuccess(req, res, messages, "success");
+  return helper.sendSuccess(req, res, { messagesData: messages }, "success");
 });
 exports.userMessages = catchAssyncFunc(async function (req, res, next) {
   const messages = await db("messages")
@@ -366,6 +389,14 @@ exports.listenCallStatus = catchAssyncFunc(async function (req, res, next) {
 
   res.set("Content-Type", "text/xml");
   res.send(client.toString());
+});
+exports.transferCall = catchAssyncFunc(async function (req, res, next) {
+  const callSid = req.body.callSid; // Extract CallSid from request
+
+  const twiml = new twilio.twiml.VoiceResponse();
+  twiml.play("Transferring your call...");
+  twiml.dial({ record: true }).sip("ahmada.sip.twilio.com");
+  res.status(200).send("Transfer initiated");
 });
 exports.getCallLogs = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken } = req.body;
