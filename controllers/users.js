@@ -47,6 +47,7 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
     personal_phone,
     password,
     google_app_password,
+    twilio_numbers,
   } = req.body;
   const is_exist_user = await db("users")
     .where("id", user_id)
@@ -87,6 +88,7 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
       personal_phone,
       password: password !== undefined && password !== "" && hashedPassword,
       avatar: req.files && publicUrl ? publicUrl : "",
+      twilio_numbers: JSON.stringify(twilio_numbers),
       google_app_password,
     };
   } else {
@@ -102,10 +104,11 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
       phone,
       personal_phone,
       avatar: req.files && publicUrl ? publicUrl : "",
+      twilio_numbers: JSON.stringify(twilio_numbers),
       google_app_password,
     };
   }
-
+  console.log(userParams);
   const is_user_updated = await db("users")
     .where("id", user_id)
     .update(userParams);

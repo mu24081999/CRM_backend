@@ -391,12 +391,18 @@ exports.listenCallStatus = catchAssyncFunc(async function (req, res, next) {
   res.send(client.toString());
 });
 exports.transferCall = catchAssyncFunc(async function (req, res, next) {
-  const callSid = req.body.callSid; // Extract CallSid from request
-
-  const twiml = new twilio.twiml.VoiceResponse();
-  twiml.play("Transferring your call...");
-  twiml.dial({ record: true }).sip("ahmada.sip.twilio.com");
-  res.status(200).send("Transfer initiated");
+  const { callSid, targetClient, accountSid, authToken } = req.body;
+  const client = twilio(accountSid, authToken);
+  client
+    .calls(callSid)
+    .update({
+      twiml: `<Response><Dial record="true"><Client>${targetClient}</Client></Dial></Response>`,
+    })
+    .then((call) => {
+      console.log("call: ", call);
+      res.send(call);
+    })
+    .catch((error) => res.status(500).send(error));
 });
 exports.getCallLogs = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken } = req.body;
@@ -429,14 +435,14 @@ exports.getCalls = catchAssyncFunc(async function (req, res, next) {
   console.log("🚀 ~ req.body:", req.body);
 });
 exports.getCallToken = catchAssyncFunc(async function (req, res, next) {
-  // const capability = new ClientCapability({
-  //   accountSid: config.TWILLIO_ACCOUNT_SID,
-  //   authToken: config.TWILLIO_AUTH_TOKEN,
+  //   const capability = new twilio.jwt.ClientCapability({
+  //     accountSid: accountSid,
+  //     authToken: authToken,
   // });
-  // capability.addScope(new ClientCapability.IncomingClientScope("joey"));
+  // capability.addScope(new twilio.jwt.ClientCapability.IncomingClientScope('identity'));
+  // capability.addScope(new twilio.jwt.ClientCapability.OutgoingClientScope({ applicationSid: twiml_app_sid }));
   // const token = capability.toJwt();
-  // res.set("Content-Type", "application/jwt");
-  // res.json({ token: token });
+  // res.send({ token: token });
   const {
     from_phone,
     accountSid,
@@ -446,8 +452,6 @@ exports.getCallToken = catchAssyncFunc(async function (req, res, next) {
     api_key_sid,
     api_key_secret,
   } = req.body;
-  console.log("🚀 ~ identity:", req.body);
-
   const accessToken = new AccessToken(
     // config.TWILLIO_ACCOUNT_SID,
     // accountSid,

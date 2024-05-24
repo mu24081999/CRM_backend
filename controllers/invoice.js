@@ -122,7 +122,7 @@ exports.addInvoice = catchAssyncFunc(async function (req, res, next) {
     subtotal,
     discount,
     extra_discount_percentage,
-    discount_total,
+    discount_total: discount_total !== undefined ? discount_total : 0,
     total,
     note_to_client,
     from_name,
