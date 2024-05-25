@@ -152,6 +152,10 @@ app.get("/v1/user/calling/voice.xml", (req, res) => {
     res.send(data);
   });
 });
+
+app.get("/v1/user/template/template.css", (req, res) => {
+  res.sendFile(path.join(__dirname, "template.css"));
+});
 // //Welcome Api
 // app.get("/", (req, res) => {
 //   res.send("Welcome ...");
