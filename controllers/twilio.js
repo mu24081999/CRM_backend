@@ -31,17 +31,22 @@ exports.updateBalanceAfterCall = catchAssyncFunc(async function (
   const { accountSid, authToken, user_id, callSid } = req.body;
   const client = twilio(accountSid, authToken);
   const call = await client.calls.list({ limit: 1 });
-  console.log("🚀 ~ call:", call);
+  console.log("🚀 ~ call:", call[0]);
 
-  if (call?.status === "completed" && call?.price !== null) {
+  if (call[0]?.status === "completed" && call[0]?.price !== null) {
     const is_exist_balance = await db("balance")
       .where("user_id", user_id)
       .first();
+    console.log(
+      parseFloat(is_exist_balance?.credit),
+      parseFloat(call[0]?.price) * 100
+    );
     const is_balance_updated = await db("balance")
       .where("user_id", user_id)
       .update({
         credit:
-          parseFloat(is_exist_balance?.credit) + parseFloat(call.price) * 100,
+          parseFloat(is_exist_balance?.credit) +
+          parseFloat(call[0].price) * 100,
       });
   }
   return helper.sendSuccess(req, res, {}, "balance updated successfully");
@@ -379,6 +384,15 @@ exports.listenCallStatus = catchAssyncFunc(async function (req, res, next) {
     // }
     const user = await db("users").where("phone", To).first();
     client.dial({ record: true }).client(user?.username);
+    const notificationData = await db("notifications").insert({
+      user_id: user.id,
+      notification: `A call comming from number ${From}`,
+      type: "incoming_call",
+    });
+    const notifications = await db("notifications")
+      .where("user_id", user.id)
+      .select();
+    io.to(user.socket_id).emit("trigger_notification", notifications);
   } else {
     const dial = client.dial({
       callerId: From,
@@ -403,6 +417,53 @@ exports.transferCall = catchAssyncFunc(async function (req, res, next) {
       res.send(call);
     })
     .catch((error) => res.status(500).send(error));
+});
+exports.pauseRecording = catchAssyncFunc(async function (req, res, next) {
+  // const { callSid, accountSid, authToken } = req.body;
+  // const client = twilio(accountSid, authToken);
+  // const recording = await client.calls(callSid).recordings.list({ limit: 1 });
+  // console.log("🚀 ~ recording:", recording);
+  // if (recording.length > 0) {
+  //   const recordingSid = recording[0].sid;
+  //   await client
+  //     .calls(callSid)
+  //     .recordings(recordingSid)
+  //     .update({ status: "paused" });
+  //   return helper.sendSuccess(req, res, {}, "Recording Paused.");
+  //   // res.status(200).send({ success: true, message: "Recording paused" });
+  // } else {
+  //   return helper.sendSuccess(req, res, {}, "No Recording Found.");
+  // }
+  const { callSid, accountSid, authToken } = req.body;
+  const client = twilio(accountSid, authToken);
+  client
+    .calls(callSid)
+    .update({
+      twiml: `<Response>
+      <StopRecording/></Response>`,
+    })
+    .then((call) => {
+      console.log("call: ", call);
+      res.send(call);
+    })
+    .catch((error) => res.status(500).send(error));
+});
+exports.resumeRecording = catchAssyncFunc(async function (req, res, next) {
+  const { callSid, accountSid, authToken } = req.body;
+  const client = twilio(accountSid, authToken);
+  const recording = await client.calls(callSid).recordings.list({ limit: 1 });
+  console.log("🚀 ~ recording:", recording);
+  if (recording.length > 0) {
+    const recordingSid = recording[0].sid;
+    await client
+      .calls(callSid)
+      .recordings(recordingSid)
+      .update({ status: "in-progress" });
+    return helper.sendSuccess(req, res, {}, "Recording Resumed.");
+    // res.status(200).send({ success: true, message: "Recording paused" });
+  } else {
+    return helper.sendSuccess(req, res, {}, "No Recording Found.");
+  }
 });
 exports.getCallLogs = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken } = req.body;

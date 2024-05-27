@@ -96,6 +96,22 @@ io.on("connection", (socket) => {
   //       throw new NEW_ERROR_RES(500, err);
   //     });
   // });
+  socket.on("push-notification", async (data) => {
+    const { user_id, notification, type } = data;
+    console.log("🚀 ~ socket.on ~ data:", data);
+    const insert_notificaiton = await db("notifications").insert({
+      user_id,
+      notification,
+      type,
+    });
+    const notifications = await db("notifications")
+      .where("user_id", user_id)
+      .orderBy("created_at", "desc")
+      .select();
+    const user = await db("users").where("id", user_id).first();
+    const socket_id = user?.socket_id;
+    io.to(socket_id).emit("trigger_notification", notifications);
+  });
   socket.on("send-message", async (data) => {
     const params = {
       from: data.from.phone, // Your Twilio phone number

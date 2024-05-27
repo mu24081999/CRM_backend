@@ -25,6 +25,8 @@ const {
   getAdminClaimedNumbers,
   transferCall,
   updateBalanceAfterCall,
+  pauseRecording,
+  resumeRecording,
 } = require("../controllers/twilio");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
@@ -94,6 +96,8 @@ router.post("/user-messages-logs", inboundMessages);
 router.post("/listen-call", listenCallStatus);
 router.post("/update-balance", updateBalanceAfterCall);
 router.post("/transfer-call", transferCall);
+router.post("/pause-recording", pauseRecording);
+router.post("/resume-recording", resumeRecording);
 router.post(
   "/get-call-token",
   IsAuth,
