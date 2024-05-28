@@ -107,7 +107,8 @@ io.on("connection", (socket) => {
     const notifications = await db("notifications")
       .where("user_id", user_id)
       .orderBy("created_at", "desc")
-      .select();
+      .select()
+      .limit(20);
     const user = await db("users").where("id", user_id).first();
     const socket_id = user?.socket_id;
     io.to(socket_id).emit("trigger_notification", notifications);

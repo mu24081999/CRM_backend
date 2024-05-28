@@ -1,433 +1,389 @@
 <html lang="en">
   <head>
-    <!-- Meta Tags -->
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Invoice Preview | Jampack - Admin CRM Dashboard Template</title>
-    <meta
-      name="description"
-      content="A modern CRM Dashboard Template with reusable and flexible components for your SaaS web applications by hencework. Based on Bootstrap."
-    />
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="favicon.ico" />
-    <link rel="icon" href="favicon.ico" type="image/x-icon" />
-
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Inline CSS Invoice Template</title>
+    <style>
+      body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+    </style>
   </head>
+
   <body>
-    <!-- Wrapper -->
-    <div
-      class="hk-wrapper"
-      data-layout="vertical"
-      data-layout-style="collapsed"
-      data-menu="light"
-      data-footer="simple"
-      data-hover="active"
-    >
-      <!-- Main Content -->
-      <div class="hk-pg-wrapper pb-0" style="padding: 0px; margin: 0px">
-        <div class="hk-pg-body py-0">
-          <div class="invoiceapp-wrap">
-            <div class="invoiceapp-content" style="padding: 0px; margin: 0px">
-              <div class="invoiceapp-detail-wrap">
-                <div class="invoice-body">
-                  <div class="nicescroll-bar">
-                    <div class="">
-                      <div class="template-invoice-wrap mt-xxl-5 p-md-5 p-3">
-                        <div class="row">
-                          <div class="col-lg-3 col-md-5 order-md-0 order-1">
-                            <img src="dist/img/logo-light.png" alt="logo" />
-                          </div>
-                          <div
-                            class="col-lg-4 offset-lg-5 offset-md-3 col-md-4 mb-md-0 mb-2"
-                          >
-                            <h2 class="d-flex justify-content-md-end mb-0">
-                              Invoice{{name}}
-                            </h2>
-                          </div>
-                        </div>
-                        <div class="row mt-4">
-                          <div class="col-md-4 order-md-0 order-1">
-                            <div class="address-wrap">
-                              <h6>Hencework</h6>
-                              <p>4747, Pearl Street</p>
-                              <p>Rainy day Drive</p>
-                              <p>Washington DC 42341</p>
-                              <p>jampack_01@hencework.com</p>
-                            </div>
-                          </div>
-                          <div class="col-md-5 offset-md-3 mb-4 mb-md-0">
-                            <div class="d-flex justify-content-md-end">
-                              <div class="text-md-end me-3">
-                                <div class="mb-1">Invoice No*</div>
-                                <div class="mb-1">Invoice Date*</div>
-                                <div class="mb-1">Due Date*</div>
-                                <div>Customer No</div>
-                              </div>
-                              <div class="text-dark">
-                                <div class="mb-1">0001</div>
-                                <div class="mb-1">24/08/2020</div>
-                                <div class="mb-1">Due on receipt</div>
-                                <div>321456</div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="separator separator-light"></div>
-                        <div class="row">
-                          <div class="col-md-3">
-                            <h6 class="text-uppercase fs-7 mb-2">Billed To</h6>
-                            <div class="Billto-wrap">
-                              <h6>Supernova consultant</h6>
-                              <p>4747, Pearl Street</p>
-                              <p>Rainy day Drive</p>
-                              <p>Washington DC 42341</p>
-                              <p>jampack_01@hencework.com</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="table-wrap mt-6">
-                          <div class="table-responsive">
-                            <table class="table table-bordered">
-                              <thead class="thead-primary">
-                                <tr>
-                                  <th>Item</th>
-                                  <th class="text-end">Quantity</th>
-                                  <th class="text-end">Price</th>
-                                  <th class="text-end">Discount</th>
-                                  <th class="text-end">Amount</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <td class="w-70">
-                                    <h6>Redesiging of agencyclick.com</h6>
-                                    <p>
-                                      This is my project description. if the
-                                      line do not filt like the sentence is to
-                                      big the area will start getting bigger
-                                    </p>
-                                  </td>
-                                  <td class="text-end text-dark">8</td>
-                                  <td class="w-15 text-end text-dark">60.00</td>
-                                  <td class="text-end text-dark">5%</td>
-                                  <td class="w-20 text-end text-dark">
-                                    $420.5
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="w-70">
-                                    <h6>Re-branding</h6>
-                                  </td>
-                                  <td class="text-end text-dark">1</td>
-                                  <td class="w-15 text-end text-dark">
-                                    150.00
-                                  </td>
-                                  <td class="text-end text-dark">0%</td>
-                                  <td class="w-20 text-end text-dark">
-                                    $140.5
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="w-70">
-                                    <h6>Social media marketing</h6>
-                                  </td>
-                                  <td class="text-end text-dark">20</td>
-                                  <td class="w-15 text-end text-dark">30.00</td>
-                                  <td class="text-end text-dark">5%</td>
-                                  <td class="w-20 text-end text-dark">
-                                    $540.5
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td
-                                    colspan="2"
-                                    rowspan="4"
-                                    class="border-0"
-                                  ></td>
-                                  <td colspan="2">Subtotal</td>
-                                  <td class="text-end text-dark">$1101.0</td>
-                                </tr>
-                                <tr>
-                                  <td colspan="2">Item Discount</td>
-                                  <td class="text-end text-dark">$10.0</td>
-                                </tr>
-                                <tr>
-                                  <td colspan="2">Extra Discount</td>
-                                  <td class="text-end text-dark">$0</td>
-                                </tr>
-                                <tr class="border-0">
-                                  <td colspan="2" class="text-dark border">
-                                    Total
-                                  </td>
-                                  <td class="text-end text-dark border">
-                                    $1101.0
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
-                        <div class="row mt-3">
-                          <div class="col-lg-5">
-                            <h6>Note to client</h6>
-                            <p>
-                              thank you for choosing Hencework for design
-                              services. If you need more assistance in future
-                              here is your discount coupon for future jobs. Just
-                              call us and mention the coupon code:
-                              "10-springhnc"
-                            </p>
-                          </div>
-                          <div class="col-lg-7 text-lg-end mt-lg-0 mt-3">
-                            <h5 class="mt-lg-7">Katherine Zeta Jones</h5>
-                            <p>Co-founder, Hencework</p>
-                          </div>
-                        </div>
-                        <div class="separator separator-light mt-7"></div>
-                        <div class="row">
-                          <div class="col-md-12">
-                            <h6>Terms & Conditions</h6>
-                            <ol class="ps-3">
-                              <li>
-                                Please pay within 15 days from the date of
-                                invoice, overdue interest @ 14% will be charged
-                                on delayed payments.
-                              </li>
-                              <li>
-                                Please quote invoice number when remitting
-                                funds.
-                              </li>
-                            </ol>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+    <div style="padding: 10px">
+      <table style="width: 100%">
+        <tr style="width: 100%">
+          <td style="width: 50%">
+            <label style="font-size: 40px; font-weight: bold">INV-001</label>
+          </td>
+          <td style="width: 50%; text-align: right">
+            <img
+              style="max-width: 200px"
+              src="https://bcassetcdn.com/public/blog/wp-content/uploads/2021/11/10190851/Louis-Vuitton-1.png"
+            />
+          </td>
+        </tr>
+      </table>
+      <table style="width: 100%; margin: 10px 0px">
+        <tr style="width: 100%">
+          <td style="width: 33%; line-height: 25px">
+            <label>From</label><br />
+            <label style="font-weight: bold; font-size: 20px">Business Name</label>
+            <br />
+            Address Line 1
+            <br />
+            Address Line 2
+            <br />
+          </td>
+          <td style="width: 33%; line-height: 25px">
+            <label>To</label><br />
+            <label style="font-weight: bold; font-size: 20px">Business Name</label><br
+            />
+            Address Line 1
+            <br />
+            Address Line 2
+            <br />
+          </td>
+          <td style="width: 33%; margin: auto">
+            <span
+              style="
+                background: #e1e1e1;
+                font-size: 30px;
+                font-weight: bold;
+                padding: 10px;
+                color: #343a40;
+              "
+            >
+              DUE/PAID</span>
+            <span>27 Jul, 2024</span>
+          </td>
+        </tr>
+      </table>
+      <table style="width: 100%">
+        <tr style="background: teal; color: white; border-radius: 20px">
+          <th style="padding: 10px; border-top-left-radius: 10px">Item</th>
+          <th>Description</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Discount</th>
+          <th style="border-top-right-radius: 10px">Amount</th>
+        </tr>
+        <tr>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            Product 1
+          </td>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            100
+          </td>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            1
+          </td>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            0.00
+          </td>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            100
+          </td>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            100
+          </td>
+        </tr>
+        <tr>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            Product 1
+          </td>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            100
+          </td>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            1
+          </td>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            0.00
+          </td>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            100
+          </td>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            100
+          </td>
+        </tr>
+        <tr>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            Product 1
+          </td>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            100
+          </td>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            1
+          </td>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            0.00
+          </td>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            100
+          </td>
+          <td
+            style="
+              text-align: center;
+              background-color: rgba(128, 128, 128, 0.194);
+              padding-top: 0.5%;
+              padding-bottom: 0.5%;
+            "
+          >
+            100
+          </td>
+        </tr>
+      </table>
+      <div
+        style="
+          width: 50%;
+          display: flex;
+          float: inline-end;
+          justify-content: end;
+          padding-top: 1%;
+        "
+      >
+        <div style="width: 40%">
+          <div>
+            <div
+              style="
+                padding-inline: 6%;
+                padding-top: 4%;
+                padding-bottom: 4%;
+                color: grey;
+                border: 1px solid rgb(174, 169, 169);
+              "
+            >
+              Subtotal
+            </div>
+            <div
+              style="
+                padding-inline: 6%;
+                padding-top: 4%;
+                padding-bottom: 4%;
+                color: grey;
+                border: 1px solid rgb(174, 169, 169);
+              "
+            >
+              Item Discount
+            </div>
+            <div
+              style="
+                padding-inline: 6%;
+                padding-top: 4%;
+                padding-bottom: 4%;
+                color: grey;
+                border: 1px solid rgb(174, 169, 169);
+              "
+            >
+              Extra Discount
+            </div>
+            <div
+              style="
+                padding-inline: 6%;
+                padding-top: 4%;
+                padding-bottom: 4%;
+                color: grey;
+                border: 1px solid rgb(174, 169, 169);
+              "
+            >
+              Total
             </div>
           </div>
         </div>
-        <!-- /Page Body -->
+        <div style="width: 16%; background-color: rgba(128, 128, 128, 0.194)">
+          <div
+            style="
+              padding-inline: 6%;
+              padding-top: 10%;
+              padding-bottom: 10%;
+              color: black;
+              border: 1px solid rgb(174, 169, 169);
+            "
+          >
+            20.00
+          </div>
+          <div
+            style="
+              padding-inline: 6%;
+              padding-top: 10%;
+              padding-bottom: 10%;
+              color: black;
+              border: 1px solid rgb(174, 169, 169);
+            "
+          >
+            20.00
+          </div>
+          <div
+            style="
+              padding-inline: 6%;
+              padding-top: 10%;
+              padding-bottom: 10%;
+              color: black;
+              border: 1px solid rgb(174, 169, 169);
+            "
+          >
+            20.00
+          </div>
+          <div
+            style="
+              padding-inline: 6%;
+              padding-top: 10%;
+              padding-bottom: 10%;
+              color: black;
+              border: 1px solid rgb(174, 169, 169);
+            "
+          >
+            20.00
+          </div>
+        </div>
       </div>
-      <!-- /Main Content -->
+      <table style="width: 100%; position: fixed; bottom: 0">
+        <tr style="width: 100%">
+          <td style="width: 50%">
+            <div>Notes:</div>
+            <div>More Information</div>
+          </td>
+          <td
+            style="
+              width: 50%;
+              background-color: whitesmoke;
+              text-align: center;
+              padding: 10px;
+            "
+          >
+            <label
+              style="
+                font-size: 30px;
+                color: #e1e1e1;
+                text-transform: uppercase;
+                margin: auto;
+              "
+            >Signature</label>
+          </td>
+        </tr>
+      </table>
     </div>
-    <!-- /Wrapper -->
   </body>
 </html>
-{{! <div
-  style="max-width: 800px;margin: auto;padding: 16px;border: 1px solid #eee;font-size: 16px;line-height: 24px;font-family: 'Inter', sans-serif;color: #555;background-color: #F9FAFC;"
->
-  <table style="font-size: 12px; line-height: 20px;">
-    <thead>
-      <tr>
-        <td style="padding: 0 16px 18px 16px;">
-          <h1
-            style="color: #1A1C21;font-size: 18px;font-style: normal;font-weight: 600;line-height: normal;"
-          >
-            Alvish Baldha (Courier)</h1>
-          <p>hello@email.com</p>
-          <p>+44 7766002333</p>
-        </td>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>
-          <table
-            style="background-color: #FFF; padding: 20px 16px; border: 1px solid #D7DAE0;width: 100%; border-radius: 12px;font-size: 12px; line-height: 20px; table-layout: fixed;"
-          >
-            <tbody>
-              <tr>
-                <td
-                  style="vertical-align: top; width: 30%; padding-right: 20px;padding-bottom: 35px;"
-                >
-                  <p style="font-weight: 700; color: #1A1C21;">Client Name</p>
-                  <p style="color: #5E6470;">Business address City, Country</p>
-                  <p style="color: #5E6470;">email@company.com</p>
-                </td>
-                <td
-                  style="vertical-align: top; width: 35%; padding-right: 20px;padding-bottom: 35px;"
-                >
-                  <p style="font-weight: 700; color: #1A1C21;">Pick-up</p>
-                  <p style="color: #5E6470;">1 Hight street, London, E1 7QL Uk</p>
-
-                  <p style="font-weight: 700; color: #1A1C21;">Drop-off</p>
-                  <p style="color: #5E6470;">1 Hight street, London, E1 7QL Uk</p>
-                </td>
-                <td style="vertical-align: top;padding-bottom: 35px;">
-                  <table
-                    style="table-layout: fixed;width:-webkit-fill-available;"
-                  >
-                    <tr>
-                      <th style="text-align: left; color: #1A1C21;">Job ID</th>
-                      <td style="text-align: right;">123567</td>
-                    </tr>
-                    <tr>
-                      <th style="text-align: left; color: #1A1C21;">Job date</th>
-                      <td style="text-align: right;">14/12/2020</td>
-                    </tr>
-                    <tr>
-                      <th
-                        style="text-align: left; color: #1A1C21;"
-                      >Distance</th>
-                      <td style="text-align: right;">1.568 miles</td>
-                    </tr>
-                    <tr>
-                      <th style="text-align: left; color: #1A1C21;">Pick-up time</th>
-                      <td style="text-align: right;">19:58</td>
-                    </tr>
-                    <tr>
-                      <th style="text-align: left; color: #1A1C21;">Time
-                        delivered</th>
-                      <td style="text-align: right;">20:58</td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding-bottom: 13px;">
-                  <p style="color: #5E6470;">Service </p>
-                  <p style="font-weight: 700; color: #1A1C21;">Delivery Service</p>
-                </td>
-                <td style="text-align: center; padding-bottom: 13px;">
-                  <p style="color: #5E6470;">Invoice number</p>
-                  <p style="font-weight: 700; color: #1A1C21;">#AB2324-01</p>
-                </td>
-                <td style="text-align: end; padding-bottom: 13px;">
-                  <p style="color: #5E6470;">Invoice date</p>
-                  <p style="font-weight: 700; color: #1A1C21;">01 Aug, 2023</p>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="3">
-                  <table style="width: 100%;border-spacing: 0;">
-                    <thead>
-                      <tr style="text-transform: uppercase;">
-                        <td
-                          style="padding: 8px 0; border-block:1px solid #D7DAE0;"
-                        >Item Detail</td>
-                        <td
-                          style="padding: 8px 0; border-block:1px solid #D7DAE0; width: 40px;"
-                        >Qty
-                        </td>
-                        <td
-                          style="padding: 8px 0; border-block:1px solid #D7DAE0; text-align: end; width: 100px;"
-                        >
-                          Rate</td>
-                        <td
-                          style="padding: 8px 0; border-block:1px solid #D7DAE0; text-align: end; width: 120px;"
-                        >
-                          Amount</td>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td style="padding-block: 12px;">
-                          <p style="font-weight: 700; color: #1A1C21;">Drops</p>
-                          <p style="color: #5E6470;">On-demand delivery</p>
-                        </td>
-                        <td style="padding-block: 12px;">
-                          <p style="font-weight: 700; color: #1A1C21;">1</p>
-                        </td>
-                        <td style="padding-block: 12px; text-align: end;">
-                          <p style="font-weight: 700; color: #1A1C21;">£5.00</p>
-                        </td>
-                        <td style="padding-block: 12px; text-align: end;">
-                          <p style="font-weight: 700; color: #1A1C21;">£5.00</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding-block: 12px;">
-                          <p style="font-weight: 700; color: #1A1C21;">Hours</p>
-                          <p style="color: #5E6470;">Shift delivery service</p>
-                        </td>
-                        <td style="padding-block: 12px;">
-                          <p style="font-weight: 700; color: #1A1C21;">0</p>
-                        </td>
-                        <td style="padding-block: 12px; text-align: end;">
-                          <p style="font-weight: 700; color: #1A1C21;">£0.00</p>
-                        </td>
-                        <td style="padding-block: 12px; text-align: end;">
-                          <p style="font-weight: 700; color: #1A1C21;">£0.00</p>
-                        </td>
-                      </tr>
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <td
-                          style="padding: 12px 0; border-top:1px solid #D7DAE0;"
-                        ></td>
-                        <td style="border-top:1px solid #D7DAE0;" colspan="3">
-                          <table style="width: 100%;border-spacing: 0;">
-                            <tbody>
-                              <tr>
-                                <th
-                                  style="padding-top: 12px;text-align: start; color: #1A1C21;"
-                                >
-                                  Subtotal</th>
-                                <td
-                                  style="padding-top: 12px;text-align: end; color: #1A1C21;"
-                                >
-                                  £5.00</td>
-                              </tr>
-                              <tr>
-                                <th
-                                  style="padding: 12px 0;text-align: start; color: #1A1C21;"
-                                >
-                                  VAT in items (0%) (1)</th>
-                                <td
-                                  style="padding: 12px 0;text-align: end; color: #1A1C21;"
-                                >
-                                  £5.00</td>
-                              </tr>
-                            </tbody>
-                            <tfoot>
-                              <tr>
-                                <th
-                                  style="padding: 12px 0 30px 0;text-align: start; color: #1A1C21;border-top:1px solid #D7DAE0;"
-                                >
-                                  Total Price (2)</th>
-                                <th
-                                  style="padding: 12px 0 30px 0;text-align: end; color: #1A1C21;border-top:1px solid #D7DAE0;"
-                                >
-                                  £5.00</th>
-                              </tr>
-                            </tfoot>
-                          </table>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <p style="color: #1A1C21;">(1) VAT non applicable</p>
-                          <p style="color: #1A1C21;">(2) Price includes the
-                            remuneration for MealShift Services</p>
-                        </td>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-      </tr>
-    </tbody>
-    <tfoot>
-      <tr>
-        <td style="padding-top: 30px;">
-          <p style="display: flex; gap: 0 13px;"><span
-              style="color: #1A1C21;font-weight: 700;"
-            >MealShift Ltd</span><span>1 Assam Street, London - E1 7QL</span><span
-            >Registration number:12793366</span></p>
-          <p style="color: #1A1C21;">Any questions, contact customer service at
-            <a
-              href="mailto:support@mealshift.co.uk"
-              style="color: #000;"
-            >support@mealshift.co.uk</a>.</p>
-        </td>
-      </tr>
-    </tfoot>
-  </table>
-</div> }}
