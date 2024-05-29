@@ -5,7 +5,10 @@ const fs = require("fs");
 const moment = require("moment");
 
 exports.getBoards = catchAssyncFunc(async function (req, res, next) {
-  const boards = await db("boards").where("user_id", req.user.id).select();
+  const boards = await db("boards")
+    .where("user_id", req.user.id)
+    .orderBy("created_at", "desc")
+    .select();
   return helper.sendSuccess(
     req,
     res,
@@ -90,8 +93,16 @@ exports.deleteBoard = catchAssyncFunc(async function (req, res, next) {
 //   }
 // });
 exports.addBoard = catchAssyncFunc(async function (req, res, next) {
-  const { name, visibility, avatar_text, avatar_color, team_members } =
-    req.body;
+  const {
+    name,
+    visibility,
+    avatar_text,
+    avatar_color,
+    team_members,
+    pipeline_status_array,
+  } = req.body;
+  console.log("🚀 ~ team_members:", team_members);
+  console.log("🚀 ~ pipeline_status_array:", pipeline_status_array);
   let publicUrl;
   if (req.files) {
     const { image } = req.files;
@@ -112,8 +123,9 @@ exports.addBoard = catchAssyncFunc(async function (req, res, next) {
     visibility,
     avatar_text,
     avatar_color,
-    team_members: { team: JSON.parse(team_members) },
+    team_members: { team: team_members },
     image: req.files ? publicUrl : "",
+    pipeline_status_array: { status_array: pipeline_status_array },
   });
   if (!is_record_inserted) {
     return helper.sendError(
@@ -123,7 +135,7 @@ exports.addBoard = catchAssyncFunc(async function (req, res, next) {
       500
     );
   }
-  return helper.sendSuccess(req, res, {}, "Board successfully created.");
+  return helper.sendSuccess(req, res, {}, "Pipeline successfully created.");
 });
 
 exports.updateBoard = catchAssyncFunc(async function (req, res, next) {
