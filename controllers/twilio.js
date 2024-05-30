@@ -406,6 +406,10 @@ exports.listenCallStatus = catchAssyncFunc(async function (req, res, next) {
 });
 exports.transferCall = catchAssyncFunc(async function (req, res, next) {
   const { callSid, targetClient, accountSid, authToken } = req.body;
+  // Basic input validation
+  if (!callSid || !targetClient || !accountSid || !authToken) {
+    return res.status(400).send({ error: "Missing required parameters" });
+  }
   const client = twilio(accountSid, authToken);
   client
     .calls(callSid)
@@ -417,6 +421,28 @@ exports.transferCall = catchAssyncFunc(async function (req, res, next) {
       res.send(call);
     })
     .catch((error) => res.status(500).send(error));
+});
+exports.addConfressCall = catchAssyncFunc(async function (req, res, next) {
+  const { callSid, targetClient, accountSid, authToken } = req.body;
+  // Basic input validation
+  if (!callSid || !targetClient || !accountSid || !authToken) {
+    return res.status(400).send({ error: "Missing required parameters" });
+  }
+  const client = twilio(accountSid, authToken);
+
+  // Update the call to move it to a conference
+  const call = await client.calls(callSid).update({
+    twiml: `<Response><Dial><Conference>${targetClient}-conference</Conference></Dial></Response>`,
+  });
+
+  console.log("Call transferred to conference:", call);
+
+  // Add the new participant to the conference
+  await client.conferences(`${targetClient}-conference`).participants.create({
+    to: `client:${targetClient}`,
+    from: call.to,
+  });
+  res.send(call);
 });
 exports.pauseRecording = catchAssyncFunc(async function (req, res, next) {
   // const { callSid, accountSid, authToken } = req.body;
