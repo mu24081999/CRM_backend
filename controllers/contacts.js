@@ -395,6 +395,43 @@ exports.updateContact = catchAsyncFunc(async (req, res, next) => {
   }
   return helper.sendSuccess(req, res, {}, "Contact successfully updated.");
 });
+exports.updateBulkContact = catchAsyncFunc(async (req, res, next) => {
+  const schema = Joi.object({
+    updates: Joi.array().optional(),
+  });
+
+  const { error, value } = schema.validate(req.body);
+  if (error) {
+    return helper.sendError(req, res, error, 403);
+  }
+  const ids = updates.map((update) => update.id);
+  const cases = {
+    board_status: knex.raw("CASE ?? END", [
+      knex.raw(
+        updates.map((update) => `WHEN ?? THEN ?`).join(" "),
+        updates.flatMap((update) => [`id`, update.id, update.board_status])
+      ),
+    ]),
+  };
+  const query = db("contacts")
+    .update({
+      name: cases.name,
+      age: cases.age,
+    })
+    .whereIn("id", ids);
+
+  const is_record_updated = await query;
+
+  if (!is_record_updated) {
+    return helper.sendError(
+      req,
+      res,
+      "Something went wrong, while creating user.",
+      500
+    );
+  }
+  return helper.sendSuccess(req, res, {}, "Contact successfully updated.");
+});
 
 exports.deleteContact = catchAsyncFunc(async (req, res, next) => {
   const { contact_id } = req.params;
@@ -431,7 +468,6 @@ exports.getContacts = catchAsyncFunc(async (req, res, next) => {
     .where("user_id", req.user.id)
     .orderBy("created_at", "desc")
     .select();
-
   if (!contacts) {
     return helper.sendError(
       req,
@@ -444,6 +480,11 @@ exports.getContacts = catchAsyncFunc(async (req, res, next) => {
 });
 exports.getContactsByBoard = catchAsyncFunc(async (req, res, next) => {
   const { board_id } = req.params;
+  console.log(
+    "🚀 ~ exports.getContactsByBoard=catchAsyncFunc ~ board_id:",
+    board_id
+  );
+
   const contacts = await db("contacts")
     .where("board_id", board_id)
     .orderBy("created_at", "desc")
