@@ -9,6 +9,8 @@ const {
   uploadFile,
   getContactsByBoard,
   permanentDeleteContact,
+  updateBulkContact,
+  addBulkContact,
 } = require("../controllers/contacts");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
@@ -16,6 +18,12 @@ router.post(
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   addContact
+);
+router.post(
+  "/post-bulk-contacts",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  addBulkContact
 );
 router.get(
   "/get-contacts",
@@ -53,6 +61,12 @@ router.put(
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   updateContact
+);
+router.put(
+  "/contact-bulk-update",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  updateBulkContact
 );
 
 module.exports = router;

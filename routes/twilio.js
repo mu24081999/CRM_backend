@@ -28,6 +28,7 @@ const {
   pauseRecording,
   resumeRecording,
   addConfressCall,
+  sendSMSBulk,
 } = require("../controllers/twilio");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
@@ -89,6 +90,12 @@ router.get(
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   userMessages
+);
+router.post(
+  "/send-sms-bulk",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  sendSMSBulk
 );
 router.post("/recieve-sms", recieveSMS);
 router.post("/listen-sms-status", listenSMS);

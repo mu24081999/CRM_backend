@@ -605,3 +605,51 @@ exports.makeCall = catchAssyncFunc(async function (req, res, next) {
     })
     .catch((error) => helper.sendError(req, res, JSON.stringify(error), 500));
 });
+exports.sendSMSBulk = catchAssyncFunc(async function (req, res, next) {
+  const { from, to, message } = req.body;
+  const e164Regex = /^\+[1-9]\d{1,14}$/;
+
+  const client = twilio(from?.accountSid, from?.authToken);
+  if (Array.isArray(to)) {
+    const is_sent_all = await Promise.all(
+      to?.map(async (contact) => {
+        return new Promise(async (resolve, reject) => {
+          if (contact?.phone && e164Regex.test(contact?.phone)) {
+            const params = {
+              from: from.phone, // Your Twilio phone number
+              to: contact.phone, // Recipient's phone number
+              // sendAt: new Date(Date.UTC(2021, 10, 30, 20, 36, 27)),
+              // scheduleType: 'fixed'
+              body: message, // Message content
+              // mediaUrl: [
+              //   "https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg",
+              //   "https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg",
+              // ],
+            };
+            const is_sent = await client.messages.create(params);
+            console.log("🚀 ~ returnnewPromise ~ is_sent:", is_sent);
+            if (is_sent) {
+              const is_added_to_database = await db("messages").insert({
+                user_id: from?.user_id,
+                from_name: from?.name,
+                to_name: contact?.firstname + "" + contact?.lastname,
+                from_phone: from?.phone,
+                to_phone: contact?.phone,
+                message: message,
+                account_sid: from?.accountSid,
+                sid: is_sent?.sid,
+                price: is_sent?.price,
+                uri: is_sent?.uri,
+                num_media: is_sent?.numMedia,
+              });
+              resolve(true);
+            } else {
+              reject(true);
+            }
+          }
+        });
+      })
+    );
+    return helper.sendSuccess(req, res, {}, "SMS sent.");
+  }
+});

@@ -218,6 +218,31 @@ exports.addContact = catchAsyncFunc(async (req, res, next) => {
   }
   return helper.sendSuccess(req, res, {}, "Contact successfully created.");
 });
+exports.addBulkContact = catchAsyncFunc(async (req, res, next) => {
+  const { contactsArray, user_id } = req.body;
+  // Filter the array to include only the desired properties (name and email)
+  const filteredContacts = contactsArray.map((contact) => ({
+    user_id,
+    firstname: contact.firstname,
+    lastname: contact.lastname,
+    phone: contact.phone,
+    state: contact.state,
+    city: contact.city,
+    biography: contact.biography,
+    country: contact.country,
+    email: contact.email,
+  }));
+  const is_record_inserted = await db("contacts").insert(filteredContacts);
+  if (!is_record_inserted) {
+    return helper.sendError(
+      req,
+      res,
+      "Something went wrong, while creating user.",
+      500
+    );
+  }
+  return helper.sendSuccess(req, res, {}, "Contacts successfully created.");
+});
 
 exports.readContact = catchAsyncFunc(async (req, res, next) => {
   const { contact_id } = req.params;
@@ -397,28 +422,54 @@ exports.updateContact = catchAsyncFunc(async (req, res, next) => {
 });
 exports.updateBulkContact = catchAsyncFunc(async (req, res, next) => {
   const schema = Joi.object({
-    updates: Joi.array().optional(),
+    updates: Joi.array().required(),
+    modify_key: Joi.string().required(),
   });
 
   const { error, value } = schema.validate(req.body);
   if (error) {
     return helper.sendError(req, res, error, 403);
   }
+  const { updates, modify_key } = req.body;
+  console.log(
+    "🚀 ~ exports.updateBulkContact=catchAsyncFunc ~ req.body:",
+    req.body
+  );
   const ids = updates.map((update) => update.id);
   const cases = {
-    board_status: knex.raw("CASE ?? END", [
-      knex.raw(
-        updates.map((update) => `WHEN ?? THEN ?`).join(" "),
-        updates.flatMap((update) => [`id`, update.id, update.board_status])
-      ),
-    ]),
+    board_id: db.raw(
+      `CASE ${updates
+        .map((update) => `WHEN id = ? THEN ?`)
+        .join(" ")} ELSE board_id END`,
+      updates.flatMap((update) => [update.id, update.board_id])
+    ),
+    status: db.raw(
+      `CASE ${updates
+        .map((update) => `WHEN id = ? THEN ?`)
+        .join(" ")} ELSE status END`,
+      updates.flatMap((update) => [update.id, update.status])
+    ),
   };
-  const query = db("contacts")
-    .update({
-      name: cases.name,
-      age: cases.age,
-    })
-    .whereIn("id", ids);
+  var updateParams = {};
+  switch (modify_key) {
+    case "board_id":
+      updateParams = {
+        board_id: cases.board_id,
+      };
+      break;
+    case "status":
+      updateParams = {
+        status: cases.status,
+      };
+      break;
+    default:
+      break;
+  }
+  console.log(
+    "🚀 ~ exports.updateBulkContact=catchAsyncFunc ~ updateParams:",
+    updateParams
+  );
+  const query = db("contacts").update(updateParams).whereIn("id", ids);
 
   const is_record_updated = await query;
 
