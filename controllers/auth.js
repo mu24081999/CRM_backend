@@ -242,7 +242,9 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     }
   }
 });
-
+exports.googleCallback = catchAssyncFunc(async (req, res, next) => {
+  console.log(req.body);
+});
 exports.signIn = catchAssyncFunc(async function (req, res, next) {
   const schema = Joi.object({
     username: Joi.string().required(),

@@ -8,10 +8,16 @@ const {
   resetPassword,
   logout,
   emailVerification,
+  googleCallback,
 } = require("../controllers/auth");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post("/signup_user", signUp);
 router.post("/siginin_user", signIn);
+router.post("/google/callback", googleCallback);
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
 router.post(
   "/signout_user",
   IsAuth,

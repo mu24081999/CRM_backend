@@ -16,6 +16,8 @@ const dbConnection = require("./config/database");
 const multer = require("multer");
 const twilio = require("twilio");
 const { Storage } = require("@google-cloud/storage");
+global.passport = require("passport");
+var GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 //Google Cloud Storage
 global.storage = new Storage({
@@ -87,10 +89,36 @@ app.use(
   session({
     secret: config.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
   })
 );
 
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID:
+        "73457248543-ajrfqvu4dia9uk53c218j68jc34c7a44.apps.googleusercontent.com",
+      clientSecret: "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",
+      callbackURL: "https://desktopcrm.com/auth/google/callback",
+    },
+    function (accessToken, refreshToken, profile, cb) {
+      console.log(profile);
+      // User.findOrCreate({ googleId: profile.id }, function (err, user) {
+      //   return cb(err, user);
+      // });
+    }
+  )
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((obj, done) => {
+  done(null, obj);
+});
 //Allow requests from the client
 // app.use(
 //   cors({
