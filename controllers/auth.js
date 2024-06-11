@@ -243,7 +243,21 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
   }
 });
 exports.googleCallback = catchAssyncFunc(async (req, res, next) => {
-  console.log(req.body);
+  const { code, scope, authuser, prompt } = req.body;
+  console.log(
+    "🚀 ~ exports.googleCallback=catchAssyncFunc ~ req.body:",
+    req.body
+  );
+
+  // Use the code to get tokens and authenticate the user
+  passport.authenticate("google", { session: false }, (err, user, info) => {
+    if (err || !user) {
+      return res
+        .status(400)
+        .json({ message: "Authentication failed", error: err });
+    }
+    res.json({ message: "Authentication successful", user });
+  })(req, res, next);
 });
 exports.signIn = catchAssyncFunc(async function (req, res, next) {
   const schema = Joi.object({

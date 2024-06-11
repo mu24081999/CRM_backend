@@ -97,9 +97,9 @@ passport.use(
   new GoogleStrategy(
     {
       clientID:
-        "73457248543-ajrfqvu4dia9uk53c218j68jc34c7a44.apps.googleusercontent.com",
-      clientSecret: "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",
-      callbackURL: "https://desktopcrm.com/auth/google/callback",
+        "73457248543-vn1bjkn98qogdcljl35job6ek20e82qt.apps.googleusercontent.com",
+      clientSecret: "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",
+      callbackURL: "https://app.desktopcrm.com/auth/google/callback",
     },
     function (accessToken, refreshToken, profile, cb) {
       console.log(profile);
