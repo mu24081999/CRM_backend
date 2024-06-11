@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const passport = require("passport");
 const {
   signUp,
   signIn,
@@ -16,7 +17,9 @@ router.post("/siginin_user", signIn);
 router.get("/google/callback", googleCallback);
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+  })
 );
 router.post(
   "/signout_user",
