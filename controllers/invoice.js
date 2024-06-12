@@ -70,9 +70,7 @@ exports.readInvoice = catchAssyncFunc(async function (req, res, next) {
 });
 exports.deleteInvoice = catchAssyncFunc(async function (req, res, next) {
   const { invoice_id } = req.params;
-  const is_deleted = await db("invoices").where("id", invoice_id).update({
-    activity: "blocked",
-  });
+  const is_deleted = await db("invoices").where("id", invoice_id).del();
   return helper.sendSuccess(req, res, {}, "Invoice deleted successfully.");
 });
 exports.updateActivity = catchAssyncFunc(async function (req, res, next) {

@@ -494,14 +494,35 @@ exports.resumeRecording = catchAssyncFunc(async function (req, res, next) {
 exports.getCallLogs = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken } = req.body;
   const client = twilio(accountSid, authToken);
-  const calls = await client.calls.list();
-  return helper.sendSuccess(req, res, { callsData: calls }, "success");
+  const calls = await client.calls.list({ limit: 100 });
+  console.log("🚀 ~ calls:", calls);
+  const allRecordings = await client.recordings.list({ limit: 100 });
+  console.log("🚀 ~ allRecordings:", allRecordings);
+
+  // Iterate through each call
+  const recordingsMap = {};
+  for (const recording of allRecordings) {
+    if (!recordingsMap[recording.callSid]) {
+      recordingsMap[recording.callSid] = [];
+    }
+    recordingsMap[recording.callSid].push(recording);
+  }
+  const history = [];
+  // Add recordings to the call objects
+  for (const call of calls) {
+    const recordings = recordingsMap[call.sid] || [];
+    history.push({
+      call: call,
+      recording: recordings?.length > 0 ? recordings[0] : {},
+    });
+  }
+  return helper.sendSuccess(req, res, { callsData: history }, "success");
 });
 exports.getCallRecordings = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken } = req.body;
   console.log("recordings", accountSid, authToken);
   const client = twilio(accountSid, authToken);
-  const recordings = await client.recordings.list();
+  const recordings = await client.recordings.list({ limit: 50 });
   return helper.sendSuccess(
     req,
     res,

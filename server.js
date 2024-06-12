@@ -224,6 +224,7 @@ global.io = new Server(server, {
       "https://www.desktopcrm.com",
       "https://app.desktopcrm.com",
       "https://localhost:3000",
+      "http://localhost:3000",
     ],
     // origin: "*",
     // origin: "http://34.72.165.103",

@@ -6,6 +6,7 @@ const {
   softDeleteUser,
   updateStatus,
   updateUser,
+  permanentDeleteUser,
 } = require("../controllers/users");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.get(
@@ -25,6 +26,12 @@ router.delete(
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   softDeleteUser
+);
+router.delete(
+  "/permanent-delete-user/:user_id",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  permanentDeleteUser
 );
 router.put(
   "/update-user-status/:user_id",

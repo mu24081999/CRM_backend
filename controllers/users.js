@@ -26,6 +26,11 @@ exports.softDeleteUser = catchAssyncFunc(async function (req, res, next) {
   });
   return helper.sendSuccess(req, res, {}, "User Updated!");
 });
+exports.permanentDeleteUser = catchAssyncFunc(async function (req, res, next) {
+  const { user_id } = req.params;
+  const user = await db("users").where("id", user_id).del();
+  return helper.sendSuccess(req, res, {}, "User Deleted successfully!");
+});
 exports.updateStatus = catchAssyncFunc(async function (req, res, next) {
   const { user_id } = req.params;
   const user = await db("users").where("id", user_id).update({

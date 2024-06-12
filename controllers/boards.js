@@ -33,9 +33,10 @@ exports.readBoard = catchAssyncFunc(async function (req, res, next) {
 });
 exports.deleteBoard = catchAssyncFunc(async function (req, res, next) {
   const { board_id } = req.params;
-  const board = await db("boards").where("id", board_id).update({
-    visibility: "deleted",
-  });
+  const board = await db("boards").where("id", board_id).del();
+  // .update({
+  //   visibility: "deleted",
+  // });
   return helper.sendSuccess(req, res, {}, "Board deleted successfully.");
 });
 // exports.addBoard = catchAssyncFunc(async function (req, res, next) {
