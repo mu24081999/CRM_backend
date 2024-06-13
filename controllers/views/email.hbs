@@ -9,16 +9,32 @@
     </style>
   </head>
 
-  <body>
-    <div style="padding: 10px">
+  <body class="width:100%s">
+    <div
+      style="
+      padding: 5%; 
+      margin:auto; 
+      width:60%;  
+      position: relative;
+      display: block;
+      height: 100%;  
+      border-radius: 10px;
+      border: 1px solid grey;
+      overflow: hidden;
+      text-decoration: none;  
+      box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+      transition: 0.3s;"
+    >
       <table style="width: 100%">
         <tr style="width: 100%">
           <td style="width: 50%">
-            <label style="font-size: 40px; font-weight: bold">INV-001</label>
+            <label
+              style="font-size: 40px; font-weight: bold"
+            >{{post_data.title}}</label>
           </td>
           <td style="width: 50%; text-align: right">
             <img
-              style="max-width: 200px"
+              style="max-width: 100px"
               src="https://bcassetcdn.com/public/blog/wp-content/uploads/2021/11/10190851/Louis-Vuitton-1.png"
             />
           </td>
@@ -28,34 +44,49 @@
         <tr style="width: 100%">
           <td style="width: 33%; line-height: 25px">
             <label>From</label><br />
-            <label style="font-weight: bold; font-size: 20px">Business Name</label>
+            <label
+              style="font-weight: bold; font-size: 20px"
+            >{{post_data.business_info.company_name}}</label>
             <br />
-            Address Line 1
+            {{post_data.business_info.address_line_1}}
             <br />
-            Address Line 2
+            {{post_data.business_info.address_line_2}}
             <br />
           </td>
           <td style="width: 33%; line-height: 25px">
             <label>To</label><br />
-            <label style="font-weight: bold; font-size: 20px">Business Name</label><br
-            />
-            Address Line 1
+            <label
+              style="font-weight: bold; font-size: 20px"
+            >{{post_data.bill_details.company_name}}</label>
             <br />
-            Address Line 2
+            {{post_data.bill_details.address_line_1}}
+            <br />
+            {{post_data.bill_details.address_line_2}}
             <br />
           </td>
           <td style="width: 33%; margin: auto">
-            <span
-              style="
-                background: #e1e1e1;
-                font-size: 30px;
+            <div>
+              <span
+                style="
+                font-size: 16px;
                 font-weight: bold;
-                padding: 10px;
                 color: #343a40;
               "
-            >
-              DUE/PAID</span>
-            <span>27 Jul, 2024</span>
+              >
+                Invoice No:</span>
+              <strong>{{invoice_no}}</strong>
+            </div>
+            <div>
+              <span
+                style="
+                font-size: 16px;
+                font-weight: bold;
+                color: #343a40;
+              "
+              >
+                DUE Date:</span>
+              <strong>{{due_date}}</strong>
+            </div>
           </td>
         </tr>
       </table>
@@ -68,211 +99,92 @@
           <th>Discount</th>
           <th style="border-top-right-radius: 10px">Amount</th>
         </tr>
-        <tr>
-          <td
-            style="
+        {{#each post_data.invoice_items.items}}
+          <tr>
+            <td
+              style="
               text-align: center;
               background-color: rgba(128, 128, 128, 0.194);
               padding-top: 0.5%;
               padding-bottom: 0.5%;
             "
-          >
-            Product 1
-          </td>
-          <td
-            style="
+            >
+              {{this.name}}
+            </td>
+            <td
+              style="
               text-align: center;
               background-color: rgba(128, 128, 128, 0.194);
               padding-top: 0.5%;
               padding-bottom: 0.5%;
             "
-          >
-            100
-          </td>
-          <td
-            style="
+            >
+              {{this.description}}
+            </td>
+            <td
+              style="
               text-align: center;
               background-color: rgba(128, 128, 128, 0.194);
               padding-top: 0.5%;
               padding-bottom: 0.5%;
             "
-          >
-            1
-          </td>
-          <td
-            style="
+            >
+              {{this.qty}}
+            </td>
+            <td
+              style="
               text-align: center;
               background-color: rgba(128, 128, 128, 0.194);
               padding-top: 0.5%;
               padding-bottom: 0.5%;
             "
-          >
-            0.00
-          </td>
-          <td
-            style="
+            >
+              {{this.price}}
+            </td>
+            <td
+              style="
               text-align: center;
               background-color: rgba(128, 128, 128, 0.194);
               padding-top: 0.5%;
               padding-bottom: 0.5%;
             "
-          >
-            100
-          </td>
-          <td
-            style="
+            >
+              {{this.discount}}
+            </td>
+            <td
+              style="
               text-align: center;
               background-color: rgba(128, 128, 128, 0.194);
               padding-top: 0.5%;
               padding-bottom: 0.5%;
             "
-          >
-            100
-          </td>
-        </tr>
-        <tr>
-          <td
-            style="
-              text-align: center;
-              background-color: rgba(128, 128, 128, 0.194);
-              padding-top: 0.5%;
-              padding-bottom: 0.5%;
-            "
-          >
-            Product 1
-          </td>
-          <td
-            style="
-              text-align: center;
-              background-color: rgba(128, 128, 128, 0.194);
-              padding-top: 0.5%;
-              padding-bottom: 0.5%;
-            "
-          >
-            100
-          </td>
-          <td
-            style="
-              text-align: center;
-              background-color: rgba(128, 128, 128, 0.194);
-              padding-top: 0.5%;
-              padding-bottom: 0.5%;
-            "
-          >
-            1
-          </td>
-          <td
-            style="
-              text-align: center;
-              background-color: rgba(128, 128, 128, 0.194);
-              padding-top: 0.5%;
-              padding-bottom: 0.5%;
-            "
-          >
-            0.00
-          </td>
-          <td
-            style="
-              text-align: center;
-              background-color: rgba(128, 128, 128, 0.194);
-              padding-top: 0.5%;
-              padding-bottom: 0.5%;
-            "
-          >
-            100
-          </td>
-          <td
-            style="
-              text-align: center;
-              background-color: rgba(128, 128, 128, 0.194);
-              padding-top: 0.5%;
-              padding-bottom: 0.5%;
-            "
-          >
-            100
-          </td>
-        </tr>
-        <tr>
-          <td
-            style="
-              text-align: center;
-              background-color: rgba(128, 128, 128, 0.194);
-              padding-top: 0.5%;
-              padding-bottom: 0.5%;
-            "
-          >
-            Product 1
-          </td>
-          <td
-            style="
-              text-align: center;
-              background-color: rgba(128, 128, 128, 0.194);
-              padding-top: 0.5%;
-              padding-bottom: 0.5%;
-            "
-          >
-            100
-          </td>
-          <td
-            style="
-              text-align: center;
-              background-color: rgba(128, 128, 128, 0.194);
-              padding-top: 0.5%;
-              padding-bottom: 0.5%;
-            "
-          >
-            1
-          </td>
-          <td
-            style="
-              text-align: center;
-              background-color: rgba(128, 128, 128, 0.194);
-              padding-top: 0.5%;
-              padding-bottom: 0.5%;
-            "
-          >
-            0.00
-          </td>
-          <td
-            style="
-              text-align: center;
-              background-color: rgba(128, 128, 128, 0.194);
-              padding-top: 0.5%;
-              padding-bottom: 0.5%;
-            "
-          >
-            100
-          </td>
-          <td
-            style="
-              text-align: center;
-              background-color: rgba(128, 128, 128, 0.194);
-              padding-top: 0.5%;
-              padding-bottom: 0.5%;
-            "
-          >
-            100
-          </td>
-        </tr>
+            >
+              {{this.total}}
+            </td>
+          </tr>
+        {{/each}}
       </table>
       <div
         style="
-          width: 50%;
+          width: max-content;
           display: flex;
           float: inline-end;
           justify-content: end;
           padding-top: 1%;
+          margin-right:.5%;
+
         "
       >
-        <div style="width: 40%">
+        <div style="width: 12vh">
           <div>
             <div
               style="
-                padding-inline: 6%;
-                padding-top: 4%;
-                padding-bottom: 4%;
+               padding-inline: 6%;
+              padding-top: 5%;
+              padding-bottom: 5%;
+              text-align:center;    `
                 color: grey;
-                border: 1px solid rgb(174, 169, 169);
+                border: 0.5px solid rgba(128, 128, 128, 0.573);
               "
             >
               Subtotal
@@ -280,110 +192,116 @@
             <div
               style="
                 padding-inline: 6%;
-                padding-top: 4%;
-                padding-bottom: 4%;
+                padding-top: 5%;
+                padding-bottom: 5%;
+                text-align:center;
                 color: grey;
-                border: 1px solid rgb(174, 169, 169);
+                border: 0.5px solid rgba(128, 128, 128, 0.573);
               "
             >
               Item Discount
             </div>
             <div
               style="
-                padding-inline: 6%;
-                padding-top: 4%;
-                padding-bottom: 4%;
+               padding-inline: 6%;
+              padding-top: 5%;
+              padding-bottom: 5%;
+              text-align:center;
                 color: grey;
-                border: 1px solid rgb(174, 169, 169);
+                border: 0.5px solid rgba(128, 128, 128, 0.573);
               "
             >
               Extra Discount
             </div>
             <div
               style="
-                padding-inline: 6%;
-                padding-top: 4%;
-                padding-bottom: 4%;
+               padding-inline: 6%;
+              padding-top: 5%;
+              padding-bottom: 5%;
+              text-align:center;
                 color: grey;
-                border: 1px solid rgb(174, 169, 169);
+                border: 0.5px solid rgba(128, 128, 128, 0.573);
               "
             >
               Total
             </div>
           </div>
         </div>
-        <div style="width: 16%; background-color: rgba(128, 128, 128, 0.194)">
+        <div style="width: 12vh; background-color: rgba(0, 128, 128, 0.187)">
           <div
             style="
               padding-inline: 6%;
-              padding-top: 10%;
-              padding-bottom: 10%;
+              padding-top: 5%;
+              padding-bottom: 5%;
+              text-align:center;
               color: black;
-              border: 1px solid rgb(174, 169, 169);
+              border: 0.5px solid rgba(128, 128, 128, 0.573);
             "
           >
-            20.00
+            {{post_data.subtotal}}
           </div>
           <div
             style="
               padding-inline: 6%;
-              padding-top: 10%;
-              padding-bottom: 10%;
+              padding-top: 5%;
+              padding-bottom: 5%;
+              text-align:center;
               color: black;
-              border: 1px solid rgb(174, 169, 169);
+              border: 0.5px solid rgba(128, 128, 128, 0.573);
             "
           >
-            20.00
+            {{post_data.discount}}
           </div>
           <div
             style="
               padding-inline: 6%;
-              padding-top: 10%;
-              padding-bottom: 10%;
+              padding-top: 5%;
+              padding-bottom: 5%;
+              text-align:center;
               color: black;
-              border: 1px solid rgb(174, 169, 169);
+              border: 0.5px solid rgba(128, 128, 128, 0.573);
             "
           >
-            20.00
+            {{post_data.extra_discount_percentage}}
           </div>
           <div
             style="
               padding-inline: 6%;
-              padding-top: 10%;
-              padding-bottom: 10%;
+              padding-top: 5%;
+              padding-bottom: 5%;
+              text-align:center;
               color: black;
-              border: 1px solid rgb(174, 169, 169);
+              border: 0.5px solid rgba(128, 128, 128, 0.573);
             "
           >
-            20.00
+            {{post_data.total}}
           </div>
         </div>
       </div>
-      <table style="width: 100%; position: fixed; bottom: 0">
-        <tr style="width: 100%">
-          <td style="width: 50%">
-            <div>Notes:</div>
-            <div>More Information</div>
-          </td>
-          <td
-            style="
-              width: 50%;
-              background-color: whitesmoke;
-              text-align: center;
-              padding: 10px;
-            "
-          >
-            <label
-              style="
-                font-size: 30px;
-                color: #e1e1e1;
-                text-transform: uppercase;
-                margin: auto;
-              "
-            >Signature</label>
-          </td>
-        </tr>
-      </table>
+      <div style="padding: 0%;">
+        <p style="font-size:large;font-weight: bold;padding:0%;">Note:</p>
+        <div
+          style="height: 8vh; width:25vh;border: 1px solid black; border-radius:10px; padding:2%;overflow:scroll; margin:0%;"
+        >
+          {{post_data.note_to_client}}
+        </div>
+      </div>
+      <div>
+        <div>
+          <h4 style="font-weight: bold;">Conditions</h4>
+          <ol>
+            {{#each invoice_conditions.items}}
+              <li style="font-weight: bold;">{{this.term}}</li>
+            {{/each}}
+          </ol>
+        </div>
+      </div>
+      <div style="float: inline-end;">
+        <div style="padding: 1%; font-wieght:bold">{{post_data.from_name}}</div>
+        <div
+          style="padding: 1%; font-wieght:bold"
+        >{{post_data.from_label}}</div>
+      </div>
     </div>
   </body>
 </html>

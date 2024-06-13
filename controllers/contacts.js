@@ -424,6 +424,7 @@ exports.updateBulkContact = catchAsyncFunc(async (req, res, next) => {
   const schema = Joi.object({
     updates: Joi.array().required(),
     modify_key: Joi.string().required(),
+    board_status: Joi.string().optional(),
   });
 
   const { error, value } = schema.validate(req.body);
@@ -443,6 +444,12 @@ exports.updateBulkContact = catchAsyncFunc(async (req, res, next) => {
         .join(" ")} ELSE board_id END`,
       updates.flatMap((update) => [update.id, update.board_id])
     ),
+    board_status: db.raw(
+      `CASE ${updates
+        .map((update) => `WHEN id = ? THEN ?`)
+        .join(" ")} ELSE board_id END`,
+      updates.flatMap((update) => [update.id, value.board_status])
+    ),
     status: db.raw(
       `CASE ${updates
         .map((update) => `WHEN id = ? THEN ?`)
@@ -455,6 +462,7 @@ exports.updateBulkContact = catchAsyncFunc(async (req, res, next) => {
     case "board_id":
       updateParams = {
         board_id: cases.board_id,
+        board_status: cases.board_status,
       };
       break;
     case "status":

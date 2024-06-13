@@ -33,7 +33,7 @@ exports.up = function (knex) {
       "important",
       "archived",
     ]);
-    table.string().defaultTo("pending");
+    table.string("board_status").defaultTo("pending");
     table.timestamps(true, true);
   });
 };

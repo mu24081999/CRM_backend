@@ -99,7 +99,7 @@ passport.use(
       clientID:
         "73457248543-vn1bjkn98qogdcljl35job6ek20e82qt.apps.googleusercontent.com",
       clientSecret: "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",
-      callbackURL: "https://app.desktopcrm.com/auth/google/callback",
+      callbackURL: "https://desktopcrm.com:51/auth/google/callback",
     },
     function (accessToken, refreshToken, profile, cb) {
       console.log(profile);
@@ -165,6 +165,13 @@ app.use((error, req, res, next) => {
 });
 const xmlFilePath = path.join(__dirname, "voice.xml");
 // Define a route to serve XML data
+app.get("/auth/google/callback", (req, res) => {
+  passport.authenticate("google", { failureRedirect: "/" }),
+    (err, user, info) => {
+      // Successful authentication, redirect home
+      console.log(user, info, err);
+    };
+});
 app.get("/v1/user/calling/voice.xml", (req, res) => {
   // Read the XML file
   fs.readFile(xmlFilePath, "utf8", (err, data) => {

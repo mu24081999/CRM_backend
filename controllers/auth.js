@@ -250,7 +250,7 @@ exports.googleCallback = catchAssyncFunc(async (req, res, next) => {
   );
 
   // Use the code to get tokens and authenticate the user
-  passport.authenticate("google", { session: false }, (err, user, info) => {
+  passport.authenticate("google", (err, user, info) => {
     if (err || !user) {
       return res
         .status(400)

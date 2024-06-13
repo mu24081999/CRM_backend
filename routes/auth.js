@@ -14,7 +14,7 @@ const {
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post("/signup_user", signUp);
 router.post("/siginin_user", signIn);
-router.post("/google/callback", googleCallback);
+router.get("/google/callback", googleCallback);
 router.get(
   "/google",
   passport.authenticate("google", {

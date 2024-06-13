@@ -7,7 +7,8 @@ const nodeMailer = require("nodemailer");
 const hbs = require("nodemailer-express-handlebars");
 const path = require("path");
 
-function sendEmailTemplate() {
+function sendEmailTemplate(email, post_data) {
+  console.log("🚀 ~ sendEmailTemplate ~ post_data:", post_data);
   const transporter = nodeMailer.createTransport({
     service: "gmail",
     auth: {
@@ -30,11 +31,14 @@ function sendEmailTemplate() {
   transporter.use("compile", hbs(handlebarOptions));
   const mailOptions = {
     from: config.EMAIL_FROM_ACC,
-    to: "umarrajpoot274@gmail.com",
-    subject: "Test Email",
+    to: email,
+    subject: "DesktopCRM Inovice",
     template: "email", // Name of the template file
     context: {
-      name: "John Doe", // Replace {{name}} with this value
+      post_data: post_data, // Replace {{name}} with this value
+      invoice_no: post_data?.invoice_details?.items[0]?.value,
+      due_date: post_data?.invoice_details?.items[1]?.value,
+      invoice_conditions: JSON.parse(post_data?.conditions),
     },
   };
 
@@ -107,8 +111,6 @@ exports.addInvoice = catchAssyncFunc(async function (req, res, next) {
   } = req.body;
   let is_logo_added;
   let logo_url;
-  console.log("add post", req.body);
-  console.log("add post", req.files);
   if (req.files) {
     is_logo_added = await new Promise(async (resolve, reject) => {
       const { logo } = req.files;
@@ -175,7 +177,7 @@ exports.addInvoice = catchAssyncFunc(async function (req, res, next) {
   if (!is_added) {
     return helper.sendError(req, res, "Error adding invoice", 500);
   }
-  await sendEmailTemplate();
+  await sendEmailTemplate(JSON.parse(bill_details)?.email, post_data);
 
   return helper.sendSuccess(req, res, {}, "invoice added successfully");
 });
