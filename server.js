@@ -99,7 +99,7 @@ passport.use(
       clientID:
         "73457248543-vn1bjkn98qogdcljl35job6ek20e82qt.apps.googleusercontent.com",
       clientSecret: "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",
-      callbackURL: "https://desktopcrm.com:51/auth/google/callback",
+      callbackURL: "https://app.desktopcrm.com/auth/google/callback",
     },
     function (accessToken, refreshToken, profile, cb) {
       console.log(profile);
