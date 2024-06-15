@@ -939,8 +939,6 @@ exports.getEmailsByEmail = catchAssyncFunc(async function (req, res, next) {
 });
 exports.deleteEmail = catchAssyncFunc(async function (req, res, next) {
   const { email_id } = req.params;
-  const is_deleted = await db("emails").where("id", email_id).update({
-    status: "blocked",
-  });
+  const is_deleted = await db("emails").where("id", email_id).del();
   return helper.sendSuccess(req, res, {}, "Email deleted successfully.");
 });

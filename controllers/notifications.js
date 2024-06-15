@@ -15,3 +15,13 @@ exports.getUserNotifications = catchAsyncFunc(async (req, res, next) => {
     "success"
   );
 });
+exports.updateNotification = catchAsyncFunc(async (req, res, next) => {
+  const { notification_id } = req.params;
+  const { is_read } = req.body;
+  const notifications = await db("notifications")
+    .where("id", notification_id)
+    .update({
+      is_read: is_read,
+    });
+  return helper.sendSuccess(req, res, {}, "Status updated successfully.");
+});

@@ -25,6 +25,7 @@ const kycRoutes = require("./routes/kyc");
 const ticketRoutes = require("./routes/tickets");
 const balanceRoutes = require("./routes/balance");
 const notificationRoutes = require("./routes/notification");
+const ratesRoutes = require("./routes/plan-rates");
 
 app.use("/v1/auth", authRoutes);
 app.use("/v1/user", usersRoutes);
@@ -52,3 +53,4 @@ app.use("/v1/user/kyc", kycRoutes);
 app.use("/v1/user/ticket", ticketRoutes);
 app.use("/v1/user/balance", balanceRoutes);
 app.use("/v1/user/notifications", notificationRoutes);
+app.use("/v1/user/rates", ratesRoutes);

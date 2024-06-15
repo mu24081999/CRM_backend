@@ -1,21 +1,28 @@
 const express = require("express");
 const router = express.Router();
-const {
-  getUserNotifications,
-  updateNotification,
-} = require("../controllers/notifications");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
-router.get(
-  "/get-user-notifications/:user_id",
+const {
+  addRates,
+  updateRates,
+  readRate,
+} = require("../controllers/plan-rates");
+router.post(
+  "/add-rate",
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
-  getUserNotifications
+  addRates
 );
 router.put(
-  "/update-user-notification/:notification_id",
+  "/update-rate/:rate_id",
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
-  updateNotification
+  updateRates
+);
+router.get(
+  "/plan-rate/:rate_id",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  readRate
 );
 
 module.exports = router;

@@ -264,6 +264,8 @@ exports.signIn = catchAssyncFunc(async function (req, res, next) {
     username: Joi.string().required(),
     password: Joi.string().required(),
     type: Joi.boolean().optional(),
+    authType: Joi.string().optional(),
+    googleProfile: Joi.object().optional(),
   });
   const { error } = schema.validate(req.body);
   if (error) {
@@ -274,19 +276,42 @@ exports.signIn = catchAssyncFunc(async function (req, res, next) {
       403
     );
   }
-  const { username, password, type } = req.body;
+  const { username, password, type, authType, googleProfile } = req.body;
   const is_exist_user = await db("users")
     .where("username", username)
     .orWhere("email", username)
     .first();
-  if (!is_exist_user) {
+  if (!is_exist_user && !authType) {
     return helper.sendError(req, res, "Invalid username or password.", 403);
   }
   if (is_exist_user && is_exist_user.status !== "active") {
     return helper.sendError(req, res, "Your account is blocked.", 401);
   }
-  if (type && password === is_exist_user?.password) {
+  if (type === true && password === is_exist_user?.password) {
     return createSession(is_exist_user, req, res);
+  }
+  if (authType === "google") {
+    if (is_exist_user) {
+      return createSession(is_exist_user, req, res);
+    } else {
+      const is_added_user = await db("users").insert({
+        name: googleProfile?.name,
+        username: googleProfile?.email,
+        email: googleProfile?.email,
+        password: "1234567890",
+        avatar: googleProfile?.picture,
+        verified: googleProfile?.email_verified,
+        role: "USER",
+      });
+      console.log(
+        "🚀 ~ constis_added_user=awaitdb ~ is_added_user:",
+        is_added_user
+      );
+      const new_user = await db("users").where("id", is_added_user[0]).first();
+      if (new_user) {
+        return createSession(new_user, req, res);
+      }
+    }
   }
   const is_password_matched = await bcrypt.compare(
     password,
