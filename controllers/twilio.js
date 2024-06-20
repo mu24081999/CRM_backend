@@ -176,6 +176,7 @@ exports.getUserSubAccounts = catchAssyncFunc(async function (req, res, next) {
   );
 });
 exports.recieveSMS = catchAssyncFunc(async function (req, res, next) {
+  console.log(req.body);
   // const twiml = new twilio.twiml.MessagingResponse();
   const message = await twilioClient.messages(req.body.MessageSid).fetch();
   const is_added_to_database = await db("messages").insert({
@@ -198,8 +199,6 @@ exports.recieveSMS = catchAssyncFunc(async function (req, res, next) {
     .select();
   console.log("🚀 ~ messages:", messages);
   io.to(user.socket_id).emit("message_received", messages);
-
-  console.log(req.body);
 });
 exports.listenSMS = catchAssyncFunc(async function (req, res, next) {
   console.log(req.body);
