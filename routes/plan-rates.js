@@ -20,8 +20,9 @@ router.put(
 );
 router.get(
   "/plan-rate/:rate_id",
-  IsAuth,
-  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  // IsAuth,
+  // authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+
   readRate
 );
 

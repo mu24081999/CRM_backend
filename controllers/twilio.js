@@ -202,9 +202,19 @@ exports.recieveSMS = catchAssyncFunc(async function (req, res, next) {
   console.log(req.body);
 });
 exports.listenSMS = catchAssyncFunc(async function (req, res, next) {
+  console.log(req.body);
   const messageSid = req.body.MessageSid;
   const messageStatus = req.body.MessageStatus;
   const user = await db("users").where("phone", req.body.to).first();
+  const is_added_to_database = await db("messages").insert({
+    user_id: "",
+    from_name: data?.from?.name,
+    to_name: data?.to?.name,
+    from_phone: data?.from?.phone,
+    to_phone: data?.to?.phone,
+    message: data?.message,
+    account_sid: data?.from?.accountSid,
+  });
   const messages = await db("messages")
     .where("from_phone", user?.phone)
     .orWhere("to_phone", user?.phone)
