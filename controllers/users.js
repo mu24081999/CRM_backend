@@ -53,7 +53,9 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
     password,
     google_app_password,
     twilio_numbers,
+    recording,
   } = req.body;
+  console.log("🚀 ~ req.body:", req.body);
   const is_exist_user = await db("users")
     .where("id", user_id)
     // .orWhere("username", username)
@@ -95,6 +97,7 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
       avatar: req.files && publicUrl ? publicUrl : "",
       twilio_numbers: JSON.stringify(twilio_numbers),
       google_app_password,
+      recording,
     };
   } else {
     userParams = {
@@ -111,6 +114,7 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
       avatar: req.files && publicUrl ? publicUrl : "",
       twilio_numbers: JSON.stringify(twilio_numbers),
       google_app_password,
+      recording,
     };
   }
   console.log(userParams);

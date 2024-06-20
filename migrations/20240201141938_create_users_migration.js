@@ -29,6 +29,7 @@ exports.up = function (knex) {
     table.string("role").nullable();
     table.string("client_id").nullable();
     table.enum("status", ["active", "blocked"]).defaultTo("active");
+    table.boolean("recording").defaultTo(1);
     table.timestamps(true, true);
   });
 };

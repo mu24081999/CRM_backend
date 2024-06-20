@@ -372,6 +372,9 @@ exports.listenCallStatus = catchAssyncFunc(async function (req, res, next) {
   const To = req.body.To;
   const From = req.body.from || req.body.Caller;
   const client = new twilio.twiml.VoiceResponse();
+  const user = await db("users").where("phone", To).first();
+  const is_recording = user?.recording === 1 ? true : false;
+
   if (req.body.CallToken) {
     // client.say("Incoming call");
     // client.say(
@@ -391,8 +394,7 @@ exports.listenCallStatus = catchAssyncFunc(async function (req, res, next) {
     // } else {
     //   client.say("Invalid input. Goodbye!"); // Handle invalid input
     // }
-    const user = await db("users").where("phone", To).first();
-    client.dial({ record: true }).client(user?.username);
+    client.dial({ record: is_recording }).client(user?.username);
     const notificationData = await db("notifications").insert({
       user_id: user.id,
       notification: `A call comming from number ${From}`,
@@ -405,7 +407,7 @@ exports.listenCallStatus = catchAssyncFunc(async function (req, res, next) {
   } else {
     const dial = client.dial({
       callerId: From,
-      record: true,
+      record: is_recording,
     });
     dial.number(To);
   }
