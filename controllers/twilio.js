@@ -178,20 +178,15 @@ exports.getUserSubAccounts = catchAssyncFunc(async function (req, res, next) {
 exports.recieveSMS = catchAssyncFunc(async function (req, res, next) {
   console.log(req.body);
   // const twiml = new twilio.twiml.MessagingResponse();
-  const message = await twilioClient.messages(req.body.SmsSid).fetch();
   const is_added_to_database = await db("messages").insert({
-    from_phone: message.from,
-    to_phone: message.to,
-    message: message.body,
-    sid: message.sid,
-    price: message.price,
-    account_sid: message.accountSid,
-    uri: message.uri,
-    num_media: message.numMedia,
+    from_phone: req.body.From,
+    to_phone: req.body.To,
+    message: req.body.Body,
+    sid: req.body.SmsSid,
     // media_urls: { urls: [] },
     direction: "inbound",
   });
-  const user = await db("users").where("phone", message.to).first();
+  const user = await db("users").where("phone", req.body.To).first();
   console.log("🚀 ~ user:", user);
   const messages = await db("messages")
     .where("from_phone", user?.phone)
