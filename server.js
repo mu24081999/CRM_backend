@@ -208,6 +208,7 @@ app.get("/_ah/health", (req, res) => {
 //Routes
 const routes = require("./routes");
 const port = config.PORT;
+const HOST = "0.0.0.0"; // Listen on all interfaces
 
 const options = {
   key: fs.readFileSync("desktopcrm.key"),
@@ -242,6 +243,6 @@ const os = require("os");
 console.log(os.hostname());
 
 const socketLogic = require("./socket");
-server.listen(port, () => {
+server.listen(port, HOST, () => {
   console.log("Server listening on port https://localhost:" + port);
 });
