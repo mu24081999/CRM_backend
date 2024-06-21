@@ -199,6 +199,7 @@ exports.recieveSMS = catchAssyncFunc(async function (req, res, next) {
     .select();
   console.log("🚀 ~ messages:", messages);
   io.to(user.socket_id).emit("message_received", messages);
+  res.end();
 });
 exports.listenSMS = catchAssyncFunc(async function (req, res, next) {
   console.log(req.body);

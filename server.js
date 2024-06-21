@@ -207,7 +207,7 @@ app.get("/_ah/health", (req, res) => {
 
 //Routes
 const routes = require("./routes");
-const port = process.env.PORT || config.PORT;
+const port = config.PORT;
 
 const options = {
   key: fs.readFileSync("desktopcrm.key"),
