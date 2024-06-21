@@ -207,7 +207,7 @@ app.get("/_ah/health", (req, res) => {
 
 //Routes
 const routes = require("./routes");
-const port = config.PORT;
+const port = process.env.PORT || config.PORT;
 const HOST = "0.0.0.0"; // Listen on all interfaces
 
 const options = {
