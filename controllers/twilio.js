@@ -178,7 +178,7 @@ exports.getUserSubAccounts = catchAssyncFunc(async function (req, res, next) {
 exports.recieveSMS = catchAssyncFunc(async function (req, res, next) {
   console.log(req.body);
   // const twiml = new twilio.twiml.MessagingResponse();
-  const message = await twilioClient.messages(req.body.MessageSid).fetch();
+  const message = await twilioClient.messages(req.body.SmsSid).fetch();
   const is_added_to_database = await db("messages").insert({
     from_phone: message.from,
     to_phone: message.to,
