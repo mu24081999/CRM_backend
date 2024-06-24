@@ -8,12 +8,14 @@ const {
   getEmailsByEmail,
   getEmailsByAccount,
   sendEmailBulk,
+  sendGridEmail,
 } = require("../controllers/email");
 
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post("/send-email", sendEmail);
 router.post("/send-email-bulk", sendEmailBulk);
 router.put("/update-email/:emailId", updateEmail);
+router.get("/send-grid-email", sendGridEmail);
 router.get(
   "/get-emails/:user_email/:page_size/:page",
   IsAuth,

@@ -4,7 +4,7 @@ const Joi = require("joi");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
-
+const nodemailer = require("nodemailer");
 // Create Session Function
 async function createSession(user, req, res) {
   const token = jwt.sign({ user_id: user.id }, config.JWT_SECRET, {
@@ -66,7 +66,31 @@ async function createSession(user, req, res) {
     }
   }
 }
-
+async function sendGridEmail(toEmail, subject, htmlText) {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.sendgrid.net",
+    port: 587,
+    auth: {
+      user: "apikey", // This is the fixed username for SendGrid SMTP
+      pass: config.SENDGRID_API_KEY, // Your SendGrid API key
+    },
+  });
+  // Define the email options
+  const mailOptions = {
+    from: "Desktopcrm <support@app.desktopcrm.com>", // Sender address
+    to: toEmail, // List of recipients
+    subject: subject,
+    // text: "This is a test email sent using Nodemailer with SendGrid.",
+    html: htmlText,
+  };
+  // Send the email
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return console.log("Error:", error);
+    }
+    console.log("Email sent:", info);
+  });
+}
 exports.signUp = catchAssyncFunc(async function (req, res, next) {
   console.log(req.body);
 
@@ -222,15 +246,19 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
       "]</h2><p>This OTP is valid for a limited time period and can only be used once.</p><p>If you did not initiate this action or have any concerns regarding your account security, please contact our support team immediately at [Support Email/Phone Number].</p><br><a href='http://localhost:3000/reset-password-verification/" +
       new_user?.email +
       "' >Reset Password</a><p>Thank you,<br>The <b>DesktopCRM</b> Team</p>";
-
-    const sendResetOTP = await helper.sendEmail(
-      req,
-      res,
-      "OTP FOR RESET PASSWORD.",
+    const sendResetOTP = await sendGridEmail(
       email,
-      "",
+      "OTP FOR RESET PASSWORD",
       htmlMessage
     );
+    // const sendResetOTP = await helper.sendEmail(
+    //   req,
+    //   res,
+    //   "OTP FOR RESET PASSWORD.",
+    //   email,
+    //   "",
+    //   htmlMessage
+    // );
     const dbOTP = await db("otps").insert({
       email: email,
       otp: otp_code,
@@ -353,12 +381,9 @@ exports.forgotPassword = catchAssyncFunc(async (req, res, next) => {
     is_user_exist?.email +
     "' >Reset Password</a><p>Thank you,<br>The <b>DesktopCRM</b> Team</p>";
 
-  const sendResetOTP = await helper.sendEmail(
-    req,
-    res,
-    "OTP FOR RESET PASSWORD.",
+  const sendResetOTP = await sendGridEmail(
     email,
-    "",
+    "OTP FOR RESET PASSWORD",
     htmlMessage
   );
   const dbOTP = await db("otps").insert({
@@ -504,6 +529,5 @@ exports.logout = catchAssyncFunc(async (req, res, next) => {
   if (result) {
     return helper.sendSuccess(req, res, {}, "User logged out.");
   }
-  d;
   return helper.sendError(req, res, "Something went wrong.", 500);
 });

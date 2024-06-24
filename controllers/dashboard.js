@@ -288,6 +288,21 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
     "success"
   );
 });
+exports.getTwilioRates = async function (req, res, next) {
+  const { accountSid, authToken } = req.body;
+  const client = new twilio(accountSid, authToken);
+
+  const smsPricing = await client.pricing.messaging.countries.list();
+  const voicePricing = await client.pricing.voice.countries.list();
+
+  return res.status(200).json({
+    status: "success",
+    data: {
+      smsPricing: smsPricing,
+      voicePricing: voicePricing,
+    },
+  });
+};
 
 // async function getSubAccountsData(subaccounts) {
 //   const messagesArray = [];

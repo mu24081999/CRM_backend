@@ -529,7 +529,6 @@ exports.getCallLogs = catchAssyncFunc(async function (req, res, next) {
 });
 exports.getCallRecordings = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken } = req.body;
-  console.log("recordings", accountSid, authToken);
   const client = twilio(accountSid, authToken);
   const recordings = await client.recordings.list({ limit: 50 });
   return helper.sendSuccess(

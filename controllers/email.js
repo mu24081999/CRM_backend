@@ -7,7 +7,7 @@ const fs = require("fs");
 const Imap = require("node-imap");
 const { simpleParser } = require("mailparser");
 const { emailQueue } = require("../Queue/BulkEmails");
-
+const nodemailer = require("nodemailer");
 exports.getEmailsByAccount = catchAssyncFunc(async (req, res, next) => {
   const config = {
     user: "mu24081999@gmail.com",
@@ -94,6 +94,32 @@ exports.getEmailsByAccount = catchAssyncFunc(async (req, res, next) => {
     // Handle errors if fetching fails
     next(err);
   }
+});
+exports.sendGridEmail = catchAssyncFunc(async (req, res, next) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.sendgrid.net",
+    port: 587,
+    auth: {
+      user: "apikey", // This is the fixed username for SendGrid SMTP
+      pass: config.SENDGRID_API_KEY, // Your SendGrid API key
+    },
+  });
+  // Define the email options
+  const mailOptions = {
+    from: `"Desktopcrm" <support@app.desktopcrm.com>`, // Sender address
+    to: "mu24081999@gmail.com", // List of recipients
+    subject: "Sending Email using Nodemailer with SendGrid",
+    text: "This is a test email sent using Nodemailer with SendGrid.",
+    html: "<strong>This is a test email sent using Nodemailer with SendGrid.</strong>",
+  };
+  // Send the email
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return console.log("Error:", error);
+    }
+    console.log("Email sent:", info);
+  });
+  res.end();
 });
 // exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
 //   const { from, to, subject, body, type, parent_id } = req.body;

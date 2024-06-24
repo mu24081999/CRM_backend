@@ -19,6 +19,7 @@ exports.up = function (knex) {
     table.string("user_name").notNullable();
     table.string("user_image").nullable();
     table.json("team_members").nullable();
+    table.boolean("notified").defualtTo(false);
     table.timestamps(true, true);
   });
 };

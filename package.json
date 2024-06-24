@@ -25,6 +25,7 @@
   "dependencies": {
     "@google-cloud/cloud-sql-connector": "^1.2.4",
     "@google-cloud/storage": "^7.8.0",
+    "@sendgrid/mail": "^8.1.3",
     "aws-sdk": "^2.1552.0",
     "bcryptjs": "^2.4.3",
     "bee-queue": "^1.7.1",

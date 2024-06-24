@@ -51,6 +51,7 @@ exports.addPost = catchAssyncFunc(async function (req, res, next) {
     user_name,
     user_image,
   } = req.body;
+  console.log("🚀 ~ req.body:", req.body);
   const slider_images_json = [];
   let preview_image_url;
   let is_preview_added;
@@ -194,27 +195,26 @@ exports.addPost = catchAssyncFunc(async function (req, res, next) {
         // });
       }
     }
-    console.log(slider_images, preview_image);
-    if (is_slider_images_added && is_preview_added) {
-      const is_record_inserted = await db("posts").insert({
-        title,
-        visibility,
-        permalink,
-        post_content,
-        post_type,
-        preview_image: preview_image_url,
-        slider_images: { images: slider_images_json },
-        tags: { tags: typeof tags === "string" ? [tags] : tags },
-        category,
-        publish_date,
-        status,
-        user_id,
-        user_name,
-        user_image,
-      });
-      if (is_record_inserted) {
-        return helper.sendSuccess(req, res, {}, "Post added successfully");
-      }
+  }
+  if (req.files ? is_slider_images_added && is_preview_added : true) {
+    const is_record_inserted = await db("posts").insert({
+      title,
+      visibility,
+      permalink,
+      post_content,
+      post_type,
+      preview_image: preview_image_url,
+      slider_images: { images: slider_images_json },
+      tags: { tags: typeof tags === "string" ? [tags] : tags },
+      category,
+      publish_date,
+      status,
+      user_id,
+      user_name,
+      user_image,
+    });
+    if (is_record_inserted) {
+      return helper.sendSuccess(req, res, {}, "Post added successfully");
     }
   }
 });

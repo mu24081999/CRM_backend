@@ -3,6 +3,7 @@ const helper = require("../helper/helper");
 const stripe = require("stripe")(config.STRIPE_API_KEY);
 
 exports.createPayment = catchAssyncFunc(async (req, res, next) => {
+  console.log(req.body);
   const payment = await stripe.paymentIntents.create({
     amount: req.body.amount,
     currency: "usd",

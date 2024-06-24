@@ -5,6 +5,7 @@ const {
   getEvents,
   deleteEvent,
   readEvent,
+  updateEvent,
 } = require("../controllers/calendar_events");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
@@ -12,6 +13,12 @@ router.post(
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   addEvent
+);
+router.put(
+  "/update-event",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  updateEvent
 );
 router.get(
   "/get-events",

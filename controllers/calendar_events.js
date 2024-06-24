@@ -82,3 +82,53 @@ exports.addEvent = catchAssyncFunc(async function (req, res, next) {
     "Calender event created successfully."
   );
 });
+exports.updateEvent = catchAssyncFunc(async function (req, res, next) {
+  const { event_id } = req.params;
+  const {
+    name,
+    type,
+    description,
+    start_date,
+    start_time,
+    end_date,
+    end_time,
+    location,
+    category,
+    visibility,
+    event_color,
+    priority,
+    user_id,
+    user_name,
+    user_image,
+    notified,
+  } = req.body;
+  console.log("🚀 ~ req.body:", req.body);
+  const is_added = await db("calender_events").where("id", event_id).update({
+    name,
+    type,
+    description,
+    start_date,
+    start_time,
+    end_date,
+    end_time,
+    location,
+    category,
+    visibility,
+    event_color,
+    priority,
+    end_time,
+    user_id,
+    user_name,
+    user_image,
+    notified,
+  });
+  if (!is_added) {
+    return helper.sendError(req, res, "Error creating calender event.", 500);
+  }
+  return helper.sendSuccess(
+    req,
+    res,
+    {},
+    "Calender event created successfully."
+  );
+});
