@@ -2,7 +2,7 @@ const catchAssyncFunc = require("../middlewares/catchAsyncFunc");
 const helper = require("../helper/helper");
 const twilio = require("twilio");
 const moment = require("moment");
-
+const axios = require("axios");
 async function getSubAccountsData(subaccounts) {
   const messagesArray = [];
   const callsArray = [];
@@ -288,20 +288,27 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
     "success"
   );
 });
-exports.getTwilioRates = async function (req, res, next) {
-  const { accountSid, authToken } = req.body;
+
+exports.getTwilioPricing = async function (req, res, next) {
+  const { accountSid, authToken, country_code } = req.body;
   const client = new twilio(accountSid, authToken);
-
-  const smsPricing = await client.pricing.messaging.countries.list();
-  const voicePricing = await client.pricing.voice.countries.list();
-
-  return res.status(200).json({
-    status: "success",
-    data: {
-      smsPricing: smsPricing,
-      voicePricing: voicePricing,
+  const voicePricing = await client.pricing.v2.voice
+    .countries(country_code)
+    .fetch();
+  const smsPricing = await client.pricing.v1.messaging
+    .countries(country_code)
+    .fetch();
+  return helper.sendSuccess(
+    req,
+    res,
+    {
+      pricingData: {
+        voicePricing,
+        smsPricing,
+      },
     },
-  });
+    "success"
+  );
 };
 
 // async function getSubAccountsData(subaccounts) {

@@ -220,18 +220,28 @@ exports.addContact = catchAsyncFunc(async (req, res, next) => {
 });
 exports.addBulkContact = catchAsyncFunc(async (req, res, next) => {
   const { contactsArray, user_id } = req.body;
+  console.log(
+    "🚀 ~ exports.addBulkContact=catchAsyncFunc ~ contactsArray:",
+    contactsArray
+  );
   // Filter the array to include only the desired properties (name and email)
-  const filteredContacts = contactsArray.map((contact) => ({
-    user_id,
-    firstname: contact.firstname,
-    lastname: contact.lastname,
-    phone: contact.phone,
-    state: contact.state,
-    city: contact.city,
-    biography: contact.biography,
-    country: contact.country,
-    email: contact.email,
-  }));
+
+  const filteredContacts = [];
+  await contactsArray.map((contact) => {
+    if (contact?.phone !== undefined) {
+      filteredContacts.push({
+        user_id,
+        firstname: contact.firstname,
+        lastname: contact.lastname,
+        phone: contact.phone,
+        state: contact.state,
+        city: contact.city,
+        biography: contact.biography,
+        country: contact.country,
+        email: contact.email,
+      });
+    }
+  });
   const is_record_inserted = await db("contacts").insert(filteredContacts);
   if (!is_record_inserted) {
     return helper.sendError(

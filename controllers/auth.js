@@ -238,14 +238,83 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     // return createSession(new_user, req, res);
     var otp_code = Math.floor(Math.random() * 900000);
 
-    const htmlMessage =
-      "<h1>OTP for <b>DesktopCRM</b> App</h1><br></br><p>Hello " +
-      new_user?.name +
-      ",</p><p>We have generated a one-time password (OTP) for your  <b>DesktopCRM</b> account. Please use the following OTP to verify your identity:</p><h2 style='background-color: #f2f2f2; padding: 10px; border-radius: 4px; font-size: 24px; display: inline-block;'>[" +
-      otp_code +
-      "]</h2><p>This OTP is valid for a limited time period and can only be used once.</p><p>If you did not initiate this action or have any concerns regarding your account security, please contact our support team immediately at [Support Email/Phone Number].</p><br><a href='http://localhost:3000/reset-password-verification/" +
-      new_user?.email +
-      "' >Reset Password</a><p>Thank you,<br>The <b>DesktopCRM</b> Team</p>";
+    // const htmlMessage =
+    //   "<h1>OTP for <b>DesktopCRM</b> App</h1><br></br><p>Hello " +
+    //   new_user?.name +
+    //   ",</p><p>We have generated a one-time password (OTP) for your  <b>DesktopCRM</b> account. Please use the following OTP to verify your identity:</p><h2 style='background-color: #f2f2f2; padding: 10px; border-radius: 4px; font-size: 24px; display: inline-block;'>[" +
+    //   otp_code +
+    //   "]</h2><p>This OTP is valid for a limited time period and can only be used once.</p><p>If you did not initiate this action or have any concerns regarding your account security, please contact our support team immediately at [Support Email/Phone Number].</p><br><a href='http://localhost:3000/reset-password-verification/" +
+    //   new_user?.email +
+    //   "' >Reset Password</a><p>Thank you,<br>The <b>DesktopCRM</b> Team</p>";
+    const htmlMessage = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }
+            .email-container {
+                max-width: 600px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #ffffff;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+                background-color: #008080;
+                color: white;
+                padding: 20px;
+                text-align: center;
+                border-radius: 8px 8px 0 0;
+            }
+            .content {
+                padding: 20px;
+            }
+            .otp {
+                background-color: #f2f2f2;
+                padding: 10px;
+                border-radius: 4px;
+                font-size: 24px;
+                display: inline-block;
+            }
+            .button {
+                display: inline-block;
+                padding: 10px 20px;
+                margin-top: 20px;
+                background-color: #008080;
+                color: white;
+                text-decoration: none;
+                border-radius: 4px;
+            }
+            .footer {
+                margin-top: 20px;
+                color: #666666;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="email-container">
+            <div class="header">
+                <h1>OTP for <b>DesktopCRM</b> App</h1>
+            </div>
+            <div class="content">
+                <p>Hello ${new_user.name},</p>
+                <p>We have generated a one-time password (OTP) for your <b>DesktopCRM</b> account. Please use the following OTP to verify your identity:</p>
+                <h2 class="otp">${otp_code}</h2>
+                <p>This OTP is valid for a limited time period and can only be used once.</p>
+                <p>If you did not initiate this action or have any concerns regarding your account security, please contact our support team immediately at [support@app.desktopcrm.com].</p>
+            </div>
+            <div class="footer">
+                <p>Thank you,<br>The <b>DesktopCRM</b> Team</p>
+            </div>
+        </div>
+    </body>
+    </html>`;
     const sendResetOTP = await sendGridEmail(
       email,
       "OTP FOR RESET PASSWORD",
@@ -372,14 +441,83 @@ exports.forgotPassword = catchAssyncFunc(async (req, res, next) => {
 
   var otp_code = Math.floor(Math.random() * 900000);
 
-  const htmlMessage =
-    "<h1>OTP for <b>DesktopCRM</b> App</h1><br></br><p>Hello " +
-    is_user_exist.name +
-    ",</p><p>We have generated a one-time password (OTP) for your  <b>DesktopCRM</b> account. Please use the following OTP to verify your identity:</p><h2 style='background-color: #f2f2f2; padding: 10px; border-radius: 4px; font-size: 24px; display: inline-block;'>[" +
-    otp_code +
-    "]</h2><p>This OTP is valid for a limited time period and can only be used once.</p><p>If you did not initiate this action or have any concerns regarding your account security, please contact our support team immediately at [Support Email/Phone Number].</p><br><a href='http://localhost:3000/reset-password-verification/" +
-    is_user_exist?.email +
-    "' >Reset Password</a><p>Thank you,<br>The <b>DesktopCRM</b> Team</p>";
+  // const htmlMessage =
+  //   "<h1>OTP for <b>DesktopCRM</b> App</h1><br></br><p>Hello " +
+  //   is_user_exist.name +
+  //   ",</p><p>We have generated a one-time password (OTP) for your  <b>DesktopCRM</b> account. Please use the following OTP to verify your identity:</p><h2 style='background-color: #f2f2f2; padding: 10px; border-radius: 4px; font-size: 24px; display: inline-block;'>[" +
+  //   otp_code +
+  //   "]</h2><p>This OTP is valid for a limited time period and can only be used once.</p><p>If you did not initiate this action or have any concerns regarding your account security, please contact our support team immediately at [Support Email/Phone Number].</p><br><a href='http://localhost:3000/reset-password-verification/" +
+  //   is_user_exist?.email +
+  //   "' >Reset Password</a><p>Thank you,<br>The <b>DesktopCRM</b> Team</p>";
+  const htmlMessage = `
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background-color: #008080;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        .content {
+            padding: 20px;
+        }
+        .otp {
+            background-color: #f2f2f2;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 24px;
+            display: inline-block;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #008080;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .footer {
+            margin-top: 20px;
+            color: #666666;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>OTP for <b>DesktopCRM</b> App</h1>
+        </div>
+        <div class="content">
+            <p>Hello ${is_user_exist.name},</p>
+            <p>We have generated a one-time password (OTP) for your <b>DesktopCRM</b> account. Please use the following OTP to verify your identity:</p>
+            <h2 class="otp">${otp_code}</h2>
+            <p>This OTP is valid for a limited time period and can only be used once.</p>
+            <p>If you did not initiate this action or have any concerns regarding your account security, please contact our support team immediately at [support@app.desktopcrm.com].</p>
+        </div>
+        <div class="footer">
+            <p>Thank you,<br>The <b>DesktopCRM</b> Team</p>
+        </div>
+    </div>
+</body>
+</html>`;
 
   const sendResetOTP = await sendGridEmail(
     email,

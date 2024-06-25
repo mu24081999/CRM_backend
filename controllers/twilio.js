@@ -7,6 +7,16 @@ const bcrypt = require("bcryptjs");
 
 const { AccessToken } = twilio.jwt;
 const VoiceResponse = twilio.twiml.VoiceResponse;
+exports.sendFax = catchAssyncFunc(async function (req, res, next) {
+  const { accountSid, authToken, fromFaxNumber, toFaxNumber } = req.body;
+  const client = twilio(accountSid, authToken);
+  const fax_sent = await client.fax.faxes.create({
+    from: fromFaxNumber,
+    to: toFaxNumber,
+    mediaUrl:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqGK3diR3Zi-mnOXEaj-3ewmFyRYVxGzVzZw&s", // URL to the document you want to fax
+  });
+});
 exports.getAvailableNumbers = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken } = req.body;
   const numbers = await twilio(accountSid, authToken)
@@ -31,7 +41,6 @@ exports.updateBalanceAfterCall = catchAssyncFunc(async function (
   const { accountSid, authToken, user_id, callSid } = req.body;
   const client = twilio(accountSid, authToken);
   const call = await client.calls.list({ limit: 1 });
-  console.log("🚀 ~ call:", call[0]);
 
   if (call[0]?.status === "completed" && call[0]?.price !== null) {
     const is_exist_balance = await db("balance")

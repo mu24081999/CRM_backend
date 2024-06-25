@@ -9,10 +9,10 @@ exports.up = function (knex) {
     table.bigInteger("user_id").unsigned().notNullable();
     table.string("avatar").nullable();
     table.string("phone").notNullable();
-    table.string("firstname").notNullable();
+    table.string("firstname").nullable();
     table.string("middlename").nullable();
     table.string("lastname").nullable();
-    table.string("email").unique().notNullable();
+    table.string("email").nullable();
     table.string("country").nullable();
     table.string("state").nullable();
     table.string("city").nullable();

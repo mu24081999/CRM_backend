@@ -15,7 +15,7 @@ router.post(
   addEvent
 );
 router.put(
-  "/update-event",
+  "/update-event/:event_id",
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   updateEvent
