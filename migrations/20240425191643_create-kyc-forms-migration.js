@@ -30,6 +30,9 @@ exports.up = function (knex) {
     table.string("document_type").nullable();
     table.string("document_url").nullable();
     table.boolean("is_policy_accepted").nullable().defaultTo(0);
+    table.boolean("is_approved").nullable().defaultTo(0);
+    table.integer("approved_by").unsigned().nullable();
+
     table.text("signature_data", "long_text").nullable();
     table.string("status").nullable();
     table.timestamps(true, true);
