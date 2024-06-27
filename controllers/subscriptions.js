@@ -162,7 +162,7 @@ exports.addSubscription = catchAssyncFunc(async function (req, res, next) {
 
   const sendEmail = await sendGridEmail(
     user?.email,
-    "OTP FOR RESET PASSWORD",
+    "Subscription payment success",
     htmlMessage
   );
   return helper.sendSuccess(req, res, {}, "Subscription successfully created.");

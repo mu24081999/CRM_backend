@@ -83,7 +83,9 @@ exports.updateTodo = catchAssyncFunc(async function (req, res, next) {
     priority,
     asign_to,
     labels,
+    is_notified,
   } = req.body;
+  console.log("🚀 ~ req.body:", req.body);
   const formData = {
     name,
     code,
@@ -95,9 +97,19 @@ exports.updateTodo = catchAssyncFunc(async function (req, res, next) {
     category_id,
     status,
     priority,
-    asign_to: JSON.stringify({ members: asign_to }),
-    labels: JSON.stringify({ labels: labels }),
+
+    is_notified,
   };
+  // Add asign_to to formData only if it is defined
+  if (asign_to !== undefined) {
+    formData.asign_to = JSON.stringify({ members: asign_to });
+  }
+
+  // Add labels to formData only if they are defined
+  if (labels !== undefined) {
+    formData.labels = JSON.stringify({ labels: labels });
+  }
+
   const is_updated = await db("todos").where("id", todo_id).update(formData);
   if (!is_updated) {
     return helper.sendError(req, res, "Something went wrong", 500);

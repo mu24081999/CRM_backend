@@ -316,7 +316,7 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     </html>`;
     const sendResetOTP = await sendGridEmail(
       email,
-      "OTP FOR RESET PASSWORD",
+      "Sign up Verification",
       htmlMessage
     );
     // const sendResetOTP = await helper.sendEmail(

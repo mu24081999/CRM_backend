@@ -24,6 +24,7 @@ exports.up = function (knex) {
     table.enum("priority", ["high", "medium", "low"]).defaultTo("high");
     table.json("asign_to").nullable();
     table.json("labels").nullable();
+    table.boolean("is_notified").defaultTo(0);
     table.timestamps(true, true);
   });
 };

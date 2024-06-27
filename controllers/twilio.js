@@ -4,9 +4,35 @@ const Joi = require("joi");
 const moment = require("moment");
 const twilio = require("twilio");
 const bcrypt = require("bcryptjs");
-
+const nodeMailer = require("nodemailer");
 const { AccessToken } = twilio.jwt;
 const VoiceResponse = twilio.twiml.VoiceResponse;
+
+async function sendGridEmail(toEmail, subject, htmlText) {
+  const transporter = nodeMailer.createTransport({
+    host: "smtp.sendgrid.net",
+    port: 587,
+    auth: {
+      user: "apikey", // This is the fixed username for SendGrid SMTP
+      pass: config.SENDGRID_API_KEY, // Your SendGrid API key
+    },
+  });
+  // Define the email options
+  const mailOptions = {
+    from: "Desktopcrm <support@app.desktopcrm.com>", // Sender address
+    to: toEmail, // List of recipients
+    subject: subject,
+    // text: "This is a test email sent using Nodemailer with SendGrid.",
+    html: htmlText,
+  };
+  // Send the email
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return console.log("Error:", error);
+    }
+    console.log("Email sent:", info);
+  });
+}
 exports.sendFax = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken, fromFaxNumber, toFaxNumber } = req.body;
   const client = twilio(accountSid, authToken);
@@ -185,8 +211,6 @@ exports.getUserSubAccounts = catchAssyncFunc(async function (req, res, next) {
   );
 });
 exports.recieveSMS = catchAssyncFunc(async function (req, res, next) {
-  console.log(req.body);
-  // const twiml = new twilio.twiml.MessagingResponse();
   const user = await db("users")
     .where("accountSid", req.body.AccountSid)
     .first();
@@ -199,12 +223,85 @@ exports.recieveSMS = catchAssyncFunc(async function (req, res, next) {
     // media_urls: { urls: [] },
     direction: "inbound",
   });
-  console.log("🚀 ~ user:", user);
+
   const messages = await db("messages")
     .where("account_sid", req.body.AccountSid)
     .select();
-  console.log("🚀 ~ messages:", messages);
   io.to(user.socket_id).emit("message_received", messages);
+  if (user.connected === 0) {
+    const htmlMessage = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }
+            .email-container {
+                max-width: 600px;
+                margin: 20px auto;
+                padding: 20px;
+                background-color: #ffffff;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+                background-color: #008080;
+                color: white;
+                padding: 10px;
+                text-align: center;
+                border-radius: 8px 8px 0 0;
+            }
+            .content {
+                padding: 20px;
+            }
+            .button {
+                display: inline-block;
+                padding: 10px 20px;
+                margin-top: 20px;
+                background-color: #007bff;
+                color: white;
+                text-decoration: none;
+                border-radius: 4px;
+                text-decoration: none;
+            }
+            .footer {
+                margin-top: 20px;
+                color: #666666;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="email-container">
+            <div class="header">
+                <p style="font-size:24px"><b>DesktopCRM</b></p>
+                <p style="font-size:16px">New Message Notification</p>
+            </div>
+            <div class="content">
+                <p>Hello ${user?.name},</p>
+                <p>You have received a new message:</p>
+                <p><b>From:</b> ${req.body.From}</p>
+                <p><b>Client ID:</b> ${req.body.To}</p>
+                <p><b>Message:</b></p>
+                <p>${req.body.Body?.slice(0, 100)}...</p>
+                <a style="text-decoration:none,color:white" href="https://app.desktopcrm.com/chats" class="button">View Message</a>
+                <p>If you have any questions or need further assistance, please contact our support team at [support@app.desktopcrm.com].</p>
+            </div>
+            <div class="footer">
+                <p>Thank you for using <b>DesktopCRM</b>!<br>The <b>DesktopCRM</b> Team</p>
+            </div>
+        </div>
+    </body>
+    </html>`;
+    const is_send = await sendGridEmail(
+      user.email,
+      "Message Notification",
+      htmlMessage
+    );
+  }
   res.end();
 });
 exports.listenSMS = catchAssyncFunc(async function (req, res, next) {
