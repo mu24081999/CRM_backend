@@ -21,13 +21,14 @@ var GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 //Google Cloud Storage
 global.storage = new Storage({
-  keyFilename: __dirname + "/justcall-378101-79e45cb3c455.json",
+  keyFilename: __dirname + "/justcall-378101-85a5c9fa46e9.json",
+  projectId: "justcall-378101",
 });
 const { GoogleAuth } = require("google-auth-library");
 
 // Set the path to the keyfile using environment variable
 process.env.GOOGLE_APPLICATION_CREDENTIALS =
-  "justcall-378101-79e45cb3c455.json";
+  "justcall-378101-85a5c9fa46e9.json";
 async function authenticate() {
   const auth = new GoogleAuth();
   const client = await auth.getClient();

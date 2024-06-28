@@ -15,6 +15,30 @@ exports.getUserBalance = catchAssyncFunc(async function (req, res, next) {
     "success"
   );
 });
+exports.asignBalance = catchAssyncFunc(async function (req, res, next) {
+  const { user_id, credit, to_user } = req.body;
+  const is_exist = await db("balance").where("user_id", user_id).first();
+  const is_to_user_balance_exist = await db("balance")
+    .where("user_id", to_user)
+    .first();
+  if (is_exist?.credit > credit) {
+    if (is_to_user_balance_exist) {
+      const balance =
+        parseInt(credit) + parseInt(is_to_user_balance_exist?.credit);
+      const is_record_updated = await db("balance")
+        .where("user_id", to_user)
+        .update({
+          credit: balance,
+        });
+    } else {
+      const is_record_inserted = await db("balance").insert({
+        user_id: to_user,
+        credit: credit,
+      });
+    }
+  }
+  return helper.sendSuccess(req, res, {}, "Balance successfully added.");
+});
 exports.addUpdateUserBalance = catchAssyncFunc(async function (req, res, next) {
   const { user_id, credit } = req.body;
   const is_exist = await db("balance").where("user_id", user_id).first();

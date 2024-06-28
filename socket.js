@@ -441,6 +441,30 @@ io.on("connection", (socket) => {
       throw new NEW_ERROR_RES(500, "Error sending message: " + error);
     }
   });
+  async function uploadFileToGCS(tempFilePath, room, file_name, retries = 1) {
+    try {
+      const [fileData] = await storage
+        .bucket("crm-justcall")
+        .upload(tempFilePath, {
+          destination: `chats/${room}/${file_name}`,
+          predefinedAcl: "publicRead",
+        });
+
+      return fileData;
+    } catch (error) {
+      console.error("Error uploading file:", error.message);
+      console.error("Error stack:", error.stack);
+      console.error("Full error object:", JSON.stringify(error, null, 2));
+
+      if (retries > 0) {
+        console.log(`Retrying... ${retries} attempts left`);
+        // await sleep(2000); // Wait for 2 seconds before retrying
+        return uploadFileToGCS(tempFilePath, room, file_name, retries - 1);
+      } else {
+        throw new Error("All retry attempts failed.");
+      }
+    }
+  }
   //send chat message
   socket.on("chat_message", async function (data) {
     const {
@@ -455,7 +479,6 @@ io.on("connection", (socket) => {
       file_type,
       file,
     } = data;
-
     let formData;
     if (type === "text") {
       formData = {
@@ -478,6 +501,8 @@ io.on("connection", (socket) => {
           // Set ACL to public-read
           predefinedAcl: "publicRead",
         });
+
+      // const fileData = await uploadFileToGCS(tempFilePath, room, file_name);
       const publicUrl = fileData?.publicUrl();
       formData = {
         sender: sender,
@@ -584,8 +609,7 @@ io.on("connection", (socket) => {
             <p>You have received a new message:</p>
             <p><b>From:</b> ${sender_details.name}</p>
             <p><b>Message:</b></p>
-            <p>${message?.slice(0, 100)}...</p>
-            <p>If you have any questions or need further assistance, please contact our support team at [support@app.desktopcrm.com].</p>
+            <p>${message}</p>
         </div>
         <div class="footer">
             <p>Thank you for using <b>DesktopCRM</b>!<br>The <b>DesktopCRM</b> Team</p>

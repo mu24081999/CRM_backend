@@ -164,6 +164,8 @@ exports.updateKYCForm = catchAssyncFunc(async function (req, res, next) {
     is_policy_accepted,
     signature_data,
     status,
+    is_approved,
+    approved_by,
   } = req.body;
   const is_record_updated = await db("kyc-forms").where("id", form_id).update({
     firstname,
@@ -187,6 +189,8 @@ exports.updateKYCForm = catchAssyncFunc(async function (req, res, next) {
     is_policy_accepted,
     signature_data,
     status,
+    is_approved,
+    approved_by,
   });
   if (!is_record_updated) {
     return helper.sendError(

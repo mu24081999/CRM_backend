@@ -51,13 +51,11 @@ exports.addPost = catchAssyncFunc(async function (req, res, next) {
     user_name,
     user_image,
   } = req.body;
-  console.log("🚀 ~ req.body:", req.body);
   const slider_images_json = [];
   let preview_image_url;
   let is_preview_added;
   let is_slider_images_added;
   if (req.files) {
-    console.log("🚀 ~ req.files:", req.files);
     const { slider_images, preview_image } = req.files;
     if (preview_image) {
       const { tempFilePath, size, mimetype, name } = preview_image;
@@ -70,6 +68,7 @@ exports.addPost = catchAssyncFunc(async function (req, res, next) {
           predefinedAcl: "publicRead",
         });
       preview_image_url = fileData?.publicUrl();
+      console.log("🚀 ~ fileData:", preview_image_url);
       is_preview_added = true;
       // is_preview_added = await new Promise((resolve, reject) => {
       //   fs.readFile(tempFilePath, async (err, data) => {
@@ -124,31 +123,35 @@ exports.addPost = catchAssyncFunc(async function (req, res, next) {
                 slider_images_json.push({
                   image_url: fileData?.publicUrl(),
                 });
-                is_slider_images_added = true;
-                const params = {
-                  Bucket: config.S3_BUCKET,
-                  Key: "posts/sliders/" + user_name + "/" + file.name,
-                  Body: data,
-                  ContentType: file.mimetype,
-                };
-                s3.upload(params, {}, async (err, data) => {
-                  if (err) {
-                    console.error(err);
-                    reject(new Error("Error Uploading File: " + err));
-                    return helper.sendError(
-                      req,
-                      res,
-                      "Error uploading files.",
-                      500
-                    );
-                  } else {
-                    console.log("File uploaded successfully:", data);
-                    slider_images_json.push({
-                      image_url: data.Location,
-                    });
-                    resolve(true);
-                  }
-                });
+                console.log(
+                  "🚀 ~ fs.readFile ~ fileData:",
+                  fileData?.publicUrl
+                );
+                resolve(true);
+                // const params = {
+                //   Bucket: config.S3_BUCKET,
+                //   Key: "posts/sliders/" + user_name + "/" + file.name,
+                //   Body: data,
+                //   ContentType: file.mimetype,
+                // };
+                // s3.upload(params, {}, async (err, data) => {
+                //   if (err) {
+                //     console.error(err);
+                //     reject(new Error("Error Uploading File: " + err));
+                //     return helper.sendError(
+                //       req,
+                //       res,
+                //       "Error uploading files.",
+                //       500
+                //     );
+                //   } else {
+                //     console.log("File uploaded successfully:", data);
+                //     slider_images_json.push({
+                //       image_url: data.Location,
+                //     });
+                //     resolve(true);
+                //   }
+                // });
               });
             });
           })
@@ -166,6 +169,7 @@ exports.addPost = catchAssyncFunc(async function (req, res, next) {
         slider_images_json.push({
           image_url: fileData?.publicUrl(),
         });
+        console.log("🚀 ~ fileData:", fileData.publicUrl);
         is_slider_images_added = true;
         // is_slider_images_added = await new Promise((resolve, reject) => {
         //   fs.readFile(tempFilePath, async (err, data) => {
@@ -196,7 +200,9 @@ exports.addPost = catchAssyncFunc(async function (req, res, next) {
       }
     }
   }
-  if (req.files ? is_slider_images_added && is_preview_added : true) {
+  console.log("🚀 ~ is_preview_added:", is_preview_added);
+  console.log("🚀 ~ is_slider_images_added:", is_slider_images_added);
+  if (is_slider_images_added && is_preview_added) {
     const is_record_inserted = await db("posts").insert({
       title,
       visibility,

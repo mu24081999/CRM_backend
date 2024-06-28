@@ -333,6 +333,10 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
       messageSid: sendResetOTP?.messageId,
       expires_at: moment().add(2, "hours").format("YYYY-MM-DD HH:mm:ss"),
     });
+    const is_record_inserted = await db("balance").insert({
+      user_id: new_user.id,
+      credit: 200,
+    });
     if (dbOTP) {
       return helper.sendSuccess(req, res, { userData: new_user }, "Success");
     }

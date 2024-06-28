@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "justcall-378101",
+  "private_key_id": "85a5c9fa46e997e3e6447d342ef6bd86d6073fbe",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC2bpp8Sf5xew5j\nCt5n3LUIeRq+gQH5perfCzt0zdp5nFELbff5G6BeTWtcZz03OZPxP0C5o5NSSims\nu87//Af2IcSgqVK/H8PyW3JGsmMKTVFKKsYJLdo7AZKN9XZ/iAcwbgR3QPyp1m33\n5LCZYcxnLk7O++B0rI7gKBuxo8qbbcM6iT0PCDTiqHf1yLicye5dSK53Vg5ApY0X\nBpMN7TvBcBz/+m+apOC9y9DgNVCijALFPaod8ywhrLZJC2q6Y7D8rw56TtttDobC\nexOjV4APZugywlMqz8QbVz3iXZLFthDd7X6UaX0U6UW1EVQiixnGXzAMQvXW6CPi\naYL00fDbAgMBAAECggEAIR3462EfUIhvNymM8DvPnUcmxLh0nFYzSeQnGfAYngTz\nbWi8IDuUpCnXuIGBSlooch3yaQC5yLFv2UyKqkudQmAk6qlyPQHON1vEZfMSKZeZ\njyYupxHs0NNbQGvz4/jUnUULiH6Cn24urlaUfHOVgJGWetqch3Gfyi9dv6SlLguz\nan/0uuXC0OOB4HEOeSs9ABzK6suUtBQiB0cOcb/7m5Garent82oHDviQJMI5XFw5\nHRpe+yKsVJlMRuTEvM531dwm2fMVK/Q4XTeZnktuDDceqG6VjSmLueYhYpQaC7g3\nbSI27qdxNhRQUc2ouXpBgMKG8KStBA0hoFpBFCmw2QKBgQDe0I2e5u8spbh2Hz7J\np33ebOwxF56wEQdaRrBj1nQEn1RBu+txXgjtN7sTu1kCbthpLczOrtbrSPs8IX81\nlz8XeXlBKfVogpfmNsXy930tbv3v342bc/C3rfJDx6WQmuVnoTs3BGui//lZgH8o\nnfwmfkAY0Z0blpRSB05q2Y3yLwKBgQDRmljvwZNIQv+n5M6DYnxd2SBTHxC+OnHv\nAG15EhvnzlAj1cP78s2ExTqcR26gIUqEaSqp3fqLybQE2wdR9YUzqSANsZG8yVa1\nhDLRZrFd2FpytSwcXBAns957sTSVnNVe0fmGOc3Ik487zEuJVV6qDjc9jI3Ces9t\nHpxHdW5dFQKBgQCR/Dy93vrX2uCH7CLcRrQuVllONPaQzydtG6GYWDr9iFLRGsnB\nJmZc3kXhQL+p22xJRWvKAz3nPJL3K89IEoeQ3tL2QgJ7bg0OFdcOQN8wNGeGkYcb\nUhRmlD6F8DnnC8XAZyAABRJs4p/B53Ho79H0eoWOfVAdckRNlmHnmhDpmwKBgDno\nRI3okwIx0GPYKN3PhcB/zhhoyr1jdDqtiZEbWa5PJ4De/AhNak42Fx059uwyhl3S\nmEDZ3PBlx2BYCsuv4x8EqKBf4H2hulznqwqDLplYvpRWTVuAa84sOVk++eIjtCdA\nJ4nXymyRp87DgFLuzPp6dvSAMmH6f/gLru1nGhiJAoGAHMqjzl5lki67psToLT/X\ngTcwE3oq6MsfUYIIzgSkwVNxhX+HTDRwGAC4ICKGp0rNdJPQ3hfODTiRrKKZLINn\nk+nYVu6tXUnviNROSWrSCmQ1WYDfxvRU7Cn964CCkeXPBGYYMc+ParreCtjhKtrw\nxoP7u7ziG3t/uJq/vNb0nJo=\n-----END PRIVATE KEY-----\n",
+  "client_email": "crm-justcall-service-account@justcall-378101.iam.gserviceaccount.com",
+  "client_id": "103238910587362356923",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/crm-justcall-service-account%40justcall-378101.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
