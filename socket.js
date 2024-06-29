@@ -137,77 +137,79 @@ io.on("connection", (socket) => {
       .limit(20);
     const user = await db("users").where("id", user_id).first();
     const socket_id = user?.socket_id;
-    const htmlMessage = `
-   <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f4f4f4;
-                margin: 0;
-                padding: 0;
-            }
-            .email-container {
-                max-width: 600px;
-                margin: 20px auto;
-                padding: 20px;
-                background-color: #ffffff;
-                border-radius: 8px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            }
-             .header {
-              background-color: #008080;
-              color: white;
-              padding: 10px;
-              text-align: center;
-              border-radius: 8px 8px 0 0;
-          }
-            .content {
-                padding: 20px;
-            }
-            .button {
-                display: inline-block;
-                padding: 10px 20px;
-                margin-top: 20px;
-                background-color: #007bff;
-                color: white;
-                text-decoration: none;
-                border-radius: 4px;
-                text-decoration: none;
-            }
-            .footer {
-                margin-top: 20px;
-                color: #666666;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="email-container">
-            <div class="header">
-                <p style="font-size:24px"><b>DesktopCRM</b></p>
-                <p style="font-size:16px">Event Reminder</p>
-            </div>
-            <div class="content">
-                <p>Hello ${user.name},</p>
-                <p>This is a reminder for your upcoming event:</p>
-                <p><b>${notification_details.name}</b></p>
-                <p>Details of the event are as follows:</p>
-                <ul>
-                    <li>Date: ${notification_details?.start_date}</li>
-                    <li>Time: ${notification_details?.start_time}</li>
-                    <li>Description: ${notification_details?.description}</li>
-                </ul>
-                <p>We hope to see you there! If you have any questions or need further assistance, please contact our support team at [support@app.desktopcrm.com].</p>
-            </div>
-            <div class="footer">
-                <p>Thank you for using <b>DesktopCRM</b>!<br>The <b>DesktopCRM</b> Team</p>
-            </div>
-        </div>
-    </body>
-    </html>`;
+    if (notification_details && email_to) {
+      const htmlMessage = `
+  <!DOCTYPE html>
+   <html>
+   <head>
+       <style>
+           body {
+               font-family: Arial, sans-serif;
+               background-color: #f4f4f4;
+               margin: 0;
+               padding: 0;
+           }
+           .email-container {
+               max-width: 600px;
+               margin: 20px auto;
+               padding: 20px;
+               background-color: #ffffff;
+               border-radius: 8px;
+               box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+           }
+            .header {
+             background-color: #008080;
+             color: white;
+             padding: 10px;
+             text-align: center;
+             border-radius: 8px 8px 0 0;
+         }
+           .content {
+               padding: 20px;
+           }
+           .button {
+               display: inline-block;
+               padding: 10px 20px;
+               margin-top: 20px;
+               background-color: #007bff;
+               color: white;
+               text-decoration: none;
+               border-radius: 4px;
+               text-decoration: none;
+           }
+           .footer {
+               margin-top: 20px;
+               color: #666666;
+           }
+       </style>
+   </head>
+   <body>
+       <div class="email-container">
+           <div class="header">
+               <p style="font-size:24px"><b>DesktopCRM</b></p>
+               <p style="font-size:16px">Event Reminder</p>
+           </div>
+           <div class="content">
+               <p>Hello ${user.name},</p>
+               <p>This is a reminder for your upcoming event:</p>
+               <p><b>${notification_details.name}</b></p>
+               <p>Details of the event are as follows:</p>
+               <ul>
+                   <li>Date: ${notification_details?.start_date}</li>
+                   <li>Time: ${notification_details?.start_time}</li>
+                   <li>Description: ${notification_details?.description}</li>
+               </ul>
+               <p>We hope to see you there! If you have any questions or need further assistance, please contact our support team at [support@app.desktopcrm.com].</p>
+           </div>
+           <div class="footer">
+               <p>Thank you for using <b>DesktopCRM</b>!<br>The <b>DesktopCRM</b> Team</p>
+           </div>
+       </div>
+   </body>
+   </html>`;
 
-    const sendEmail = await sendGridEmail(email_to, "Reminder", htmlMessage);
+      const sendEmail = await sendGridEmail(email_to, "Reminder", htmlMessage);
+    }
     io.to(socket_id).emit("trigger_notification", notifications);
   });
   socket.on("send-message", async (data) => {
@@ -479,6 +481,7 @@ io.on("connection", (socket) => {
       file_type,
       file,
     } = data;
+    console.log("🚀 ~ data:", data);
     let formData;
     if (type === "text") {
       formData = {
@@ -551,73 +554,74 @@ io.on("connection", (socket) => {
     io.to(room).emit("message_added", room_messages);
     const [sender_details, reciever_details] = await Promise.all([
       db("users").where("id", sender).first(),
-      db("users").where("id", recipient).first(),
+      recipient ? db("users").where("id", recipient).first() : {},
     ]);
-    const htmlMessage = `
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .email-container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            background-color: #008080;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            border-radius: 8px 8px 0 0;
-        }
-        .content {
-            padding: 20px;
-        }
-        .button {
-            display: inline-block;
-            padding: 10px 20px;
-            margin-top: 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            text-decoration: none;
-        }
-        .footer {
-            margin-top: 20px;
-            color: #666666;
-        }
-    </style>
-</head>
-<body>
-    <div class="email-container">
-        <div class="header">
-            <p style="font-size:24px"><b>DesktopCRM</b></p>
-            <p style="font-size:16px">New Message Notification</p>
-        </div>
-        <div class="content">
-            <p>Hello ${reciever_details?.name},</p>
-            <p>You have received a new message:</p>
-            <p><b>From:</b> ${sender_details.name}</p>
-            <p><b>Message:</b></p>
-            <p>${message}</p>
-        </div>
-        <div class="footer">
-            <p>Thank you for using <b>DesktopCRM</b>!<br>The <b>DesktopCRM</b> Team</p>
-        </div>
-    </div>
-</body>
-</html>`;
+
     if (reciever_details?.connected === 0) {
+      const htmlMessage = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <style>
+              body {
+                  font-family: Arial, sans-serif;
+                  background-color: #f4f4f4;
+                  margin: 0;
+                  padding: 0;
+              }
+              .email-container {
+                  max-width: 600px;
+                  margin: 20px auto;
+                  padding: 20px;
+                  background-color: #ffffff;
+                  border-radius: 8px;
+                  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              }
+              .header {
+                  background-color: #008080;
+                  color: white;
+                  padding: 10px;
+                  text-align: center;
+                  border-radius: 8px 8px 0 0;
+              }
+              .content {
+                  padding: 20px;
+              }
+              .button {
+                  display: inline-block;
+                  padding: 10px 20px;
+                  margin-top: 20px;
+                  background-color: #007bff;
+                  color: white;
+                  text-decoration: none;
+                  border-radius: 4px;
+                  text-decoration: none;
+              }
+              .footer {
+                  margin-top: 20px;
+                  color: #666666;
+              }
+          </style>
+      </head>
+      <body>
+          <div class="email-container">
+              <div class="header">
+                  <p style="font-size:24px"><b>DesktopCRM</b></p>
+                  <p style="font-size:16px">New Message Notification</p>
+              </div>
+              <div class="content">
+                  <p>Hello ${reciever_details?.name},</p>
+                  <p>You have received a new message:</p>
+                  <p><b>From:</b> ${sender_details.name}</p>
+                  <p><b>Message:</b></p>
+                  <p>${message}</p>
+              </div>
+              <div class="footer">
+                  <p>Thank you for using <b>DesktopCRM</b>!<br>The <b>DesktopCRM</b> Team</p>
+              </div>
+          </div>
+      </body>
+      </html>`;
       const is_send = await sendGridEmail(
         reciever_details?.email,
         "Team Message Notification",

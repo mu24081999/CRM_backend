@@ -442,10 +442,6 @@ exports.updateBulkContact = catchAsyncFunc(async (req, res, next) => {
     return helper.sendError(req, res, error, 403);
   }
   const { updates, modify_key } = req.body;
-  console.log(
-    "🚀 ~ exports.updateBulkContact=catchAsyncFunc ~ req.body:",
-    req.body
-  );
   const ids = updates.map((update) => update.id);
   const cases = {
     board_id: db.raw(
@@ -468,28 +464,35 @@ exports.updateBulkContact = catchAsyncFunc(async (req, res, next) => {
     ),
   };
   var updateParams = {};
+  let query;
   switch (modify_key) {
     case "board_id":
       updateParams = {
         board_id: cases.board_id,
         board_status: cases.board_status,
       };
+      query = db("contacts").update(updateParams).whereIn("id", ids);
       break;
     case "status":
       updateParams = {
         status: cases.status,
       };
+      query = db("contacts").update(updateParams).whereIn("id", ids);
+      break;
+    case "contact_delete":
+      query = db("contacts").whereIn("id", ids).del();
       break;
     default:
       break;
   }
-  console.log(
-    "🚀 ~ exports.updateBulkContact=catchAsyncFunc ~ updateParams:",
-    updateParams
-  );
-  const query = db("contacts").update(updateParams).whereIn("id", ids);
+
+  // const query = db("contacts").update(updateParams).whereIn("id", ids);
 
   const is_record_updated = await query;
+  console.log(
+    "🚀 ~ exports.updateBulkContact=catchAsyncFunc ~ is_record_updated:",
+    is_record_updated
+  );
 
   if (!is_record_updated) {
     return helper.sendError(

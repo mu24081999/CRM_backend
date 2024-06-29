@@ -857,7 +857,6 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
     google_app_password,
     from_name,
   } = req.body;
-  console.log(req.body.to);
   // Construct mailOptions
   // const mailOptions = {
   //   from: `${from_name} <${from}>`,
@@ -865,6 +864,7 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
   //   subject: subject,
   //   html: body,
   // };
+  const files = req.files;
   const transporter = nodeMailer.createTransport({
     service: "gmail",
     auth: {
@@ -890,8 +890,8 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
               mailOptions,
               subject,
               body,
+              files: files?.files,
             })
-
             .delayUntil(Date.now() + 15000) // Delay for 15 seconds
             .save()
             .then(() => resolve(true))
