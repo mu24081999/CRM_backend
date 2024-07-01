@@ -472,7 +472,6 @@ exports.searchPhoneNumbers = catchAssyncFunc(async function (req, res, next) {
   );
 });
 exports.listenCallStatus = catchAssyncFunc(async function (req, res, next) {
-  console.log("status", req.body);
   const To = req.body.To;
   const From = req.body.from || req.body.Caller;
   const client = new twilio.twiml.VoiceResponse();
@@ -607,12 +606,15 @@ exports.resumeRecording = catchAssyncFunc(async function (req, res, next) {
   }
 });
 exports.getCallLogs = catchAssyncFunc(async function (req, res, next) {
-  const { accountSid, authToken } = req.body;
+  const { accountSid, authToken, phoneNumber, direction } = req.body;
   const client = twilio(accountSid, authToken);
-  const calls = await client.calls.list({ limit: 100 });
-  console.log("🚀 ~ calls:", calls);
+  const calls = await client.calls.list({
+    limit: 100,
+    from: phoneNumber,
+    direction: direction,
+  });
   const allRecordings = await client.recordings.list({ limit: 100 });
-  console.log("🚀 ~ allRecordings:", allRecordings);
+  // console.log("🚀 ~ allRecordings:", allRecordings);
 
   // Iterate through each call
   const recordingsMap = {};

@@ -264,7 +264,7 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             }
             .header {
-                background-color: #28a745;
+                background-color: #008080;
                 color: white;
                 padding: 10px;
                 text-align: center;
@@ -333,10 +333,7 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
       messageSid: sendResetOTP?.messageId,
       expires_at: moment().add(2, "hours").format("YYYY-MM-DD HH:mm:ss"),
     });
-    const is_record_inserted = await db("balance").insert({
-      user_id: new_user.id,
-      credit: 200,
-    });
+
     if (dbOTP) {
       return helper.sendSuccess(req, res, { userData: new_user }, "Success");
     }
@@ -422,6 +419,7 @@ exports.signIn = catchAssyncFunc(async function (req, res, next) {
 exports.forgotPassword = catchAssyncFunc(async (req, res, next) => {
   const schema = Joi.object({
     email: Joi.string().email().required(),
+    subject: Joi.string().optional(),
   });
   const { error } = schema.validate(req.body);
   if (error) {
@@ -432,7 +430,7 @@ exports.forgotPassword = catchAssyncFunc(async (req, res, next) => {
       403
     );
   }
-  const { email } = req.body;
+  const { email, subject } = req.body;
   const is_user_exist = await db("users").where("email", email).first();
   if (!is_user_exist) {
     return helper.sendSuccess(req, res, {}, "No user found.");
@@ -506,7 +504,7 @@ exports.forgotPassword = catchAssyncFunc(async (req, res, next) => {
               <p style="font-size:16px">Reset Password OTP </p>
           </div>
           <div class="content">
-              <p>Hello ${new_user.name},</p>
+              <p>Hello ${is_user_exist.name},</p>
               <p>We have generated a one-time password (OTP) for your <b>DesktopCRM</b> account. Please use the following OTP to verify your identity:</p>
               <h2 class="otp">${otp_code}</h2>
               <p>This OTP is valid for a limited time period and can only be used once.</p>
@@ -519,11 +517,7 @@ exports.forgotPassword = catchAssyncFunc(async (req, res, next) => {
   </body>
   </html>`;
 
-  const sendResetOTP = await sendGridEmail(
-    email,
-    "OTP FOR RESET PASSWORD",
-    htmlMessage
-  );
+  const sendResetOTP = await sendGridEmail(email, subject, htmlMessage);
   const dbOTP = await db("otps").insert({
     email: email,
     otp: otp_code,

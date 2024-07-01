@@ -21,17 +21,10 @@ exports.asignBalance = catchAssyncFunc(async function (req, res, next) {
   const is_to_user_balance_exist = await db("balance")
     .where("user_id", to_user)
     .first();
-  console.log("🚀 ~ is_to_user_balance_exist:", is_to_user_balance_exist);
   if (is_exist?.credit >= credit) {
-    console.log(
-      "🚀 ~ is_to_user_balance_exist?.user_id:",
-      is_to_user_balance_exist?.user_id,
-      to_user
-    );
     if (is_to_user_balance_exist?.user_id === to_user) {
       const balance =
         parseInt(credit) + parseInt(is_to_user_balance_exist?.credit);
-      console.log("🚀 ~ balance:", balance);
       const is_record_updated = await db("balance")
         .where("user_id", to_user)
         .update({
