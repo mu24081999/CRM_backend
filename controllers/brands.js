@@ -16,14 +16,15 @@ exports.getAllBrands = catchAssyncFunc(async function (req, res, next) {
 });
 exports.readUserBrand = catchAssyncFunc(async function (req, res, next) {
   const { user_id } = req.params;
-  const user = await db("users").where("user_id", user_id).first();
+  const user = await db("users").where("id", user_id).first();
   let brand;
   if (user.client_id !== null) {
     brand = await db("brands")
       .where("user_id", parseInt(user?.client_id))
       .first();
+  } else {
+    brand = await db("brands").where("user_id", user_id).first();
   }
-  brand = await db("brands").where("user_id", user_id).first();
   return helper.sendSuccess(req, res, { brandData: brand }, "success");
 });
 exports.addUpdateBrand = catchAssyncFunc(async function (req, res, next) {
