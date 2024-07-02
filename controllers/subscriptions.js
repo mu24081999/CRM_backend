@@ -26,7 +26,7 @@ exports.getUserSubscriptions = catchAssyncFunc(async function (req, res, next) {
       .first();
   } else if (user.parent_id === null && user.client_id !== null) {
     const parent_user = await db("users")
-      .where("id", parseInt(user.client))
+      .where("id", parseInt(user.client_id))
       .first();
     subscription = await db("subscriptions")
       .where("customer_id", parseInt(parent_user?.parent_id))
@@ -217,13 +217,13 @@ exports.addSubscription = catchAssyncFunc(async function (req, res, next) {
       case "Growth":
         params = {
           user_id: user.id,
-          credit: 400,
+          credit: 600,
         };
         break;
       case "Enterprise":
         params = {
           user_id: user.id,
-          credit: 600,
+          credit: 1000,
         };
         break;
       default:
