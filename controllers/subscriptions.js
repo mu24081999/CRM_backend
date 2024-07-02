@@ -14,14 +14,29 @@ exports.getAllSubscriptions = catchAssyncFunc(async function (req, res, next) {
   );
 });
 exports.getUserSubscriptions = catchAssyncFunc(async function (req, res, next) {
-  const subscriptions = await db("subscriptions")
-    .where("customer_id", req.user.id)
-    .select();
+  const user = await db("users").where("id", req.user.id).first();
+  let subscription;
+  if (user.parent_id === null && user.client_id === null) {
+    subscription = await db("subscriptions")
+      .where("customer_id", req.user.id)
+      .first();
+  } else if (user.parent_id !== null && user.client_id === null) {
+    subscription = await db("subscriptions")
+      .where("customer_id", parseInt(user.parent_id))
+      .first();
+  } else if (user.parent_id === null && user.client_id !== null) {
+    const parent_user = await db("users")
+      .where("id", parseInt(user.client))
+      .first();
+    subscription = await db("subscriptions")
+      .where("customer_id", parseInt(parent_user?.parent_id))
+      .first();
+  }
   return helper.sendSuccess(
     req,
     res,
     {
-      subscriptionsData: subscriptions,
+      subscriptionsData: subscription,
     },
     "success"
   );
