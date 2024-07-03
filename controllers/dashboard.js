@@ -162,7 +162,9 @@ exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
       accountSid
         ? db("messages").where("account_sid", accountSid).select()
         : [],
-      db("invoices").select(),
+      user?.role === "ADMIN"
+        ? db("invoices").select()
+        : db("invoices").where("user_id", user.id).select(),
       db("contacts").where("user_id", req.user.id).select(),
       user.role === "ADMIN"
         ? db("subscriptions").select()

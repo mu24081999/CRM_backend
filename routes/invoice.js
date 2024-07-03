@@ -7,6 +7,7 @@ const {
   getInvoices,
   updateActivity,
   updateInvoiceRec,
+  getUserInvoices,
 } = require("../controllers/invoice");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
@@ -20,6 +21,12 @@ router.get(
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   getInvoices
+);
+router.get(
+  "/get-user-invoices",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  getUserInvoices
 );
 router.delete(
   "/delete-invoice/:invoice_id",

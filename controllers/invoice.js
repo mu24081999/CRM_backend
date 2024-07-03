@@ -8,7 +8,6 @@ const hbs = require("nodemailer-express-handlebars");
 const path = require("path");
 
 function sendEmailTemplate(email, post_data) {
-  console.log("🚀 ~ sendEmailTemplate ~ post_data:", post_data);
   const transporter = nodeMailer.createTransport({
     service: "gmail",
     auth: {
@@ -51,6 +50,17 @@ function sendEmailTemplate(email, post_data) {
 }
 exports.getInvoices = catchAssyncFunc(async function (req, res, next) {
   const invoices = await db("invoices").select();
+  return helper.sendSuccess(
+    req,
+    res,
+    {
+      invoicesData: invoices,
+    },
+    "success"
+  );
+});
+exports.getUserInvoices = catchAssyncFunc(async function (req, res, next) {
+  const invoices = await db("invoices").where("user_id", req.user.id).select();
   return helper.sendSuccess(
     req,
     res,
@@ -177,7 +187,7 @@ exports.addInvoice = catchAssyncFunc(async function (req, res, next) {
   if (!is_added) {
     return helper.sendError(req, res, "Error adding invoice", 500);
   }
-  await sendEmailTemplate(JSON.parse(bill_details)?.email, post_data);
+  await sendEmailTemplate(JSON.parse(business_info)?.email, post_data);
 
   return helper.sendSuccess(req, res, {}, "invoice added successfully");
 });

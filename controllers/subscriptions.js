@@ -32,6 +32,7 @@ exports.getUserSubscriptions = catchAssyncFunc(async function (req, res, next) {
       .where("customer_id", parseInt(parent_user?.parent_id))
       .first();
   }
+  console.log("🚀 ~ subscription:", subscription);
   return helper.sendSuccess(
     req,
     res,

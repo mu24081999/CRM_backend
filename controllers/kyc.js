@@ -67,13 +67,26 @@ exports.addKYCForm = catchAssyncFunc(async function (req, res, next) {
     signature_data,
     status,
   } = req.body;
+  let publicUrl;
+  let params;
+  if (req.files) {
+    const { document } = req.files;
+    const [fileData] = await storage
+      .bucket("crm-justcall")
+      .upload(document.tempFilePath, {
+        destination:
+          "kycDocuments/" + firstname + "%" + lastname + "/" + document.name,
+        predefinedAcl: "publicRead",
+      });
+    publicUrl = fileData.publicUrl();
+  }
+
   const is_exist_user_form = await db("kyc-forms")
     .where("user_id", req.user.id)
     .first();
   if (is_exist_user_form) {
-    const is_record_updated = await db("kyc-forms")
-      .where("user_id", req.user.id)
-      .update({
+    if (req.files) {
+      params = {
         firstname,
         lastname,
         martial_status,
@@ -91,11 +104,38 @@ exports.addKYCForm = catchAssyncFunc(async function (req, res, next) {
         address,
         zip_code,
         document_type,
-        document_url,
+        document_url: publicUrl,
         is_policy_accepted,
         signature_data,
         status,
-      });
+      };
+    } else {
+      params = {
+        firstname,
+        lastname,
+        martial_status,
+        gender,
+        nationality,
+        date_of_birth,
+        company_do,
+        company_size,
+        company_details,
+        company_type,
+        email,
+        phone,
+        state,
+        city,
+        address,
+        zip_code,
+        document_type,
+        is_policy_accepted,
+        signature_data,
+        status,
+      };
+    }
+    const is_record_updated = await db("kyc-forms")
+      .where("user_id", req.user.id)
+      .update(params);
     if (is_record_updated) {
       return helper.sendSuccess(
         req,
@@ -105,30 +145,57 @@ exports.addKYCForm = catchAssyncFunc(async function (req, res, next) {
       );
     }
   }
-  const is_record_inserted = await db("kyc-forms").insert({
-    user_id: req.user.id,
-    firstname,
-    lastname,
-    martial_status,
-    gender,
-    nationality,
-    company_do,
-    company_size,
-    company_details,
-    company_type,
-    date_of_birth,
-    email,
-    phone,
-    state,
-    city,
-    address,
-    zip_code,
-    document_type,
-    document_url,
-    is_policy_accepted,
-    signature_data,
-    status,
-  });
+  if (req.files) {
+    params = {
+      user_id: req.user.id,
+      firstname,
+      lastname,
+      martial_status,
+      gender,
+      nationality,
+      date_of_birth,
+      company_do,
+      company_size,
+      company_details,
+      company_type,
+      email,
+      phone,
+      state,
+      city,
+      address,
+      zip_code,
+      document_type,
+      document_url: publicUrl,
+      is_policy_accepted,
+      signature_data,
+      status,
+    };
+  } else {
+    params = {
+      user_id: req.user.id,
+      firstname,
+      lastname,
+      martial_status,
+      gender,
+      nationality,
+      date_of_birth,
+      company_do,
+      company_size,
+      company_details,
+      company_type,
+      email,
+      phone,
+      state,
+      city,
+      address,
+      zip_code,
+      document_type,
+      is_policy_accepted,
+      signature_data,
+      status,
+    };
+  }
+  const is_record_inserted = await db("kyc-forms").insert(params);
   if (!is_record_inserted) {
     return helper.sendError(
       req,
