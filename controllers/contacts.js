@@ -498,11 +498,11 @@ exports.updateBulkContact = catchAsyncFunc(async (req, res, next) => {
     return helper.sendError(
       req,
       res,
-      "Something went wrong, while creating user.",
+      "Something went wrong, server error.",
       500
     );
   }
-  return helper.sendSuccess(req, res, {}, "Contact successfully updated.");
+  return helper.sendSuccess(req, res, {}, "Operation successfully completed.");
 });
 
 exports.deleteContact = catchAsyncFunc(async (req, res, next) => {

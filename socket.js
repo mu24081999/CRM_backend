@@ -627,7 +627,6 @@ io.on("connection", (socket) => {
         "Team Message Notification",
         htmlMessage
       );
-      console.log("🚀 ~ is_send:", is_send);
     }
   });
   //Me
