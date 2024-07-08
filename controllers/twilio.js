@@ -478,7 +478,7 @@ exports.listenCallStatus = catchAssyncFunc(async function (req, res, next) {
   const user = await db("users").where("phone", To).first();
   console.log("🚀 ~ user:", user);
   const is_recording = user?.recording === 1 ? true : false;
-  console.log("🚀 ~ is_recording:", is_recording);
+  console.log("🚀 ~ is_recording:", req.body);
 
   if (req.body.CallToken) {
     // client.say("Incoming call");
