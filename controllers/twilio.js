@@ -475,7 +475,12 @@ exports.listenCallStatus = catchAssyncFunc(async function (req, res, next) {
   const To = req.body.To;
   const From = req.body.from || req.body.Caller;
   const client = new twilio.twiml.VoiceResponse();
-  const user = await db("users").where("phone", To).first();
+  let user;
+  if (req.body.CallToken) {
+    user = await db("users").where("phone", From).first();
+  } else {
+    user = await db("users").where("phone", To).first();
+  }
   console.log("🚀 ~ user:", user);
   const is_recording = user?.recording === 1 ? true : false;
   console.log("🚀 ~ is_recording:", req.body);
