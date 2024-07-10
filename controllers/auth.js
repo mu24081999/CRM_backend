@@ -370,6 +370,7 @@ exports.signIn = catchAssyncFunc(async function (req, res, next) {
     );
   }
   const { username, password, type, authType, googleProfile } = req.body;
+  console.log("🚀 ~ req.body:", req.body);
   const is_exist_user = await db("users")
     .where("username", username)
     .orWhere("email", username)
