@@ -27,6 +27,7 @@ const balanceRoutes = require("./routes/balance");
 const notificationRoutes = require("./routes/notification");
 const ratesRoutes = require("./routes/plan-rates");
 const brandRoutes = require("./routes/brands");
+const permissionRoutes = require("./routes/permissions");
 
 app.use("/v1/auth", authRoutes);
 app.use("/v1/user", usersRoutes);
@@ -56,3 +57,4 @@ app.use("/v1/user/balance", balanceRoutes);
 app.use("/v1/user/notifications", notificationRoutes);
 app.use("/v1/user/rates", ratesRoutes);
 app.use("/v1/user/brand", brandRoutes);
+app.use("/v1/user/permissions", permissionRoutes);

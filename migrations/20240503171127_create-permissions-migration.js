@@ -22,7 +22,11 @@ exports.up = function (knex) {
     table.boolean("file_manager").defaultTo(0);
     table.boolean("agents").defaultTo(0);
     table.boolean("call_recordings").defaultTo(0);
-    table.boolean("blogs").defaultTo(0);
+    table.boolean("bulk_emails").defaultTo(0);
+    table.boolean("bulk_sms").defaultTo(0);
+    table.boolean("sms_logs").defaultTo(0);
+    table.boolean("calendar").defaultTo(0);
+    table.boolean("wallet").defaultTo(0);
     table.timestamps(true, true);
   });
 };
