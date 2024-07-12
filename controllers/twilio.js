@@ -504,7 +504,7 @@ exports.listenCallStatus = catchAssyncFunc(async function (req, res, next) {
     // } else {
     //   client.say("Invalid input. Goodbye!"); // Handle invalid input
     // }
-    client.dial({ record: is_recording }).client(user?.username);
+    client.dial({ record: true }).client(user?.username);
     const notificationData = await db("notifications").insert({
       user_id: user.id,
       notification: `A call comming from number ${From}`,
@@ -616,13 +616,13 @@ exports.getCallLogs = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken, phoneNumber, direction } = req.body;
   const client = twilio(accountSid, authToken);
   let calls = await client.calls.list({
-    // limit: 100,
+    limit: 400,
     from: phoneNumber,
   });
   if (direction) {
     calls = calls?.filter((call) => call.direction === direction);
   }
-  const allRecordings = await client.recordings.list({ limit: 100 });
+  const allRecordings = await client.recordings.list({ limit: 200 });
   // console.log("🚀 ~ allRecordings:", allRecordings);
 
   // Iterate through each call
@@ -636,7 +636,8 @@ exports.getCallLogs = catchAssyncFunc(async function (req, res, next) {
   const history = [];
   // Add recordings to the call objects
   for (const call of calls) {
-    const recordings = recordingsMap[call.sid] || [];
+    const recordings =
+      recordingsMap[call.parentCallSid ? call.parentCallSid : call.sid] || [];
     history.push({
       call: call,
       recording: recordings?.length > 0 ? recordings[0] : {},

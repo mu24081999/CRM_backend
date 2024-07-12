@@ -5,8 +5,10 @@ const fs = require("fs");
 const moment = require("moment");
 
 exports.getBoards = catchAssyncFunc(async function (req, res, next) {
+  const user = await db("users").where("id", req.user.id).first();
+
   const boards = await db("boards")
-    .where("user_id", req.user.id)
+    .where("user_id", user.client_id ? parseInt(user.client_id) : req.user.id)
     .orderBy("created_at", "desc")
     .select();
   return helper.sendSuccess(

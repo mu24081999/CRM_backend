@@ -535,9 +535,11 @@ exports.permanentDeleteContact = catchAsyncFunc(async (req, res, next) => {
   return helper.sendSuccess(req, res, {}, "Contact deleted successfully.");
 });
 exports.getContacts = catchAsyncFunc(async (req, res, next) => {
+  const user = await db("users").where("id", req.user.id).first();
+
   const contacts = await db("contacts")
     // .where("status", "active")
-    .where("user_id", req.user.id)
+    .where("user_id", user.client_id ? parseInt(user.client_id) : req.user.id)
     .orderBy("created_at", "desc")
     .select();
   if (!contacts) {
