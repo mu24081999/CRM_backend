@@ -322,7 +322,7 @@ io.on("connection", (socket) => {
               .select();
             io.to(data.from.socket_id).emit("message_sent", messages);
             // Take appropriate actions here
-          } else {
+          } else if (latestMessage?.status === "delivered") {
             console.log("Message delivered successfully.");
             const is_exist_balance = await db("balance")
               .where("user_id", data?.user_id)
@@ -342,7 +342,7 @@ io.on("connection", (socket) => {
               "🚀 ~ client.messages.list ~ is_balance_updated:",
               is_balance_updated,
               parseFloat(is_exist_balance?.credit),
-              parseFloat(latestMessage.price) * 100
+              parseFloat(latestMessage.price) * 100 * 2
             );
             console.log("Message not complete. Status:", latestMessage);
           }
