@@ -352,17 +352,32 @@ io.on("connection", (socket) => {
     setTimeout(async () => {
       try {
         const messages = await client.messages.list({ to: data.to.phone });
+        const is_exist_balance = await db("balance")
+          .where("user_id", data?.user_id)
+          .first();
         const latestMessage = messages[0];
         console.log(
           "🚀 ~ client.messages.list ~ latestMessage:",
           latestMessage
         );
-
+        if (latestMessage?.price !== null) {
+          const is_balance_updated = await db("balance")
+            .where("user_id", data?.user_id)
+            .update({
+              credit:
+                parseFloat(is_exist_balance?.credit) +
+                parseFloat(latestMessage.price) * 100 * 2,
+            });
+        }
         if (
           !latestMessage ||
           latestMessage.status !== "delivered" ||
           (latestMessage.status === "sent" && latestMessage.price === null)
         ) {
+          console.log(
+            "🚀 ~ setTimeout ~ latestMessage.status :",
+            latestMessage.status
+          );
           io.to(data.from.socket_id).emit(
             "message_error",
             "A2P Verification required"
@@ -387,27 +402,27 @@ io.on("connection", (socket) => {
         } else {
           console.log("Message delivered successfully.");
 
-          const is_exist_balance = await db("balance")
-            .where("user_id", data?.user_id)
-            .first();
-          console.log(
-            "🚀 ~ client.messages.list ~ is_exist_balance:",
-            is_exist_balance
-          );
+          // const is_exist_balance = await db("balance")
+          //   .where("user_id", data?.user_id)
+          //   .first();
+          // console.log(
+          //   "🚀 ~ client.messages.list ~ is_exist_balance:",
+          //   is_exist_balance
+          // );
 
-          const is_balance_updated = await db("balance")
-            .where("user_id", data?.user_id)
-            .update({
-              credit:
-                parseFloat(is_exist_balance?.credit) +
-                parseFloat(latestMessage.price) * 100 * 2,
-            });
-          console.log(
-            "🚀 ~ client.messages.list ~ is_balance_updated:",
-            is_balance_updated,
-            parseFloat(is_exist_balance?.credit),
-            parseFloat(latestMessage.price) * 100 * 2
-          );
+          // const is_balance_updated = await db("balance")
+          //   .where("user_id", data?.user_id)
+          //   .update({
+          //     credit:
+          //       parseFloat(is_exist_balance?.credit) +
+          //       parseFloat(latestMessage.price) * 100 * 2,
+          //   });
+          // console.log(
+          //   "🚀 ~ client.messages.list ~ is_balance_updated:",
+          //   is_balance_updated,
+          //   parseFloat(is_exist_balance?.credit),
+          //   parseFloat(latestMessage.price) * 100 * 2
+          // );
         }
       } catch (error) {
         console.error("Error in setTimeout callback:", error);
