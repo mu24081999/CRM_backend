@@ -64,26 +64,24 @@ exports.updateBalanceAfterCall = catchAssyncFunc(async function (
   res,
   next
 ) {
-  const { accountSid, authToken, user_id, callSid } = req.body;
+  const { accountSid, authToken, user_id } = req.body;
   const client = twilio(accountSid, authToken);
-  const call = await client.calls.list({ limit: 1 });
-
-  if (call[0]?.status === "completed" && call[0]?.price !== null) {
-    const is_exist_balance = await db("balance")
-      .where("user_id", user_id)
-      .first();
-    console.log(
-      parseFloat(is_exist_balance?.credit),
-      parseFloat(call[0]?.price) * 100
-    );
-    const is_balance_updated = await db("balance")
-      .where("user_id", user_id)
-      .update({
-        credit:
-          parseFloat(is_exist_balance?.credit) +
-          parseFloat(call[0].price) * 100,
-      });
-  }
+  const is_exist_balance = await db("balance")
+    .where("user_id", user_id)
+    .first();
+  const calls = await client.calls.list({ limit: 2 });
+  let credit = 0;
+  calls?.map((call) => {
+    if (call?.status === "completed" && call?.price !== null) {
+      credit = credit + parseFloat(call.price) * 100 * 2;
+    }
+  });
+  console.log("credit: " + credit);
+  const is_balance_updated = await db("balance")
+    .where("user_id", user_id)
+    .update({
+      credit: parseFloat(is_exist_balance?.credit) + credit,
+    });
   return helper.sendSuccess(req, res, {}, "balance updated successfully");
 });
 exports.getClaimedNumbers = catchAssyncFunc(async function (req, res, next) {

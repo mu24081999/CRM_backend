@@ -176,62 +176,35 @@ exports.addSubscription = catchAssyncFunc(async function (req, res, next) {
       </div>
   </body>
   </html>`;
-  const is_user_balance_exist = await db("balance")
-    .where("user_id", user.id)
-    .first();
-  if (is_user_balance_exist) {
-    let params;
-    switch (plan) {
-      case "Solo Starter":
-        params = {
-          user_id: user.id,
-          credit: is_user_balance_exist.credit + 200,
-        };
-        break;
-      case "Growth":
-        params = {
-          user_id: user.id,
-          credit: is_user_balance_exist.credit + 400,
-        };
-        break;
-      case "Enterprise":
-        params = {
-          user_id: user.id,
-          credit: is_user_balance_exist.credit + 600,
-        };
-        break;
-      default:
-        break;
-    }
-    const is_balance_updated = await db("balance")
-      .where("user_id", user.id)
-      .update(params);
-  } else {
-    let params;
-    switch (plan) {
-      case "Solo Starter":
-        params = {
-          user_id: user.id,
-          credit: 200,
-        };
-        break;
-      case "Growth":
-        params = {
-          user_id: user.id,
-          credit: 600,
-        };
-        break;
-      case "Enterprise":
-        params = {
-          user_id: user.id,
-          credit: 1000,
-        };
-        break;
-      default:
-        break;
-    }
-    const is_balance_added = await db("balance").insert(params);
+
+  let params;
+  switch (plan) {
+    case "Solo Starter":
+      params = {
+        user_id: user.id,
+        credit:
+          plan_type === "monthly" ? 500 : plan_type === "yearly" && 500 * 12,
+      };
+      break;
+    case "Growth":
+      params = {
+        user_id: user.id,
+
+        credit:
+          plan_type === "monthly" ? 1500 : plan_type === "yearly" && 1500 * 12,
+      };
+      break;
+    case "Enterprise":
+      params = {
+        user_id: user.id,
+        credit:
+          plan_type === "monthly" ? 5000 : plan_type === "yearly" && 5000 * 12,
+      };
+      break;
+    default:
+      break;
   }
+  const is_balance_added = await db("balance").insert(params);
 
   const sendEmail = await sendGridEmail(
     user?.email,

@@ -5,7 +5,10 @@ const fs = require("fs");
 const moment = require("moment");
 
 exports.getUserBalance = catchAssyncFunc(async function (req, res, next) {
-  const balanceData = await db("balance").where("user_id", req.user.id).first();
+  const user = await db("users").where("id", req.user.id).first();
+  const balanceData = await db("balance")
+    .where("user_id", user?.client_id ? parseInt(user?.client_id) : req.user.id)
+    .first();
   return helper.sendSuccess(
     req,
     res,

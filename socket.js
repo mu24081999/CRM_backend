@@ -290,10 +290,13 @@ io.on("connection", (socket) => {
         io.to(data.from.socket_id).emit("message_sent", messages);
         // throw new NEW_ERROR_RES(500, err);
       });
-    // if (country_code === "+1") {
     await setTimeout(() => {
       client.messages.list({ to: data.to.phone }).then(async (messages) => {
         const latestMessage = messages[0];
+        console.log(
+          "🚀 ~ client.messages.list ~ latestMessage:",
+          latestMessage
+        );
         if (
           latestMessage.status !== "delivered" ||
           (latestMessage.status === "sent" && latestMessage.price === null)
@@ -331,7 +334,7 @@ io.on("connection", (socket) => {
             .update({
               credit:
                 parseFloat(is_exist_balance?.credit) +
-                parseFloat(latestMessage.price) * 100,
+                parseFloat(latestMessage.price) * 100 * 2,
             });
           console.log(
             "🚀 ~ client.messages.list ~ is_balance_updated:",
