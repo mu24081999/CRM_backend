@@ -322,7 +322,7 @@ io.on("connection", (socket) => {
               .select();
             io.to(data.from.socket_id).emit("message_sent", messages);
             // Take appropriate actions here
-          } else if (latestMessage?.status === "delivered") {
+          } else {
             console.log("Message delivered successfully.");
             const is_exist_balance = await db("balance")
               .where("user_id", data?.user_id)
