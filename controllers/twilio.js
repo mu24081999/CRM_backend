@@ -413,6 +413,10 @@ exports.claimPhoneNumber = catchAssyncFunc(async function (req, res, next) {
       smsMethod: "POST",
       // statusCallback: "https://desktopcrm.com:51/v1/user/calling/listen-call-status", // URL for handling voice call status callbacks
       // statusCallbackMethod: "POST", // HTTP method for voice call status callbacks
+    })
+    .then((response) => {})
+    .catch((error) => {
+      return helper.sendError(req, res, error, 400);
     });
   return helper.sendSuccess(
     req,
