@@ -199,6 +199,7 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     twilio_numbers,
   };
   const is_user_added = await db("users").insert(userParams);
+  console.log("🚀 ~ is_user_added:", is_user_added);
   const new_user = await db("users").where("email", is_user_added[0]).first();
   console.log("🚀 ~ new_user:", new_user);
 
