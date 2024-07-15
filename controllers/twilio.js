@@ -442,9 +442,8 @@ exports.searchPhoneNumbers = catchAssyncFunc(async function (req, res, next) {
     filters.contains = locality; // Filter by region name
   }
   if (number) {
-    filters.contains = number; // Filter by region name
+    filters.contains = number + "*"; // Filter by region name
   }
-
   // Add filters for voice, SMS, MMS, and fax capabilities
   if (voice) {
     filters.voiceEnabled = voice;
