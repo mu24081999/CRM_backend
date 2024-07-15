@@ -438,8 +438,8 @@ exports.searchPhoneNumbers = catchAssyncFunc(async function (req, res, next) {
   if (area_code) {
     filters.areaCode = area_code;
   }
-  if (locality) {
-    filters.contains = locality + "*"; // Filter by region name
+  if (locality && area_code) {
+    filters.contains = area_code + "*"; // Filter by region name
   }
   if (number) {
     filters.contains = number; // Filter by region name
