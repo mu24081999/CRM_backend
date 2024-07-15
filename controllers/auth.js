@@ -210,6 +210,7 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
       postalCode: new_user?.postal_code,
       isoCountry: new_user?.country,
     };
+    console.log("🚀 ~ addressDetails:", addressDetails);
     // Create a subaccount
     const twilio_account = await twilioClient.api.accounts.create({
       friendlyName: new_user.username,
