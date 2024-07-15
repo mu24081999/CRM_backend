@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const nodemailer = require("nodemailer");
+const twilio = require("twilio");
 // Create Session Function
 async function createSession(user, req, res) {
   const token = jwt.sign({ user_id: user.id }, config.JWT_SECRET, {
@@ -135,6 +136,10 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     personal_phone,
     role,
     location,
+    country,
+    state,
+    city,
+    postal_code,
     twilio_numbers,
   } = req.body;
   const is_exist_user = await db("users")
@@ -181,69 +186,106 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     parent_id,
     phone,
     location,
+    country,
+    state,
+    city,
+    postal_code,
     role,
     personal_phone,
     twilio_numbers,
   };
   const is_user_added = await db("users").insert(userParams);
   const new_user = await db("users").where("email", email).first();
+
   if (new_user?.role === "USER" && new_user.parent_id !== null) {
+    const addressDetails = {
+      customerName: new_user?.name,
+      street: new_user?.address,
+      city: new_user?.city,
+      region: new_user?.state,
+      postalCode: new_user?.postal_code,
+      isoCountry: new_user?.country,
+    };
     // Create a subaccount
-    const twilio_account = twilioClient.api.accounts.create(
-      {
-        friendlyName: new_user.username, // Provide a friendly name for the subaccount
-      },
-      async (err, account) => {
-        if (err) {
-          console.error("🚀 ~ err:", err);
-        } else {
-          const client = require("twilio")(account.sid, account.authToken);
-          const is_updated = await db("users").where("email", email).update({
-            authToken: account.authToken,
-            accountSid: account.sid,
-          });
-          const key = await client.newKeys
-            .create({
-              friendlyName: "justcall",
-            })
-            .then(async (key) => {
-              const is_updated = await db("users")
-                .where("email", email)
-                .update({
-                  api_key_sid: key.sid,
-                  api_key_secret: key.secret,
-                });
-            });
-          const app = await client.applications
-            .create({
-              friendlyName: "justcall",
-              voiceUrl: "https://desktopcrm.com:51/v1/user/calling/listen-call",
-              smsUrl: "https://desktopcrm.com:51/v1/user/calling/recieve-sms",
-            })
-            .then(async (app) => {
-              const is_updated = await db("users")
-                .where("email", email)
-                .update({
-                  twiml_app_sid: app.sid,
-                });
-            });
-        }
-      }
-    );
+    const twilio_account = await twilioClient.api.accounts.create({
+      friendlyName: new_user.username,
+    });
+    const client = twilio(twilio_account?.sid, twilio_account?.authToken);
+    const [key, twiml_app, address] = await Promise.all([
+      client.newKeys.create({
+        friendlyName: "justcall",
+      }),
+      client.applications.create({
+        friendlyName: "justcall",
+        voiceUrl: "https://desktopcrm.com:51/v1/user/calling/listen-call",
+        smsUrl: "https://desktopcrm.com:51/v1/user/calling/recieve-sms",
+      }),
+      client.addresses.create(addressDetails),
+    ]);
+    const updatedParams = {
+      authToken: twilio_account?.sid,
+      accountSid: twilio_account?.authToken,
+      api_key_sid: key?.sid,
+      api_key_secret: key?.secret,
+      twiml_app_sid: twiml_app?.sid,
+      addressSid: address?.sid,
+    };
+    const is_updated_user = await db("users")
+      .where("id", new_user?.id)
+      .update(updatedParams);
+    if (!is_updated_user) {
+      return helper.sendError(
+        req,
+        res,
+        "Server Error! :An error occured during registering your account!",
+        500
+      );
+    }
+    // const twilio_account = twilioClient.api.accounts.create(
+    //   {
+    //     friendlyName: new_user.username, // Provide a friendly name for the subaccount
+    //   },
+    //   async (err, account) => {
+    //     if (err) {
+    //       console.error("🚀 ~ err:", err);
+    //     } else {
+    //       const client = require("twilio")(account.sid, account.authToken);
+    //       const is_updated = await db("users").where("email", email).update({
+    //         authToken: account.authToken,
+    //         accountSid: account.sid,
+    //       });
+    //       const key = await client.newKeys
+    //         .create({
+    //           friendlyName: "justcall",
+    //         })
+    //         .then(async (key) => {
+    //           const is_updated = await db("users")
+    //             .where("email", email)
+    //             .update({
+    //               api_key_sid: key.sid,
+    //               api_key_secret: key.secret,
+    //             });
+    //         });
+    //       const app = await client.applications
+    //         .create({
+    //           friendlyName: "justcall",
+    //           voiceUrl: "https://desktopcrm.com:51/v1/user/calling/listen-call",
+    //           smsUrl: "https://desktopcrm.com:51/v1/user/calling/recieve-sms",
+    //         })
+    //         .then(async (app) => {
+    //           const is_updated = await db("users")
+    //             .where("email", email)
+    //             .update({
+    //               twiml_app_sid: app.sid,
+    //             });
+    //         });
+    //     }
+    //   }
+    // );
   }
 
   if (new_user) {
-    // return createSession(new_user, req, res);
     var otp_code = Math.floor(Math.random() * 900000);
-
-    // const htmlMessage =
-    //   "<h1>OTP for <b>DesktopCRM</b> App</h1><br></br><p>Hello " +
-    //   new_user?.name +
-    //   ",</p><p>We have generated a one-time password (OTP) for your  <b>DesktopCRM</b> account. Please use the following OTP to verify your identity:</p><h2 style='background-color: #f2f2f2; padding: 10px; border-radius: 4px; font-size: 24px; display: inline-block;'>[" +
-    //   otp_code +
-    //   "]</h2><p>This OTP is valid for a limited time period and can only be used once.</p><p>If you did not initiate this action or have any concerns regarding your account security, please contact our support team immediately at [Support Email/Phone Number].</p><br><a href='http://localhost:3000/reset-password-verification/" +
-    //   new_user?.email +
-    //   "' >Reset Password</a><p>Thank you,<br>The <b>DesktopCRM</b> Team</p>";
     const htmlMessage = `
     <!DOCTYPE html>
     <html>
@@ -319,14 +361,6 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
       "Sign up Verification",
       htmlMessage
     );
-    // const sendResetOTP = await helper.sendEmail(
-    //   req,
-    //   res,
-    //   "OTP FOR RESET PASSWORD.",
-    //   email,
-    //   "",
-    //   htmlMessage
-    // );
     const dbOTP = await db("otps").insert({
       email: email,
       otp: otp_code,

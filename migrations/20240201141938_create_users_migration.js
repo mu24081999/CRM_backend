@@ -7,6 +7,11 @@ exports.up = function (knex) {
     table.increments("id").primary();
     table.string("avatar").nullable();
     table.string("location").nullable();
+    table.string("country").nullable();
+    table.string("state").nullable();
+    table.string("city").nullable();
+    table.string("addressSid").nullable();
+    table.string("postal_code").nullable();
     table.text("bio").nullable();
     table.string("phone").nullable();
     table.string("personal_phone").nullable();
