@@ -208,7 +208,7 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
   if (new_user?.role === "USER" && new_user.parent_id !== null) {
     const addressDetails = {
       customerName: new_user?.name,
-      street: new_user?.address,
+      street: new_user?.location,
       city: new_user?.city,
       region: new_user?.state,
       postalCode: new_user?.postal_code,
