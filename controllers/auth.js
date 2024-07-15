@@ -200,7 +200,9 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
   };
   const is_user_added = await db("users").insert(userParams);
   console.log("🚀 ~ is_user_added:", is_user_added);
-  const new_user = await db("users").where("email", is_user_added[0]).first();
+  const new_user = await db("users")
+    .where("email", parseInt(is_user_added[0]))
+    .first();
   console.log("🚀 ~ new_user:", new_user);
 
   if (new_user?.role === "USER" && new_user.parent_id !== null) {
