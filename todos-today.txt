@@ -1,6 +1,8 @@
-Need to create 
-    1) roles 
-    2) Authorization 
-    3) Permissions 
-    4) Agents 
-    5) AUthentication 
+1) skillhill account 
+2) agents limit
+3) number list
+4) leads pipeline
+5) call and sms logs.
+6) team chat online
+7) rates issue
+
