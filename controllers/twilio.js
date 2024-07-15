@@ -435,9 +435,9 @@ exports.searchPhoneNumbers = catchAssyncFunc(async function (req, res, next) {
   } = req.body;
   console.log("🚀 ~ req.body:", req.body);
   const filters = {};
-  if (area_code) {
-    filters.areaCode = area_code;
-  }
+  // if (area_code) {
+  //   filters.areaCode = area_code;
+  // }
   if (locality && area_code) {
     filters.contains = area_code + "*"; // Filter by region name
   }
