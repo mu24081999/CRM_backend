@@ -396,6 +396,7 @@ exports.updateWebhookUrl = catchAssyncFunc(async function (req, res, next) {
 });
 exports.claimPhoneNumber = catchAssyncFunc(async function (req, res, next) {
   const { phoneNumber, subAccountSid, subAuthToken, addressSid } = req.body;
+  console.log("🚀 ~ req.body;:", req.body);
   const client = twilio(subAccountSid, subAuthToken); // Use subaccount credentials
 
   //claim phone number
