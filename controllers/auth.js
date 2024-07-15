@@ -232,8 +232,8 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
       client.addresses.create(addressDetails),
     ]);
     const updatedParams = {
-      authToken: twilio_account?.sid,
-      accountSid: twilio_account?.authToken,
+      accountSid: twilio_account?.sid,
+      authToken: twilio_account?.authToken,
       api_key_sid: key?.sid,
       api_key_secret: key?.secret,
       twiml_app_sid: twiml_app?.sid,
