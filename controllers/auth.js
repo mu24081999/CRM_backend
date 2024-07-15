@@ -109,6 +109,10 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     twilio_numbers: Joi.object().optional(),
     phone: Joi.string().optional(),
     location: Joi.string().optional(),
+    country: Joi.string().optional(),
+    state: Joi.string().optional(),
+    city: Joi.string().optional(),
+    postal_code: Joi.string().optional(),
     personal_phone: Joi.string().optional(),
   });
   const { error } = schema.validate(req.body);
