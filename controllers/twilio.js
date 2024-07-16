@@ -624,9 +624,13 @@ exports.getConversationsList = catchAssyncFunc(async function (req, res, next) {
   const calls = await client.calls.list();
   const conversations = [];
   calls?.map((call) => {
-    if (!call?.to?.includes("client")) conversations?.push(call?.to);
+    if (call?.to && !call?.to?.includes("client"))
+      conversations?.push(call?.to);
   });
-  console.log(conversations);
+  const filteredArray = conversations?.filter((item, index) => {
+    return conversations.indexOf(item) === index;
+  });
+  console.log(filteredArray);
 });
 exports.getCallLogs = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken, phoneNumber, direction } = req.body;
