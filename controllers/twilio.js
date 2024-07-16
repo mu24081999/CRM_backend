@@ -630,7 +630,12 @@ exports.getConversationsList = catchAssyncFunc(async function (req, res, next) {
   const filteredArray = conversations?.filter((item, index) => {
     return conversations.indexOf(item) === index;
   });
-  console.log(filteredArray);
+  return helper.sendSuccess(
+    req,
+    res,
+    { conversations: filteredArray },
+    "success"
+  );
 });
 exports.getCallLogs = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken, phoneNumber, direction } = req.body;
