@@ -618,6 +618,16 @@ exports.resumeRecording = catchAssyncFunc(async function (req, res, next) {
     return helper.sendSuccess(req, res, {}, "No Recording Found.");
   }
 });
+exports.getConversationsList = catchAssyncFunc(async function (req, res, next) {
+  const { accountSid, authToken } = req.body;
+  const client = twilio(accountSid, authToken);
+  const calls = await client.calls.list();
+  const conversations = [];
+  calls?.map((call) => {
+    conversations?.push(call?.to);
+  });
+  console.log(conversations);
+});
 exports.getCallLogs = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken, phoneNumber, direction } = req.body;
   const client = twilio(accountSid, authToken);
