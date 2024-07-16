@@ -624,7 +624,7 @@ exports.getConversationsList = catchAssyncFunc(async function (req, res, next) {
   const calls = await client.calls.list();
   const conversations = [];
   calls?.map((call) => {
-    conversations?.push(call?.to);
+    if (!call?.to?.includes("client")) conversations?.push(call?.to);
   });
   console.log(conversations);
 });
