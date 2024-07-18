@@ -164,7 +164,7 @@ exports.updateBoard = catchAssyncFunc(async function (req, res, next) {
       status_array: pipeline_status_array,
     });
   }
-
+  console.log(params);
   const is_record_updated = await db("boards")
     .where("id", board_id)
     .update(params);
