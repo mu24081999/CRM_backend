@@ -149,34 +149,25 @@ exports.updateBoard = catchAssyncFunc(async function (req, res, next) {
     team_members,
     pipeline_status_array,
   } = req.body;
-  let publicUrl;
-  if (req.files) {
-    const { image } = req.files;
-    const { name, mimetype, tempFilePath } = image;
-    const [fileData] = await storage
-      .bucket("crm-justcall")
-      .upload(tempFilePath, {
-        // Specify the destination file name in GCS (optional)
-        destination: "/boards/" + req.body.name + "/" + name,
-        // Set ACL to public-read
-        predefinedAcl: "publicRead",
-      });
-    publicUrl = fileData.publicUrl();
+  let params = {
+    user_id: req.user.id,
+    name,
+    visibility,
+    avatar_text,
+    avatar_color,
+  };
+  if (team_members) {
+    team_members = JSON.stringify({ team: team_members });
   }
+  if (pipeline_status_array) {
+    pipeline_status_array = JSON.stringify({
+      status_array: pipeline_status_array,
+    });
+  }
+
   const is_record_updated = await db("boards")
     .where("id", board_id)
-    .update({
-      user_id: req.user.id,
-      name: req.body.name,
-      visibility,
-      avatar_text,
-      avatar_color,
-      team_members: JSON.stringify({ team: team_members }),
-      image: req.files ? publicUrl : "",
-      pipeline_status_array: JSON.stringify({
-        status_array: pipeline_status_array,
-      }),
-    });
+    .update(params);
   if (!is_record_updated) {
     return helper.sendError(
       req,
