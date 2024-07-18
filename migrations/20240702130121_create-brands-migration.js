@@ -14,6 +14,8 @@ exports.up = function (knex) {
     table.string("brand_name").notNullable();
     table.string("brand_logo").notNullable();
     table.text("brand_details").nullable();
+    table.text("font_family").nullable();
+    table.text("text_color").nullable();
     table.timestamps(true, true);
   });
 };

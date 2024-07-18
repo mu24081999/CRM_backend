@@ -125,6 +125,7 @@ io.on("connection", (socket) => {
   socket.on("push-notification", async (data) => {
     const { user_id, notification, type, notification_details, email_to } =
       data;
+    console.log("🚀 ~ socket.on ~ data:", data);
     const insert_notificaiton = await db("notifications").insert({
       user_id,
       notification,
