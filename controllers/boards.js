@@ -157,10 +157,10 @@ exports.updateBoard = catchAssyncFunc(async function (req, res, next) {
     avatar_color,
   };
   if (team_members) {
-    team_members = JSON.stringify({ team: team_members });
+    params.team_members = JSON.stringify({ team: team_members });
   }
   if (pipeline_status_array) {
-    pipeline_status_array = JSON.stringify({
+    params.pipeline_status_array = JSON.stringify({
       status_array: pipeline_status_array,
     });
   }
