@@ -28,8 +28,9 @@ exports.readUserBrand = catchAssyncFunc(async function (req, res, next) {
   return helper.sendSuccess(req, res, { brandData: brand }, "success");
 });
 exports.addUpdateBrand = catchAssyncFunc(async function (req, res, next) {
-  const { user_id, brand_name, brand_details } = req.body;
-  console.log("🚀 ~ req.body:", req.body, req.files);
+  const { user_id, brand_name, brand_details, text_color, font_family } =
+    req.body;
+  console.log("🚀 ~ req.body:", req.body);
   const is_exist_brand = await db("brands").where("user_id", user_id).first();
   let publicUrl;
   let params;
@@ -50,11 +51,15 @@ exports.addUpdateBrand = catchAssyncFunc(async function (req, res, next) {
         brand_name: brand_name,
         brand_details: brand_details,
         brand_logo: publicUrl,
+        text_color: text_color,
+        font_family: font_family,
       };
     } else {
       params = {
         brand_name: brand_name,
         brand_details: brand_details,
+        text_color: text_color,
+        font_family: font_family,
       };
     }
     const is_updated = await db("brands")
@@ -68,12 +73,16 @@ exports.addUpdateBrand = catchAssyncFunc(async function (req, res, next) {
       brand_name: brand_name,
       brand_details: brand_details,
       brand_logo: publicUrl,
+      text_color: text_color,
+      font_family: font_family,
     };
   } else {
     params = {
       user_id: user_id,
       brand_name: brand_name,
       brand_details: brand_details,
+      text_color: text_color,
+      font_family: font_family,
     };
   }
   const is_added = await db("brands").insert(params);
