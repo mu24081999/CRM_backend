@@ -544,7 +544,7 @@ exports.signIn = catchAssyncFunc(async function (req, res, next) {
   return helper.sendSuccess(
     req,
     res,
-    {},
+    { userData: is_exist_user },
     "We have send an OTP verifcation email to your email address."
   );
 });
