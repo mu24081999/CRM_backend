@@ -210,9 +210,7 @@ exports.getUserSubAccounts = catchAssyncFunc(async function (req, res, next) {
 });
 exports.recieveSMS = catchAssyncFunc(async function (req, res, next) {
   console.log(req.body);
-  const user = await db("users")
-    .where("accountSid", req.body.AccountSid)
-    .first();
+  const user = await db("users").where("phone", req.body.To).first();
   const is_added_to_database = await db("messages").insert({
     from_phone: req.body.From,
     to_phone: req.body.To,
@@ -224,7 +222,8 @@ exports.recieveSMS = catchAssyncFunc(async function (req, res, next) {
   });
 
   const messages = await db("messages")
-    .where("account_sid", req.body.AccountSid)
+    .where("from_phone", req.body.To)
+    .where("to_phone", req.body.To)
     .select();
   io.to(user.socket_id).emit("message_received", messages);
   if (user.connected === 0) {
