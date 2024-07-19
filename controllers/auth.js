@@ -538,7 +538,7 @@ exports.signIn = catchAssyncFunc(async function (req, res, next) {
   const dbOTP = await db("otps").insert({
     email: is_exist_user?.email,
     otp: otp_code,
-    messageSid: sendResetOTP?.messageId,
+    messageSid: sendGridEmail?.messageId,
     expires_at: moment().add(2, "hours").format("YYYY-MM-DD HH:mm:ss"),
   });
   return helper.sendSuccess(
