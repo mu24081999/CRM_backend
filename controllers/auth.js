@@ -530,7 +530,7 @@ exports.signIn = catchAssyncFunc(async function (req, res, next) {
   </body>
   </html>`;
 
-  const sendGridEmail = await sendGridEmail(
+  const email_sent = await sendGridEmail(
     is_exist_user?.email,
     "2FA Verification",
     htmlMessage
@@ -538,7 +538,7 @@ exports.signIn = catchAssyncFunc(async function (req, res, next) {
   const dbOTP = await db("otps").insert({
     email: is_exist_user?.email,
     otp: otp_code,
-    messageSid: sendGridEmail?.messageId,
+    messageSid: email_sent?.messageId,
     expires_at: moment().add(2, "hours").format("YYYY-MM-DD HH:mm:ss"),
   });
   return helper.sendSuccess(
