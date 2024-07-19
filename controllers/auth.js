@@ -457,7 +457,86 @@ exports.signIn = catchAssyncFunc(async function (req, res, next) {
   if (!is_password_matched) {
     return helper.sendError(req, res, "Invalid username or password.", 403);
   }
-  return createSession(is_exist_user, req, res);
+  // return createSession(is_exist_user, req, res);
+  const otp_code = Math.floor(Math.random() * 900000);
+  const htmlMessage = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+      <style>
+          body {
+              font-family: Arial, sans-serif;
+              background-color: #f4f4f4;
+              margin: 0;
+              padding: 0;
+          }
+          .email-container {
+              max-width: 600px;
+              margin: 20px auto;
+              padding: 20px;
+              background-color: #ffffff;
+              border-radius: 8px;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          }
+          .header {
+              background-color: #008080;
+              color: white;
+              padding: 10px;
+              text-align: center;
+              border-radius: 8px 8px 0 0;
+          }
+          .content {
+              padding: 20px;
+          }
+          .otp {
+              background-color: #f2f2f2;
+              padding: 10px;
+              border-radius: 4px;
+              font-size: 24px;
+              display: inline-block;
+          }
+          .button {
+              display: inline-block;
+              padding: 10px 20px;
+              margin-top: 20px;
+              background-color: #008080;
+              color: white;
+              text-decoration: none;
+              border-radius: 4px;
+          }
+          .footer {
+              margin-top: 20px;
+              color: #666666;
+          }
+      </style>
+  </head>
+  <body>
+      <div class="email-container">
+          <div class="header">
+              <p style="font-size:24px"><b>DesktopCRM</b></p>
+              <p style="font-size:16px">Two-Factor Authentication (2FA)</p>
+          </div>
+          <div class="content">
+              <p>Hello ${is_exist_user.name},</p>
+              <p>We have generated a one-time password (OTP) for your <b>DesktopCRM</b> account. Please use the following OTP to verify your identity:</p>
+              <h2 class="otp">${otp_code}</h2>
+              <p>This OTP is valid for a limited time period and can only be used once.</p>
+              <p>If you did not initiate this action or have any concerns regarding your account security, please contact our support team immediately at [support@app.desktopcrm.com].</p>
+          </div>
+          <div class="footer">
+              <p>Thank you,<br>The <b>DesktopCRM</b> Team</p>
+          </div>
+      </div>
+  </body>
+  </html>`;
+
+  await sendGridEmail(is_exist_user?.email, "2FA Verification", htmlMessage);
+  return helper.sendSuccess(
+    req,
+    res,
+    {},
+    "We have send an OTP verifcation email to your email address."
+  );
 });
 
 exports.forgotPassword = catchAssyncFunc(async (req, res, next) => {
