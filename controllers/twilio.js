@@ -209,6 +209,7 @@ exports.getUserSubAccounts = catchAssyncFunc(async function (req, res, next) {
   );
 });
 exports.recieveSMS = catchAssyncFunc(async function (req, res, next) {
+  console.log(req.body);
   const user = await db("users")
     .where("accountSid", req.body.AccountSid)
     .first();
