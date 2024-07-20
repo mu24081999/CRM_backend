@@ -30,6 +30,7 @@ const {
   addConfressCall,
   sendSMSBulk,
   getConversationsList,
+  createRegulatoryBundle,
 } = require("../controllers/twilio");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
@@ -122,6 +123,6 @@ router.post(
 router.post("/call-logs", getCallLogs);
 router.post("/call-recordings", getCallRecordings);
 router.post("/get-conversations", getConversationsList);
-router.post("/create-regulatory-bundle", getConversationsList);
+router.post("/create-regulatory-bundle", createRegulatoryBundle);
 
 module.exports = router;
