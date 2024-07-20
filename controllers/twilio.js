@@ -825,3 +825,48 @@ exports.sendSMSBulk = catchAssyncFunc(async function (req, res, next) {
     return helper.sendSuccess(req, res, {}, "SMS sent.");
   }
 });
+exports.a2pVerification = catchAssyncFunc(async function (req, res, next) {
+  const trustHubProfile = await client.trusthub.v1.profiles.create({
+    customerType: "business",
+    businessName: "Your Business Name",
+    businessType: "LLC",
+    ein: "YOUR_EIN",
+    street: "123 Business St",
+    city: "City",
+    state: "State",
+    postalCode: "ZIP",
+    country: "US",
+    contactFirstName: "John",
+    contactLastName: "Doe",
+    contactEmail: "john.doe@example.com",
+    contactPhone: "+1234567890",
+  });
+  console.log(`Trust Hub Profile SID: ${trustHubProfile.sid}`);
+  // Step 2: Register Brand
+  const brand = await client.messaging.v1.a2pBrands.create({
+    profileSid: trustHubProfile.sid,
+    brandName: "Your Brand Name",
+    brandType: "LLC",
+    ein: "YOUR_EIN",
+  });
+
+  console.log(`Brand SID: ${brand.sid}`);
+
+  // Step 3: View A2P Messaging Limits
+  const limits = await client.messaging.v1
+    .a2pBrands(brand.sid)
+    .limits()
+    .fetch();
+  console.log(`A2P Messaging Limits: ${JSON.stringify(limits)}`);
+  // Step 4: Register Campaign
+  const campaign = await client.messaging.v1
+    .a2pBrands(brand.sid)
+    .campaigns.create({
+      useCase: "customer_care",
+      description: "Customer care notifications and alerts",
+      sampleMessages: [
+        "Your order has been shipped.",
+        "Your appointment is confirmed for tomorrow at 10 AM.",
+      ],
+    });
+});
