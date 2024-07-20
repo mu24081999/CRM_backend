@@ -5,6 +5,7 @@
 exports.up = function (knex) {
   return knex.schema.createTable("packages", (table) => {
     table.increments("id").primary();
+    table.bigInteger("user_id").unsigned().notNullable();
     table.json("packages").nullable();
     table.timestamps(true, true);
   });

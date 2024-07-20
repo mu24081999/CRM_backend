@@ -122,5 +122,6 @@ router.post(
 router.post("/call-logs", getCallLogs);
 router.post("/call-recordings", getCallRecordings);
 router.post("/get-conversations", getConversationsList);
+router.post("/create-regulatory-bundle", getConversationsList);
 
 module.exports = router;

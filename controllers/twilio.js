@@ -403,6 +403,7 @@ exports.claimPhoneNumber = catchAssyncFunc(async function (req, res, next) {
   const incomingPhoneNumber = await client.incomingPhoneNumbers.create({
     phoneNumber: phoneNumber,
     addressSid: addressSid,
+    // identitySid: identitySid // Regulatory identity SID
   });
   const number_config = await client
     .incomingPhoneNumbers(incomingPhoneNumber.sid)
@@ -869,4 +870,68 @@ exports.a2pVerification = catchAssyncFunc(async function (req, res, next) {
         "Your appointment is confirmed for tomorrow at 10 AM.",
       ],
     });
+});
+exports.createRegulatoryBundle = catchAssyncFunc(async function (
+  req,
+  res,
+  next
+) {
+  const {
+    accountSid,
+    authToken,
+    friendlyName,
+    first_name,
+    last_name,
+    birth_date,
+    email,
+    street,
+    city,
+    rigion,
+    postal_code,
+    iso_country,
+    document_type,
+  } = req.body;
+  const { document_image } = req.files;
+  const client = twilio(accountSid, authToken);
+  const identity = await client.regulatoryCompliance.endUsers.create({
+    type: "individual",
+    friendlyName: friendlyName,
+    attributes: {
+      first_name: first_name,
+      last_name: last_name,
+      birth_date: birth_date,
+      email: email,
+      address: {
+        street: street,
+        city: city,
+        region: rigion,
+        postal_code: postal_code,
+        iso_country: iso_country,
+      },
+    },
+  });
+  console.log(`Identity created with SID: ${identity.sid}`);
+  const document = await client.regulatoryCompliance.supportingDocuments.create(
+    {
+      friendlyName: first_name + " " + last_name + " " + document_type,
+      type: document_type,
+      mimeType: "image/jpeg",
+    }
+  );
+  const documentContent = fs.readFileSync(document_image?.tempFilePath);
+  await client.regulatoryCompliance
+    .supportingDocuments(document.sid)
+    .media.create({
+      contentType: "image/jpeg",
+      file: documentContent,
+    });
+  console.log(`Proof of identity uploaded with SID: ${document.sid}`);
+  await client.regulatoryCompliance.bundles.create({
+    friendlyName: first_name + " " + last_name + " UK Phone Number",
+    email: email,
+    statusCallback: "http://your-status-callback-url.com",
+    regulation: "UK",
+    endUser: identity.sid,
+    supportingDocuments: [document.sid],
+  });
 });
