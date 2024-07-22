@@ -5,12 +5,7 @@
 exports.up = function (knex) {
   return knex.schema.createTable("verifications", (table) => {
     table.increments("id").primary();
-    table
-      .bigInteger("user_id")
-      .unsigned()
-      .references("id")
-      .inTable("users")
-      .notNullable();
+    table.bigInteger("user_id").unsigned().notNullable();
     table.string("username").notNullable();
     table.string("legal_business_name").notNullable();
     table.string("business_type").notNullable();
