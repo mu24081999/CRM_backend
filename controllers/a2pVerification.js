@@ -5,9 +5,10 @@ const twilio = require("twilio");
 exports.createA2PVerification = catchAsyncFunc(async (req, res, next) => {
   const { accountSid, authToken } = req.body;
   const client = twilio(accountSid, authToken);
-  // Create Customer Profile
-  client.trusthub.v1.customers
-    .create({
+
+  try {
+    // Create Customer Profile
+    const customer = await client.trusthub.v1.customerProfiles.create({
       friendlyName: "My Business",
       email: "contact@mybusiness.com",
       phoneNumber: "+1234567890",
@@ -21,41 +22,36 @@ exports.createA2PVerification = catchAsyncFunc(async (req, res, next) => {
         postalCode: "12345",
         country: "US",
       },
-    })
-    .then((customer) => {
-      console.log("Customer Profile Created:", customer.sid);
-
-      // Register Brand
-      return client.trusthub.v1.brands.create({
-        customerSid: customer.sid,
-        brandType: "STANDARD",
-        brandName: "My Business Brand",
-        ein: "12-3456789",
-      });
-    })
-    .then((brand) => {
-      console.log("Brand Registered:", brand.sid);
-
-      // Register Campaign
-      return client.trusthub.v1.campaigns.create({
-        brandSid: brand.sid,
-        useCase: "MARKETING",
-        description: "Marketing Campaign for My Business",
-      });
-    })
-    .then((campaign) => {
-      console.log("Campaign Registered:", campaign.sid);
-
-      // Register Phone Number
-      return client.trusthub.v1.phoneNumbers.create({
-        phoneNumber: "+18258700307",
-        campaignSid: campaign.sid,
-      });
-    })
-    .then((phoneNumber) => {
-      console.log("Phone Number Registered:", phoneNumber.sid);
-    })
-    .catch((error) => {
-      console.error("Error:", error);
     });
+    console.log("Customer Profile Created:", customer.sid);
+
+    // Register Brand
+    const brand = await client.trusthub.v1.brands.create({
+      customerSid: customer.sid,
+      brandType: "STANDARD",
+      brandName: "My Business Brand",
+      ein: "12-3456789",
+    });
+    console.log("Brand Registered:", brand.sid);
+
+    // Register Campaign
+    const campaign = await client.trusthub.v1.campaigns.create({
+      brandSid: brand.sid,
+      useCase: "MARKETING",
+      description: "Marketing Campaign for My Business",
+    });
+    console.log("Campaign Registered:", campaign.sid);
+
+    // Register Phone Number
+    const phoneNumber = await client.trusthub.v1.phoneNumbers.create({
+      phoneNumber: "+18258700307",
+      campaignSid: campaign.sid,
+    });
+    console.log("Phone Number Registered:", phoneNumber.sid);
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error("Error:", error);
+    next(error);
+  }
 });
