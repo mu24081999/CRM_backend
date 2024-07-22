@@ -7,7 +7,7 @@ const {
 } = require("../controllers/a2pVerification");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
-  "/a2p-verification",
+  "/create-a2p-verification",
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   createA2PVerification
