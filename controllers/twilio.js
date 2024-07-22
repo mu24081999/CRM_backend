@@ -417,7 +417,7 @@ exports.claimPhoneNumber = catchAssyncFunc(async function (req, res, next) {
     })
     .then((response) => {})
     .catch((error) => {
-      return helper.sendError(req, res, error, 400);
+      return helper.sendError(req, res, error.message, 400);
     });
   return helper.sendSuccess(
     req,
@@ -880,58 +880,27 @@ exports.createRegulatoryBundle = catchAssyncFunc(async function (
     accountSid,
     authToken,
     friendlyName,
-    first_name,
-    last_name,
-    birth_date,
-    email,
-    street,
-    city,
-    rigion,
-    postal_code,
-    iso_country,
-    document_type,
+    businessName,
+    vat,
+    businessDescription,
   } = req.body;
-  const { document_image } = req.files;
+  // const { document_image } = req.files;
   const client = twilio(accountSid, authToken);
-  const identity = await client.regulatoryCompliance.endUsers.create({
-    type: "individual",
-    friendlyName: friendlyName,
-    attributes: {
-      first_name: first_name,
-      last_name: last_name,
-      birth_date: birth_date,
-      email: email,
-      address: {
-        street: street,
-        city: city,
-        region: rigion,
-        postal_code: postal_code,
-        iso_country: iso_country,
-      },
-    },
-  });
-  console.log(`Identity created with SID: ${identity.sid}`);
-  const document = await client.regulatoryCompliance.supportingDocuments.create(
+  const identity = await client.numbers.v2.regulatoryCompliance.endUsers.create(
     {
-      friendlyName: first_name + " " + last_name + " " + document_type,
-      type: document_type,
-      mimeType: "image/jpeg",
+      attributes: {
+        business_name: businessName, //"Twilio",
+        vat: vat, //"2348132",
+        business_description: businessDescription, //"Communications Platform as a Service",
+      },
+      friendlyName: friendlyName, //"Twilio, Inc.",
+      type: "business",
     }
   );
-  const documentContent = fs.readFileSync(document_image?.tempFilePath);
-  await client.regulatoryCompliance
-    .supportingDocuments(document.sid)
-    .media.create({
-      contentType: "image/jpeg",
-      file: documentContent,
-    });
-  console.log(`Proof of identity uploaded with SID: ${document.sid}`);
-  await client.regulatoryCompliance.bundles.create({
-    friendlyName: first_name + " " + last_name + " UK Phone Number",
-    email: email,
-    statusCallback: "http://your-status-callback-url.com",
-    regulation: "UK",
-    endUser: identity.sid,
-    supportingDocuments: [document.sid],
-  });
+  return helper.sendSuccess(
+    req,
+    res,
+    { identity: identity },
+    "End user identity created successfully."
+  );
 });
