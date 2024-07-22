@@ -16,7 +16,6 @@ exports.up = function (knex) {
     table.string("rigion").notNullable();
     table.string("street").notNullable();
     table.string("city").notNullable();
-    table.string("state").notNullable();
     table.string("postal_code").notNullable();
     table.string("country").notNullable();
     table.string("name").notNullable();
