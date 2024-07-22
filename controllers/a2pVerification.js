@@ -8,50 +8,56 @@ exports.createA2PVerification = catchAsyncFunc(async (req, res, next) => {
 
   try {
     // Create Customer Profile
-    const customer = await client.trusthub.v1.customerProfiles.create({
-      friendlyName: "My Business",
-      email: "contact@mybusiness.com",
-      phoneNumber: "+1234567890",
-      businessName: "My Business LLC",
-      businessType: "LLC",
-      ein: "12-3456789",
+    const twilio = require('twilio');
+    const client =  twilio(accountSid,authToken);
+    // Step 1: Create a Business Profile
+    client.trusthub.v1.customerProfiles.create({
+      friendlyName: 'My Business Profile',
+      email: 'business@example.com',
+      businessName: 'My Business',
+      ein: 'YOUR_EIN',
       address: {
-        street: "123 Main St",
-        city: "Anytown",
-        state: "CA",
-        postalCode: "12345",
-        country: "US",
-      },
+        street: '123 Main St',
+        city: 'San Francisco',
+        state: 'CA',
+        postalCode: '94105',
+        country: 'US'
+      }
+    }).then(profile => {
+      console.log('Business Profile Created:', profile.sid);
+      
+      // Step 2: Register Your Brand
+      return client.trusthub.v1.trustProducts.create({
+        customerProfileSid: profile.sid,
+        friendlyName: 'My Brand',
+        ein: 'YOUR_EIN'
+      });
+    }).then(brand => {
+      console.log('Brand Registered:', brand.sid);
+      
+      // Step 3: Create a Messaging Service
+      return client.messaging.v1.services.create({
+        friendlyName: 'My Messaging Service'
+      });
+    }).then(service => {
+      console.log('Messaging Service Created:', service.sid);
+      
+      // Step 4: Register Your Campaign
+      return client.messaging.v1.services(service.sid).campaigns.create({
+        useCase: 'marketing',
+        description: 'Marketing Campaign'
+      });
+    }).then(campaign => {
+      console.log('Campaign Registered:', campaign.sid);
+      
+      // Step 5: Associate Phone Numbers
+      return client.messaging.v1.services(service.sid).phoneNumbers.create({
+        phoneNumberSid: 'PN700e8bb4c9814ba867033cf101d221ce'
+      });
+    }).then(phoneNumber => {
+      console.log('Phone Number Associated:', phoneNumber.sid);
+    }).catch(error => {
+      console.error('Error:', error);
     });
-    console.log("Customer Profile Created:", customer.sid);
-
-    // Register Brand
-    const brand = await client.trusthub.v1.brands.create({
-      customerSid: customer.sid,
-      brandType: "STANDARD",
-      brandName: "My Business Brand",
-      ein: "12-3456789",
-    });
-    console.log("Brand Registered:", brand.sid);
-
-    // Register Campaign
-    const campaign = await client.trusthub.v1.campaigns.create({
-      brandSid: brand.sid,
-      useCase: "MARKETING",
-      description: "Marketing Campaign for My Business",
-    });
-    console.log("Campaign Registered:", campaign.sid);
-
-    // Register Phone Number
-    const phoneNumber = await client.trusthub.v1.phoneNumbers.create({
-      phoneNumber: "+18258700307",
-      campaignSid: campaign.sid,
-    });
-    console.log("Phone Number Registered:", phoneNumber.sid);
-
-    res.status(200).json({ success: true });
-  } catch (error) {
-    console.error("Error:", error);
-    next(error);
-  }
+    
 });
