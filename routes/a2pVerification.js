@@ -4,6 +4,7 @@ const {
   createA2PVerification,
   updateA2PVerification,
   getAllVerifications,
+  readUserVerification,
 } = require("../controllers/a2pVerification");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
@@ -22,7 +23,7 @@ router.get(
   "/read-verification/:user_id",
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
-  updateA2PVerification
+  readUserVerification
 );
 router.get(
   "/get-verifications",
