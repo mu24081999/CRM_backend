@@ -19,7 +19,7 @@ exports.addPackages = catchAsyncFunc(async (req, res, next) => {
   });
   const { error, values } = schema.validate(req.body);
   if (error) {
-    return helper.sendEroor(req, res, "Validation failed:" + error.message);
+    return helper.sendError(req, res, "Validation failed:" + error.message);
   }
   const params = {
     user_id: values.user_id,
