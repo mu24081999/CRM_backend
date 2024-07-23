@@ -6,6 +6,12 @@ exports.getPackages = catchAsyncFunc(async (req, res, next) => {
   const packages = await db("packages").first();
   return helper.sendSuccess(req, res, { packages: packages }, "");
 });
+exports.readPackage = catchAsyncFunc(async (req, res, next) => {
+  const { user_id } = req.params;
+  const packages = await db("packages").where("user_id", user_id).first();
+  return helper.sendSuccess(req, res, { packageDetails: packages }, "");
+});
+
 exports.addPackages = catchAsyncFunc(async (req, res, next) => {
   const schema = Joi.object({
     user_id: Joi.number().positive().required(),
@@ -30,30 +36,32 @@ exports.addPackages = catchAsyncFunc(async (req, res, next) => {
   }
   return helper.sendError(req, res, "Server Error!", 500);
 });
-exports.updatePackages = catchAsyncFunc(async (req, res, next) => {
-  const schema = Joi.object({
-    user_id: Joi.number().positive().required(),
-    packages: Joi.object().required(),
-  });
-  const { error, values } = schema.validate(req.body);
-  if (error) {
-    return helper.sendEroor(req, res, "Validation failed:" + error.message);
+exports.packageDetails = exports.updatePackages = catchAsyncFunc(
+  async (req, res, next) => {
+    const schema = Joi.object({
+      user_id: Joi.number().positive().required(),
+      packages: Joi.object().required(),
+    });
+    const { error, values } = schema.validate(req.body);
+    if (error) {
+      return helper.sendEroor(req, res, "Validation failed:" + error.message);
+    }
+    const { package_id } = req.params;
+    const params = {
+      user_id: values.user_id,
+      packages: values.packages,
+    };
+    const is_updated = await db("packages")
+      .where("id", package_id)
+      .update(params);
+    if (is_updated) {
+      return helper.sendSuccess(
+        req,
+        res,
+        {},
+        "Packages details inserted successfully"
+      );
+    }
+    return helper.sendError(req, res, "Server Error!", 500);
   }
-  const { package_id } = req.params;
-  const params = {
-    user_id: values.user_id,
-    packages: values.packages,
-  };
-  const is_updated = await db("packages")
-    .where("id", package_id)
-    .update(params);
-  if (is_updated) {
-    return helper.sendSuccess(
-      req,
-      res,
-      {},
-      "Packages details inserted successfully"
-    );
-  }
-  return helper.sendError(req, res, "Server Error!", 500);
-});
+);
