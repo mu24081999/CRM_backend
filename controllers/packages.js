@@ -3,7 +3,7 @@ const helper = require("../helper/helper");
 const Joi = require("joi");
 
 exports.getPackages = catchAsyncFunc(async (req, res, next) => {
-  const packages = await db("packages").first();
+  const packages = await db("packages").select();
   return helper.sendSuccess(req, res, { packages: packages }, "");
 });
 exports.readPackage = catchAsyncFunc(async (req, res, next) => {
@@ -30,7 +30,7 @@ exports.addPackages = catchAsyncFunc(async (req, res, next) => {
     return helper.sendSuccess(
       req,
       res,
-      {},
+      { id: is_inserted[0] },
       "Packages details inserted successfully"
     );
   }
@@ -58,7 +58,7 @@ exports.packageDetails = exports.updatePackages = catchAsyncFunc(
       return helper.sendSuccess(
         req,
         res,
-        {},
+        { id: package_id },
         "Packages details inserted successfully"
       );
     }

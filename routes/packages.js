@@ -27,7 +27,7 @@ router.post(
   addPackages
 );
 router.put(
-  "/upfate-package",
+  "/upfate-package/:package_id",
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   updatePackages
