@@ -182,6 +182,10 @@ exports.readUserVerification = catchAsyncFunc(async (req, res, next) => {
   const verification = await db("verifications")
     .where("user_id", user_id)
     .first();
+  console.log(
+    "🚀 ~ exports.readUserVerification=catchAsyncFunc ~ verification:",
+    verification
+  );
   return helper.sendSuccess(
     req,
     res,
