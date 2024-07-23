@@ -225,210 +225,137 @@ io.on("connection", (socket) => {
       //   "https://c1.staticflickr.com/3/2899/14341091933_1e92e62d12_b.jpg",
       // ],
     };
-    const client = twilio(data?.from?.accountSid, data?.from?.authToken);
-    const is_added_to_database = await db("messages").insert({
-      user_id: data?.user_id,
-      from_name: data?.from?.name,
-      to_name: data?.to?.name,
-      from_phone: data?.from?.phone,
-      to_phone: data?.to?.phone,
-      message: data?.message,
-      account_sid: data?.from?.accountSid,
-    });
-    const messages = await db("messages")
-      .where("from_phone", data.from.phone)
-      .orWhere("to_phone", data.from.phone)
-      .select();
-    io.to(data.from.socket_id).emit("message_sent", messages);
-    if (!is_added_to_database) {
-      throw new NEW_ERROR_RES(
-        500,
-        "Something went wrong while adding to database."
+    const is_exist_balance = await db("balance")
+      .where("user_id", data?.user_id)
+      .first();
+    if (is_exist_balance?.credit < 70) {
+      io.to(data.from.socket_id).emit(
+        "message_error",
+        "You have insufficient balance for sending message."
       );
-    }
-    const message_id = is_added_to_database[0];
-    const country_code = data?.to?.phone?.slice(0, 2);
-    client.messages
-      .create(params)
-      .then(async (message) => {
-        const is_updated_to_database = await db("messages")
-          .where("id", parseInt(message_id))
-          .update({
-            sid: message.sid,
-            price: message.price,
-            uri: message.uri,
-            num_media: message.numMedia,
-          });
-        if (!is_updated_to_database) {
-          throw new NEW_ERROR_RES(
-            500,
-            "Something went wrong while adding to database."
-          );
-        }
-        const messages = await db("messages")
-          .where("from_phone", data.from.phone)
-          .orWhere("to_phone", data.from.phone)
-          .select();
-        io.to(data.from.socket_id).emit("message_sent", messages);
-      })
-      .catch(async (err) => {
-        console.log("Error", err.message);
-        io.to(data.from.socket_id).emit("message_error", err);
-        const is_updated_to_database = await db("messages")
-          .where("id", parseInt(message_id))
-          .update({
-            status: "Failed",
-            message_error: err.message,
-          });
-        console.log(
-          "🚀 ~ socket.on ~ is_updated_to_database:",
-          is_updated_to_database
-        );
-        const messages = await db("messages")
-          .where("from_phone", data.from.phone)
-          .orWhere("to_phone", data.from.phone)
-          .select();
-        io.to(data.from.socket_id).emit("message_sent", messages);
-        // throw new NEW_ERROR_RES(500, err);
+    } else {
+      const client = twilio(data?.from?.accountSid, data?.from?.authToken);
+      const is_added_to_database = await db("messages").insert({
+        user_id: data?.user_id,
+        from_name: data?.from?.name,
+        to_name: data?.to?.name,
+        from_phone: data?.from?.phone,
+        to_phone: data?.to?.phone,
+        message: data?.message,
+        account_sid: data?.from?.accountSid,
       });
-    // setTimeout(async () => {
-    //   await client.messages
-    //     .list({ to: data.to.phone })
-    //     .then(async (messages) => {
-    //       const latestMessage = messages[0];
-    //       console.log(
-    //         "🚀 ~ client.messages.list ~ latestMessage:",
-    //         latestMessage
-    //       );
-    //       if (
-    //         latestMessage.status !== "delivered" ||
-    //         (latestMessage.status === "sent" && latestMessage.price === null)
-    //       ) {
-    //         io.to(data.from.socket_id).emit(
-    //           "message_error",
-    //           "A2P Verification required"
-    //         );
-    //         const is_updated_to_database = await db("messages")
-    //           .where("id", parseInt(message_id))
-    //           .update({
-    //             status: "Failed",
-    //             message_error:
-    //               latestMessage?.status === "failed"
-    //                 ? "Failed to send the message."
-    //                 : "A2P Verification required",
-    //           });
-    //         const messages = await db("messages")
-    //           .where("from_phone", data.from.phone)
-    //           .orWhere("to_phone", data.from.phone)
-    //           .select();
-    //         io.to(data.from.socket_id).emit("message_sent", messages);
-    //         // Take appropriate actions here
-    //       } else {
-    //         console.log("Message delivered successfully.");
-    //         const is_exist_balance = await db("balance")
-    //           .where("user_id", data?.user_id)
-    //           .first();
-    //         console.log(
-    //           "🚀 ~ client.messages.list ~ is_exist_balance:",
-    //           is_exist_balance
-    //         );
-    //         const is_balance_updated = await db("balance")
-    //           .where("user_id", data?.user_id)
-    //           .update({
-    //             credit:
-    //               parseFloat(is_exist_balance?.credit) +
-    //               parseFloat(latestMessage.price) * 100 * 2,
-    //           });
-    //         console.log(
-    //           "🚀 ~ client.messages.list ~ is_balance_updated:",
-    //           is_balance_updated,
-    //           parseFloat(is_exist_balance?.credit),
-    //           parseFloat(latestMessage.price) * 100 * 2
-    //         );
-    //         console.log("Message not complete. Status:", latestMessage);
-    //       }
-    //     });
-    // }, 14000);
-    // }
-    setTimeout(async () => {
-      try {
-        const messages = await client.messages.list({ to: data.to.phone });
-        const is_exist_balance = await db("balance")
-          .where("user_id", data?.user_id)
-          .first();
-        const latestMessage = messages[0];
-        console.log(
-          "🚀 ~ client.messages.list ~ latestMessage:",
-          latestMessage
+      const messages = await db("messages")
+        .where("from_phone", data.from.phone)
+        .orWhere("to_phone", data.from.phone)
+        .select();
+      io.to(data.from.socket_id).emit("message_sent", messages);
+      if (!is_added_to_database) {
+        throw new NEW_ERROR_RES(
+          500,
+          "Something went wrong while adding to database."
         );
-        if (latestMessage?.price !== null) {
-          const is_balance_updated = await db("balance")
-            .where("user_id", data?.user_id)
+      }
+      const message_id = is_added_to_database[0];
+      const country_code = data?.to?.phone?.slice(0, 2);
+      client.messages
+        .create(params)
+        .then(async (message) => {
+          const is_updated_to_database = await db("messages")
+            .where("id", parseInt(message_id))
             .update({
-              credit:
-                parseFloat(is_exist_balance?.credit) +
-                parseFloat(latestMessage.price) * 100 * 2,
+              sid: message.sid,
+              price: message.price,
+              uri: message.uri,
+              num_media: message.numMedia,
             });
-        }
-        if (
-          !latestMessage ||
-          latestMessage.status !== "delivered" ||
-          (latestMessage.status === "sent" && latestMessage.price === null)
-        ) {
-          console.log(
-            "🚀 ~ setTimeout ~ latestMessage.status :",
-            latestMessage.status
-          );
-          io.to(data.from.socket_id).emit(
-            "message_error",
-            "A2P Verification required"
-          );
-
+          if (!is_updated_to_database) {
+            throw new NEW_ERROR_RES(
+              500,
+              "Something went wrong while adding to database."
+            );
+          }
+          const messages = await db("messages")
+            .where("from_phone", data.from.phone)
+            .orWhere("to_phone", data.from.phone)
+            .select();
+          io.to(data.from.socket_id).emit("message_sent", messages);
+        })
+        .catch(async (err) => {
+          console.log("Error", err.message);
+          io.to(data.from.socket_id).emit("message_error", err);
           const is_updated_to_database = await db("messages")
             .where("id", parseInt(message_id))
             .update({
               status: "Failed",
-              message_error:
-                latestMessage?.status === "failed"
-                  ? "Failed to send the message."
-                  : "A2P Verification required",
+              message_error: err.message,
             });
-
-          const messageHistory = await db("messages")
+          console.log(
+            "🚀 ~ socket.on ~ is_updated_to_database:",
+            is_updated_to_database
+          );
+          const messages = await db("messages")
             .where("from_phone", data.from.phone)
             .orWhere("to_phone", data.from.phone)
             .select();
+          io.to(data.from.socket_id).emit("message_sent", messages);
+          // throw new NEW_ERROR_RES(500, err);
+        });
+      setTimeout(async () => {
+        try {
+          const messages = await client.messages.list({ to: data.to.phone });
 
-          io.to(data.from.socket_id).emit("message_sent", messageHistory);
-        } else {
-          console.log("Message delivered successfully.");
+          const latestMessage = messages[0];
+          console.log(
+            "🚀 ~ client.messages.list ~ latestMessage:",
+            latestMessage
+          );
+          if (latestMessage?.price !== null) {
+            const is_balance_updated = await db("balance")
+              .where("user_id", data?.user_id)
+              .update({
+                credit:
+                  parseFloat(is_exist_balance?.credit) +
+                  parseFloat(latestMessage.price) * 100 * 2,
+              });
+          }
+          if (
+            !latestMessage ||
+            latestMessage.status !== "delivered" ||
+            (latestMessage.status === "sent" && latestMessage.price === null)
+          ) {
+            console.log(
+              "🚀 ~ setTimeout ~ latestMessage.status :",
+              latestMessage.status
+            );
+            io.to(data.from.socket_id).emit(
+              "message_error",
+              "A2P Verification required"
+            );
 
-          // const is_exist_balance = await db("balance")
-          //   .where("user_id", data?.user_id)
-          //   .first();
-          // console.log(
-          //   "🚀 ~ client.messages.list ~ is_exist_balance:",
-          //   is_exist_balance
-          // );
+            const is_updated_to_database = await db("messages")
+              .where("id", parseInt(message_id))
+              .update({
+                status: "Failed",
+                message_error:
+                  latestMessage?.status === "failed"
+                    ? "Failed to send the message."
+                    : "A2P Verification required",
+              });
 
-          // const is_balance_updated = await db("balance")
-          //   .where("user_id", data?.user_id)
-          //   .update({
-          //     credit:
-          //       parseFloat(is_exist_balance?.credit) +
-          //       parseFloat(latestMessage.price) * 100 * 2,
-          //   });
-          // console.log(
-          //   "🚀 ~ client.messages.list ~ is_balance_updated:",
-          //   is_balance_updated,
-          //   parseFloat(is_exist_balance?.credit),
-          //   parseFloat(latestMessage.price) * 100 * 2
-          // );
+            const messageHistory = await db("messages")
+              .where("from_phone", data.from.phone)
+              .orWhere("to_phone", data.from.phone)
+              .select();
+
+            io.to(data.from.socket_id).emit("message_sent", messageHistory);
+          } else {
+            console.log("Message delivered successfully.");
+          }
+        } catch (error) {
+          console.error("Error in setTimeout callback:", error);
         }
-      } catch (error) {
-        console.error("Error in setTimeout callback:", error);
-      }
-    }, 14000);
+      }, 14000);
+    }
   });
   //chat events
   socket.on("joinRoom", ({ roomId }) => {
