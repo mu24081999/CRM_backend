@@ -32,3 +32,4 @@ router.put(
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   updatePackages
 );
+module.exports = router;

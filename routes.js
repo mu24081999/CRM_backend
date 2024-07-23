@@ -29,6 +29,7 @@ const ratesRoutes = require("./routes/plan-rates");
 const brandRoutes = require("./routes/brands");
 const permissionRoutes = require("./routes/permissions");
 const a2pverification = require("./routes/a2pVerification");
+const packageRoutes = require("./routes/packages");
 
 app.use("/v1/auth", authRoutes);
 app.use("/v1/user", usersRoutes);
@@ -60,3 +61,4 @@ app.use("/v1/user/rates", ratesRoutes);
 app.use("/v1/user/brand", brandRoutes);
 app.use("/v1/user/permissions", permissionRoutes);
 app.use("/v1/user/verifications", a2pverification);
+app.use("/v1/user/packages", packageRoutes);
