@@ -7,8 +7,8 @@ exports.getPackages = catchAsyncFunc(async (req, res, next) => {
   return helper.sendSuccess(req, res, { packages: packages }, "");
 });
 exports.readPackage = catchAsyncFunc(async (req, res, next) => {
-  const { user_id } = req.params;
-  const packages = await db("packages").where("user_id", user_id).first();
+  const { package_id } = req.params;
+  const packages = await db("packages").where("id", package_id).first();
   return helper.sendSuccess(req, res, { packageDetails: packages }, "");
 });
 

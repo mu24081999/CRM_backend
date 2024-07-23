@@ -15,7 +15,7 @@ router.get(
   getPackages
 );
 router.get(
-  "/get-package/:user_id",
+  "/get-package/:package_id",
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   readPackage
