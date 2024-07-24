@@ -46,7 +46,7 @@ exports.updateSetting = catchAssyncFunc(async function (req, res, next) {
 
   const { setting_id } = req.params;
   const params = { local_number_price, toll_free_number_price, user_id };
-  const is_record_updated = await db("general-setting")
+  const is_record_updated = await db("general-settings")
     .where("id", setting_id)
     .update(params);
   if (!is_record_updated) {
