@@ -59,7 +59,7 @@ exports.updatePackages = catchAsyncFunc(async (req, res, next) => {
       req,
       res,
       { id: package_id },
-      "Packages details inserted successfully"
+      "Packages details updated successfully"
     );
   }
   return helper.sendError(req, res, "Server Error!", 500);
