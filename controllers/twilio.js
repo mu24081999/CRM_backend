@@ -225,6 +225,17 @@ exports.recieveSMS = catchAssyncFunc(async function (req, res, next) {
     .where("from_phone", req.body.To)
     .where("to_phone", req.body.To)
     .select();
+  const is_exist_balance = await db("balance")
+    .where("user_id", user?.id)
+    .first();
+
+  const updated_credit = is_exist_balance?.credit - 0.9875;
+
+  const is_exist_balance_updated = await db("balance")
+    .where("user_id", user?.id)
+    .update({
+      credit: updated_credit,
+    });
   io.to(user.socket_id).emit("message_received", messages);
   if (user.connected === 0) {
     const htmlMessage = `
