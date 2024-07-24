@@ -49,7 +49,7 @@ exports.updatePackages = catchAsyncFunc(async (req, res, next) => {
   const { package_id } = req.params;
   const { user_id, packages } = req.body;
   const params = {
-    packages: packages,
+    packages: JSON.stringify(packages),
   };
   const is_updated = await db("packages")
     .where("id", package_id)
