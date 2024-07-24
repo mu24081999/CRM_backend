@@ -26,10 +26,11 @@ exports.readGeneralSettings = catchAssyncFunc(async function (req, res, next) {
 });
 
 exports.addSetting = catchAssyncFunc(async function (req, res, next) {
-  const { local_number_price, toll_free_number_price } = req.body;
+  const { local_number_price, toll_free_number_price, user_id } = req.body;
   const is_inserted = await db("general-settings").insert({
-    local_number_price,
-    toll_free_number_price,
+    user_id: user_id,
+    local_number_price: local_number_price,
+    toll_free_number_price: toll_free_number_price,
   });
   return helper.sendSuccess(
     req,
@@ -41,10 +42,10 @@ exports.addSetting = catchAssyncFunc(async function (req, res, next) {
   );
 });
 exports.updateSetting = catchAssyncFunc(async function (req, res, next) {
-  const { local_number_price, toll_free_number_price } = req.body;
+  const { local_number_price, toll_free_number_price, user_id } = req.body;
 
   const { setting_id } = req.params;
-  const params = { local_number_price, toll_free_number_price };
+  const params = { local_number_price, toll_free_number_price, user_id };
   const is_record_updated = await db("general-setting")
     .where("id", setting_id)
     .update(params);
