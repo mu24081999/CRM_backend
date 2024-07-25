@@ -406,7 +406,8 @@ exports.updateWebhookUrl = catchAssyncFunc(async function (req, res, next) {
   }
 });
 exports.claimPhoneNumber = catchAssyncFunc(async function (req, res, next) {
-  const { phoneNumber, subAccountSid, subAuthToken, addressSid } = req.body;
+  const { phoneNumber, subAccountSid, subAuthToken, addressSid, user_id } =
+    req.body;
   console.log("🚀 ~ req.body;:", req.body);
   const client = twilio(subAccountSid, subAuthToken); // Use subaccount credentials
 
@@ -430,6 +431,7 @@ exports.claimPhoneNumber = catchAssyncFunc(async function (req, res, next) {
     .catch((error) => {
       return helper.sendError(req, res, error.message, 400);
     });
+  const is_added_to_database = await db("did-numbers").insert({});
   return helper.sendSuccess(
     req,
     res,
