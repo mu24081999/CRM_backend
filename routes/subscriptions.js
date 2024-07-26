@@ -16,7 +16,7 @@ router.post(
   addSubscription
 );
 router.put(
-  "/updated-subscription",
+  "/updated-subscription/:subscription_id",
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   updateSubscription
