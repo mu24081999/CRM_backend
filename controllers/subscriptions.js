@@ -92,7 +92,7 @@ async function sendGridEmail(toEmail, subject, htmlText) {
   });
 }
 exports.updateSubscription = catchAssyncFunc(async function (req, res, next) {
-  const { customer_id, start_date, end_date, plan_type, amount_payed } =
+  const { customer_id, plan, start_date, end_date, plan_type, amount_payed } =
     req.body;
   const { subscription_id } = req.params;
   const params = {
