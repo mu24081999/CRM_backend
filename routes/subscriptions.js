@@ -6,6 +6,7 @@ const {
   readSubscriptions,
   getAllSubscriptions,
   getUserSubscriptions,
+  updateSubscription,
 } = require("../controllers/subscriptions");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.post(
@@ -13,6 +14,12 @@ router.post(
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   addSubscription
+);
+router.put(
+  "/updated-subscription",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  updateSubscription
 );
 router.get(
   "/get-subscriptions",

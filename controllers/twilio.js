@@ -431,7 +431,29 @@ exports.claimPhoneNumber = catchAssyncFunc(async function (req, res, next) {
     .catch((error) => {
       return helper.sendError(req, res, error.message, 400);
     });
-  const is_added_to_database = await db("did-numbers").insert({});
+  const is_exist_user_record = await db("did-numbers")
+    .where("user_id", user_id)
+    .first();
+  if (is_exist_user_record) {
+    const updated_numbers = [];
+    const previousPhoneNumbers =
+      is_exist_user_record?.phoneNumbers &&
+      JSON.parse(is_exist_user_record?.phoneNumbers)?.numbers;
+    previousPhoneNumbers?.map((number) => {
+      updated_numbers?.push(number);
+    });
+    updated_numbers?.push(incomingPhoneNumber);
+    const params = {
+      user_id: user_id,
+      phoneNumbers: { numbers: updated_numbers },
+    };
+  } else {
+    const is_added_to_database = await db("did-numbers").insert({
+      user_id: user_id,
+      phoneNumbers: { numbers: [incomingPhoneNumber] },
+    });
+  }
+
   return helper.sendSuccess(
     req,
     res,

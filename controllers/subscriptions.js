@@ -91,6 +91,26 @@ async function sendGridEmail(toEmail, subject, htmlText) {
     console.log("Email sent:", info);
   });
 }
+exports.updateSubscription = catchAssyncFunc(async function (req, res, next) {
+  const { customer_id, start_date, end_date, plan_type, amount_payed } =
+    req.body;
+  const { subscription_id } = req.params;
+  const params = {
+    customer_id,
+    plan,
+    start_date,
+    end_date,
+    plan_type,
+    amount_payed,
+  };
+  const is_record_updated = await db("subscriptions")
+    .where("subscription_id", subscription_id)
+    .update(params);
+  if (!is_record_updated) {
+    return helper.sendError(req, res, {}, "Server Error!");
+  }
+  return helper.sendSuccess(req, res, { id: subscription_id }, "success");
+});
 exports.addSubscription = catchAssyncFunc(async function (req, res, next) {
   const { customer_id, plan, start_date, end_date, plan_type, amount_payed } =
     req.body;
