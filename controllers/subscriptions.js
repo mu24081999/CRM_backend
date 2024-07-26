@@ -104,7 +104,7 @@ exports.updateSubscription = catchAssyncFunc(async function (req, res, next) {
     amount_payed,
   };
   const is_record_updated = await db("subscriptions")
-    .where("subscription_id", subscription_id)
+    .where("id", subscription_id)
     .update(params);
   if (!is_record_updated) {
     return helper.sendError(req, res, {}, "Server Error!");
