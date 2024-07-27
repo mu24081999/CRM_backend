@@ -911,31 +911,76 @@ exports.createRegulatoryBundle = catchAssyncFunc(async function (
   res,
   next
 ) {
-  const {
-    accountSid,
-    authToken,
-    friendlyName,
-    businessName,
-    vat,
-    businessDescription,
-  } = req.body;
+  const { accountSid, authToken, first_name, last_name, phone_number, email } =
+    req.body;
+  const file = req.files.file;
   // const { document_image } = req.files;
   const client = twilio(accountSid, authToken);
   const identity = await client.numbers.v2.regulatoryCompliance.endUsers.create(
     {
       attributes: {
-        business_name: businessName, //"Twilio",
-        vat: vat, //"2348132",
-        business_description: businessDescription, //"Communications Platform as a Service",
+        first_name: first_name,
+        last_name: last_name,
+        phone_number: phone_number,
+        email: email,
       },
-      friendlyName: friendlyName, //"Twilio, Inc.",
-      type: "business",
+      friendlyName: first_name + " " + last_name + " identity registeration",
+      type: "individual",
     }
   );
-  return helper.sendSuccess(
-    req,
-    res,
-    { identity: identity },
-    "End user identity created successfully."
-  );
+  console.log("🚀 ~ identity:", identity);
+  // Add the attributes as a JSON string
+  const attributes = JSON.stringify({
+    address_sids: [addressSid],
+    first_name: first_name,
+    last_name: last_name,
+    email: email,
+    phone_number: phone_number,
+    issue_date: moment(Date.now()).format("YYYY-MM-DD"),
+  });
+
+  form.append("Attributes", attributes);
+  form.append("FriendlyName", first_name + " " + last_name);
+  form.append("Type", "individual");
+  form.append("File", file.data, file.name); // Use file.data and file.name from req.files
+
+  try {
+    const response = await axios.post(
+      "https://numbers-upload.twilio.com/v2/RegulatoryCompliance/SupportingDocuments",
+      form,
+      {
+        headers: {
+          ...form.getHeaders(),
+          Authorization: `Basic ${Buffer.from(
+            `${accountSid}:${authToken}`
+          ).toString("base64")}`,
+        },
+      }
+    );
+
+    res.send(response.data);
+  } catch (error) {
+    console.error(
+      "Error uploading document:",
+      error.response ? error.response.data : error.message
+    );
+    res.status(500).send("Error uploading document", error);
+  }
+
+  // const support_document =
+  //   await client.numbers.v2.regulatoryCompliance.supportingDocuments.create({
+  //     attributes: {
+  //       address_sids: [""],
+  //     },
+  //     friendlyName: "",
+  //     type: "individual",
+  //   });
+  // const bundle = await client.numbers.v2.regulatoryCompliance.bundles.create({
+  //   email: "",
+  //   endUserType: "individual",
+  //   friendlyName: "",
+  //   isoCountry: "",
+  //   numberType: "local",
+  //   statusCallback: "",
+  // });
 });
