@@ -31,6 +31,7 @@ const permissionRoutes = require("./routes/permissions");
 const a2pverification = require("./routes/a2pVerification");
 const packageRoutes = require("./routes/packages");
 const generalSettingRoutes = require("./routes/generalSetting");
+const regulatoryBundlesRoutes = require("./routes/regulatoryBundle");
 
 app.use("/v1/auth", authRoutes);
 app.use("/v1/user", usersRoutes);
@@ -64,3 +65,4 @@ app.use("/v1/user/permissions", permissionRoutes);
 app.use("/v1/user/verifications", a2pverification);
 app.use("/v1/user/packages", packageRoutes);
 app.use("/v1/user/settings", generalSettingRoutes);
+app.use("/v1/user/bundles", regulatoryBundlesRoutes);
