@@ -19,11 +19,11 @@ exports.createRegulatoryBundle = catchAsyncFunc(async (req, res, next) => {
     status,
     status_description,
   } = req.body;
-  const { supporting_documents } = req.files;
+  const { supporting_document } = req.files;
   console.log(req.body, req.files);
   const [fileData] = await storage
     .bucket("crm-justcall")
-    .upload(supporting_documents.tempFilePath, {
+    .upload(supporting_document.tempFilePath, {
       // Specify the destination file name in GCS (optional)
       destination: "regulatory_bundles/attachments/" + email,
       // Set ACL to public-read
