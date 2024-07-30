@@ -20,6 +20,7 @@ exports.createRegulatoryBundle = catchAsyncFunc(async (req, res, next) => {
     status_description,
   } = req.body;
   const { supporting_documents } = req.files;
+  console.log(req.body, req.files);
   const [fileData] = await storage
     .bucket("crm-justcall")
     .upload(supporting_documents.tempFilePath, {
