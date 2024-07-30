@@ -19,7 +19,7 @@ exports.up = function (knex) {
     table.string("business_name").nullable();
     table.string("business_ein").nullable();
     table.string("status").nullable();
-    table.string("status_descriptio").nullable();
+    table.string("status_description").nullable();
     table.timestamps(true, true);
   });
 };

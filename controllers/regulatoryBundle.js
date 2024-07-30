@@ -45,7 +45,7 @@ exports.createRegulatoryBundle = catchAsyncFunc(async (req, res, next) => {
     business_ein,
     status,
     status_description,
-    supporting_documents: publicUrl,
+    supporting_document: publicUrl,
   };
 
   const is_inserted = await db("regulatory-bundles").insert(params);
