@@ -78,7 +78,7 @@ exports.updateBalanceAfterCall = catchAssyncFunc(async function (
       credit = credit + parseFloat(call.price) * 100 * 2;
     }
   });
-  console.log("credit: " + credit);
+  console.log("credit: " + credit, client.pricing.v2.voice.countries());
   const is_balance_updated = await db("balance")
     .where("user_id", user_id)
     .update({
