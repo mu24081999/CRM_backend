@@ -75,6 +75,7 @@ exports.updateBalanceAfterCall = catchAssyncFunc(async function (
   });
   let credit = 0;
   calls?.map((call) => {
+    console.log("🚀 ~ calls?.map ~ call:", call);
     if (call?.status === "completed" && call?.price !== null) {
       credit = credit + parseFloat(call.price) * 100 * 2;
     }
