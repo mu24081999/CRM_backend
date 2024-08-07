@@ -72,7 +72,7 @@ exports.updateBalanceAfterCall = catchAssyncFunc(async function (
   const calls = setTimeout(async () => {
     const data = await client.calls.list({ limit: 2 });
     return data;
-  });
+  }, 15000);
   let credit = 0;
   calls?.map((call) => {
     console.log("🚀 ~ calls?.map ~ call:", call);
