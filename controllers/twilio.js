@@ -69,10 +69,8 @@ exports.updateBalanceAfterCall = catchAssyncFunc(async function (
   const is_exist_balance = await db("balance")
     .where("user_id", user_id)
     .first();
-  const calls = setTimeout(async () => {
-    const data = await client.calls.list({ limit: 2 });
-    return data;
-  }, 15000);
+  const calls = await client.calls.list({ limit: 2 });
+
   let credit = 0;
   calls?.map((call) => {
     console.log("🚀 ~ calls?.map ~ call:", call);
