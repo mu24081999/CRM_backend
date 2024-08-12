@@ -910,9 +910,9 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
   console.log(
     "🚀 ~ user_subscription:",
     user_subscription,
-    user_subscription?.plan === "Enterprise" &&
-      user?.bulk_emails_request_count > 0 &&
-      user?.bulk_emails_request_count < 4
+    user_subscription?.plan === "Enterprise",
+    user?.bulk_emails_request_count > 0,
+    user?.bulk_emails_request_count < 4
   );
   if (
     user_subscription?.plan === "Solo Starter" &&
