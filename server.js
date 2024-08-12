@@ -26,6 +26,15 @@ global.storage = new Storage({
 });
 const { GoogleAuth } = require("google-auth-library");
 
+//Setting cloudinary
+const cloudinary = require("cloudinary");
+cloudinary.config({
+  cloud_name: config.CLOUDINARY_NAME,
+  api_key: config.CLOUDINARY_API_KEY,
+  api_secret: config.CLOUDINARY_API_SECRET,
+});
+
+// var fileUpload = require("express-fileupload");
 // Set the path to the keyfile using environment variable
 process.env.GOOGLE_APPLICATION_CREDENTIALS =
   "justcall-378101-85a5c9fa46e9.json";

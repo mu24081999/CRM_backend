@@ -14,6 +14,7 @@ exports.getAllSubscriptions = catchAssyncFunc(async function (req, res, next) {
   );
 });
 exports.getUserSubscriptions = catchAssyncFunc(async function (req, res, next) {
+  console.log("🚀 ~  req.user.id:", req.user.id);
   const user = await db("users").where("id", req.user.id).first();
   let subscription;
   if (user.parent_id === null && user.client_id === null) {

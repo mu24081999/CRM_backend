@@ -6,6 +6,7 @@ const {
   softDeleteAgent,
   updateAgent,
   addAgent,
+  uploadCloudinaryFile,
 } = require("../controllers/agents");
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
 router.get(
@@ -14,6 +15,7 @@ router.get(
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
   getUserAgents
 );
+router.post("/post-cloudinary-file", uploadCloudinaryFile);
 router.get(
   "/agent-details/:agent_id",
   IsAuth,

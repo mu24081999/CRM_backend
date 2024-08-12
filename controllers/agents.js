@@ -2,7 +2,22 @@ const catchAssyncFunc = require("../middlewares/catchAsyncFunc");
 const helper = require("../helper/helper");
 const Joi = require("joi");
 const moment = require("moment");
+const cloudinary = require("cloudinary");
 
+exports.uploadCloudinaryFile = catchAssyncFunc(async function (req, res, next) {
+  const { file } = req.files;
+  const result = cloudinary.uploader
+    .upload(file.tempFilePath, {
+      resource_type: "auto",
+      folder: "testing_images",
+    })
+    .then((res) => {
+      res.json({ url: res });
+    })
+    .catch((err) => {
+      res.json({ error: err });
+    });
+});
 exports.getUserAgents = catchAssyncFunc(async function (req, res, next) {
   const { user_id } = req.params;
   const agents = await db("agents").where("user_id", user_id).select();
@@ -15,6 +30,7 @@ exports.getUserAgents = catchAssyncFunc(async function (req, res, next) {
     "success"
   );
 });
+
 exports.readAgent = catchAssyncFunc(async function (req, res, next) {
   const { agent_id } = req.params;
   const agent = await db("agents").where("id", agent_id).first();

@@ -857,6 +857,75 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
     google_app_password,
     from_name,
   } = req.body;
+  const send_bulk = ()=>{
+    const files = req.files;
+
+    if (Array.isArray(to)) {
+      const is_all_enqueued = await Promise.all(
+        to?.map(async (email, index) => {
+          return new Promise(async (resolve, reject) => {
+            const mailOptions = {
+              from: `${from_name} <${from}>`,
+              to: email,
+              subject: subject,
+              html: body,
+            };
+            // Enqueue email job
+            await emailQueue
+              .createJob({
+                from,
+                google_app_password,
+                mailOptions,
+                subject,
+                body,
+                files: files?.files,
+              })
+              .delayUntil(Date.now() + 15000) // Delay for 15 seconds
+              .save()
+              .then(() => resolve(true))
+              .catch((err) => reject(err));
+            resolve(true);
+          });
+        })
+      );
+    }
+    return helper.sendSuccess(req, res, {}, "Email enqueued successfully.");
+  }
+  const today = new Date();
+  const formattedToday = moment(today).format("YYYY-MM-DD");
+  const user = await db("users").where("email", from).first();
+  if (
+    moment(user?.last_bulk_email_request_send).format("YYYY-MM-DD") !==
+    formattedToday
+  ) {
+    const update_user = await db("users").where("email", user?.email).update({
+      last_bulk_email_request_send: formattedToday,
+      bulk_emails_request_count: 0,
+    });
+  }
+  const user_subscription = await db("subscriptions")
+    .where("customer_id", user?.id)
+    .first();
+  if (
+    user_subscription?.plan === "Solo Starter" &&
+    user?.bulk_emails_request_count === 0
+  ) {
+    send_bulk()
+  } else if (
+    user_subscription?.plan === "Growth" &&
+    user?.bulk_emails_request_count > 0 &&
+    user?.bulk_emails_request_count < 2
+  ) {
+    send_bulk()
+  } else if (
+    user_subscription?.plan === "Enterprise" &&
+    user?.bulk_emails_request_count > 0 &&
+    user?.bulk_emails_request_count < 4
+  ) {
+    send_bulk()
+  }else {
+    return helper.sendError(req,res,"You have reached your daily limits",400)
+  }
   // Construct mailOptions
   // const mailOptions = {
   //   from: `${from_name} <${from}>`,
@@ -864,44 +933,13 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
   //   subject: subject,
   //   html: body,
   // };
-  const files = req.files;
-  const transporter = nodeMailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: from,
-      pass: google_app_password,
-    },
-  });
-  if (Array.isArray(to)) {
-    const is_all_enqueued = await Promise.all(
-      to?.map(async (email, index) => {
-        return new Promise(async (resolve, reject) => {
-          const mailOptions = {
-            from: `${from_name} <${from}>`,
-            to: email,
-            subject: subject,
-            html: body,
-          };
-          // Enqueue email job
-          await emailQueue
-            .createJob({
-              from,
-              google_app_password,
-              mailOptions,
-              subject,
-              body,
-              files: files?.files,
-            })
-            .delayUntil(Date.now() + 15000) // Delay for 15 seconds
-            .save()
-            .then(() => resolve(true))
-            .catch((err) => reject(err));
-          resolve(true);
-        });
-      })
-    );
-  }
-  return helper.sendSuccess(req, res, {}, "Email enqueued successfully.");
+  // const transporter = nodeMailer.createTransport({
+  //   service: "gmail",
+  //   auth: {
+  //     user: from,
+  //     pass: google_app_password,
+  //   },
+  // });
   // // Enqueue email job
   // await emailQueue
   //   .createJob({ from, google_app_password, mailOptions, subject, body })

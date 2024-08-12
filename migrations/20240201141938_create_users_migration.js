@@ -33,6 +33,8 @@ exports.up = function (knex) {
     table.json("twilio_numbers").nullable();
     table.string("role").nullable();
     table.string("client_id").nullable();
+    table.date("last_bulk_email_request_send").nullable();
+    table.integer("bulk_emails_request_count").nullable();
     table.enum("status", ["active", "blocked"]).defaultTo("active");
     table.boolean("recording").defaultTo(1);
     table.timestamps(true, true);
