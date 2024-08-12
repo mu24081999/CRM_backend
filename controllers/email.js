@@ -894,6 +894,7 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
   const today = new Date();
   const formattedToday = moment(today).format("YYYY-MM-DD");
   const user = await db("users").where("email", from).first();
+  console.log("🚀 ~ user:", user);
   if (
     moment(user?.last_bulk_email_request_send).format("YYYY-MM-DD") !==
     formattedToday
