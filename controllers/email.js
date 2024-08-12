@@ -907,6 +907,7 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
   const user_subscription = await db("subscriptions")
     .where("customer_id", user?.id)
     .first();
+  console.log("🚀 ~ user_subscription:", user_subscription);
   if (
     user_subscription?.plan === "Solo Starter" &&
     user?.bulk_emails_request_count === 0
