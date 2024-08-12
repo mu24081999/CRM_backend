@@ -857,7 +857,7 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
     google_app_password,
     from_name,
   } = req.body;
-  const send_bulk = ()=>{
+  const send_bulk = async () => {
     const files = req.files;
 
     if (Array.isArray(to)) {
@@ -890,7 +890,7 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
       );
     }
     return helper.sendSuccess(req, res, {}, "Email enqueued successfully.");
-  }
+  };
   const today = new Date();
   const formattedToday = moment(today).format("YYYY-MM-DD");
   const user = await db("users").where("email", from).first();
@@ -910,21 +910,26 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
     user_subscription?.plan === "Solo Starter" &&
     user?.bulk_emails_request_count === 0
   ) {
-    send_bulk()
+    send_bulk();
   } else if (
     user_subscription?.plan === "Growth" &&
     user?.bulk_emails_request_count > 0 &&
     user?.bulk_emails_request_count < 2
   ) {
-    send_bulk()
+    send_bulk();
   } else if (
     user_subscription?.plan === "Enterprise" &&
     user?.bulk_emails_request_count > 0 &&
     user?.bulk_emails_request_count < 4
   ) {
-    send_bulk()
-  }else {
-    return helper.sendError(req,res,"You have reached your daily limits",400)
+    send_bulk();
+  } else {
+    return helper.sendError(
+      req,
+      res,
+      "You have reached your daily limits",
+      400
+    );
   }
   // Construct mailOptions
   // const mailOptions = {
