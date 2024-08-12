@@ -911,7 +911,7 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
     "🚀 ~ user_subscription:",
     user_subscription,
     user_subscription?.plan === "Enterprise",
-    user?.bulk_emails_request_count > 0,
+    user?.bulk_emails_request_count >= 0,
     user?.bulk_emails_request_count < 4
   );
   if (
@@ -921,13 +921,13 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
     send_bulk();
   } else if (
     user_subscription?.plan === "Growth" &&
-    user?.bulk_emails_request_count > 0 &&
+    user?.bulk_emails_request_count >= 0 &&
     user?.bulk_emails_request_count < 2
   ) {
     send_bulk();
   } else if (
     user_subscription?.plan === "Enterprise" &&
-    user?.bulk_emails_request_count > 0 &&
+    user?.bulk_emails_request_count >= 0 &&
     user?.bulk_emails_request_count < 4
   ) {
     send_bulk();
