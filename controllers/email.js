@@ -475,17 +475,14 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
     from_name,
   } = req.body;
   const transporter = nodeMailer.createTransport({
-    // service: "gmail",
-    host: "smtp.your-email-provider.com", // e.g., smtp.gmail.com, smtp.office365.com
-    port: 587, // 465 for SSL, 587 for TLS
-    secure: false, // true for 465, false for other ports
+    service: "gmail",
     auth: {
       // host: "smtp.ethereal.email",
       // port: 587,
-      // secure: true, // Use `true` for port 465, `false` for all other ports
-      // host: "smpt.gmail.com",
-      // port: "465",
-      // pool: true,
+      secure: true, // Use `true` for port 465, `false` for all other ports
+      host: "smpt.gmail.com",
+      port: "465",
+      pool: true,
       user: from,
       pass: google_app_password,
       tls: {

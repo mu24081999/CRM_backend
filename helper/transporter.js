@@ -4,9 +4,8 @@ const nodeMailer = require("nodemailer");
 function createTransporter(credentials) {
   return nodeMailer.createTransport({
     // service: "gmail",
-    host: "smtp.your-email-provider.com", // e.g., smtp.gmail.com, smtp.office365.com
-    port: 587, // 465 for SSL, 587 for TLS
-    secure: false, // true for 465, false for other ports
+    host: "mail.justcall.com.pk",
+    port: "465",
     auth: {
       user: credentials.user,
       pass: credentials.pass,
