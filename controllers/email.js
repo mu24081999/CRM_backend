@@ -894,7 +894,6 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
   const today = new Date();
   const formattedToday = moment(today).format("YYYY-MM-DD");
   const user = await db("users").where("email", from).first();
-  console.log("🚀 ~ user:", user);
   if (
     moment(user?.last_bulk_email_request_send).format("YYYY-MM-DD") !==
     formattedToday
@@ -907,28 +906,21 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
   const user_subscription = await db("subscriptions")
     .where("customer_id", user?.id)
     .first();
-  console.log(
-    "🚀 ~ user_subscription:",
-    user_subscription,
-    user_subscription?.plan === "Enterprise",
-    user?.bulk_emails_request_count >= 0,
-    user?.bulk_emails_request_count < 4
-  );
   if (
     user_subscription?.plan === "Solo Starter" &&
-    user?.bulk_emails_request_count === 0
+    user?.bulk_emails_request_count <= 100
   ) {
     send_bulk();
   } else if (
     user_subscription?.plan === "Growth" &&
     user?.bulk_emails_request_count >= 0 &&
-    user?.bulk_emails_request_count < 2
+    user?.bulk_emails_request_count < 300
   ) {
     send_bulk();
   } else if (
     user_subscription?.plan === "Enterprise" &&
     user?.bulk_emails_request_count >= 0 &&
-    user?.bulk_emails_request_count < 4
+    user?.bulk_emails_request_count <= 500
   ) {
     send_bulk();
   } else {

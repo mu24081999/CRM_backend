@@ -53,6 +53,7 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
     password,
     google_app_password,
     mail_provider,
+    email_type,
     twilio_numbers,
     recording,
   } = req.body;
@@ -95,6 +96,8 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
       personal_phone,
       password: password !== undefined && password !== "" && hashedPassword,
       google_app_password,
+      mail_provider,
+      email_type,
       recording,
     };
   } else if (req.files) {
@@ -110,6 +113,8 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
       personal_phone,
       avatar: req.files && publicUrl ? publicUrl : "",
       google_app_password,
+      mail_provider,
+      email_type,
       recording,
     };
   } else if (twilio_numbers) {
@@ -126,6 +131,8 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
       personal_phone,
       twilio_numbers: JSON.stringify(twilio_numbers),
       google_app_password,
+      mail_provider,
+      email_type,
       recording,
     };
   } else {
@@ -142,6 +149,7 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
       personal_phone,
       google_app_password,
       mail_provider,
+      email_type,
       recording,
     };
   }
