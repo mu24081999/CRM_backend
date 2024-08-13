@@ -2,6 +2,13 @@ const nodeMailer = require("nodemailer");
 
 // Function to create transporter for given credentials
 function createTransporter(credentials, mail_provider, email_type) {
+  console.log(
+    "🚀 ~ createTransporter ~ credentials, mail_provider, email_type:",
+    credentials,
+    mail_provider,
+    email_type,
+    email_type === "professional_email" ? mail_provider : "smpt.gmail.com"
+  );
   return nodeMailer.createTransport({
     // service: "gmail",
     host:
