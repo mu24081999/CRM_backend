@@ -413,11 +413,11 @@ exports.signIn = catchAssyncFunc(async function (req, res, next) {
     );
   }
   const { username, password, type, authType, googleProfile } = req.body;
-  console.log("🚀 ~ req.body:", req.body);
   const is_exist_user = await db("users")
     .where("username", username)
     .orWhere("email", username)
     .first();
+  console.log("🚀 ~ is_exist_user:", is_exist_user);
   if (!is_exist_user && !authType) {
     return helper.sendError(req, res, "Invalid username or password.", 403);
   }
