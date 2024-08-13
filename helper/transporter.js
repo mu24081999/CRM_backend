@@ -1,7 +1,7 @@
 const nodeMailer = require("nodemailer");
 
 // Function to create transporter for given credentials
-function createTransporter(credentials, mail_provider, email_type) {
+function createTransporter(credentials, email_type, mail_provider) {
   console.log(
     "🚀 ~ createTransporter ~ credentials, mail_provider, email_type:",
     credentials,
