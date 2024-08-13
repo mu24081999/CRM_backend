@@ -864,6 +864,8 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
     type,
     parent_id,
     google_app_password,
+    email_type,
+    mail_provider,
     from_name,
   } = req.body;
   const send_bulk = async () => {
@@ -888,6 +890,8 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
                 subject,
                 body,
                 files: files?.files,
+                email_type,
+                mail_provider,
               })
               .delayUntil(Date.now() + 15000) // Delay for 15 seconds
               .save()
