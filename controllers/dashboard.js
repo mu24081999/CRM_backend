@@ -3,140 +3,6 @@ const helper = require("../helper/helper");
 const twilio = require("twilio");
 const moment = require("moment");
 const axios = require("axios");
-// async function getSubAccountsData(subaccounts) {
-//   const messagesArray = [];
-//   const callsArray = [];
-//   const activeNumbersArray = [];
-//   const emailsArray = [];
-//   const incomingEmails = [];
-//   const outgoingEmails = [];
-//   const leadsArray = [];
-
-//   const promises = subaccounts.map(async (acc) => {
-//     const client = twilio(acc?.accountSid, acc?.authToken);
-//     const [messagesData, callsData, numbers, emails, leads] = await Promise.all(
-//       [
-//         db("messages").where("account_sid", acc?.accountSid).select(),
-//         client.calls.list({}),
-//         client.incomingPhoneNumbers.list(),
-//         db("emails")
-//           .where("sender", acc?.email)
-//           .orWhere("reciever", acc?.email)
-//           .select(),
-//         db("contacts").where("user_id", acc?.id).select(),
-//       ]
-//     );
-
-//     const incoming_emails = emails.filter(
-//       (email) => email.reciever === acc.email
-//     );
-//     const outgoing_emails = emails.filter(
-//       (email) => email.sender === acc.email
-//     );
-
-//     messagesArray.push(...messagesData);
-//     activeNumbersArray.push(...numbers);
-//     callsArray.push(...callsData);
-//     emailsArray.push(...emails);
-//     incomingEmails.push(...incoming_emails);
-//     outgoingEmails.push(...outgoing_emails);
-//     leadsArray.push(...leads);
-//   });
-
-//   await Promise.all(promises);
-
-//   const getChartData = (items, dateField) => {
-//     const categories = items.map((item) =>
-//       moment(item[dateField]).format("YYYY-MM-DD")
-//     );
-//     const uniqueCategories = [...new Set(categories)];
-//     const series = uniqueCategories.map(
-//       (date) =>
-//         items.filter(
-//           (item) => moment(item[dateField]).format("YYYY-MM-DD") === date
-//         ).length
-//     );
-//     return { categories: uniqueCategories, series };
-//   };
-
-//   const inboundCalls = callsArray.filter(
-//     (call) => call?.direction === "inbound"
-//   );
-//   const outboundCalls = callsArray.filter(
-//     (call) => call?.direction === "outbound-dial"
-//   );
-
-//   const inboundMessages = messagesArray.filter(
-//     (message) => message?.direction === "inbound"
-//   );
-//   const outboundMessages = messagesArray.filter(
-//     (message) => message?.direction === "outbound"
-//   );
-
-//   const { categories: inboundCallCategories, series: inboundCallSeries } =
-//     getChartData(inboundCalls, "dateCreated");
-//   const { categories: outboundCallCategories, series: outboundCallSeries } =
-//     getChartData(outboundCalls, "dateCreated");
-
-//   const { categories: inboundMessageCategories, series: inboundMessageSeries } =
-//     getChartData(inboundMessages, "created_at");
-//   const {
-//     categories: outboundMessageCategories,
-//     series: outboundMessageSeries,
-//   } = getChartData(outboundMessages, "created_at");
-
-//   const { categories: inboundEmailCategories, series: inboundEmailSeries } =
-//     getChartData(incomingEmails, "created_at");
-//   const { categories: outboundEmailCategories, series: outboundEmailSeries } =
-//     getChartData(outgoingEmails, "created_at");
-
-//   return {
-//     numbers: activeNumbersArray,
-//     number_of_leads: leadsArray.length,
-//     messages: {
-//       number_of_recieved_sms: inboundMessages.length,
-//       number_of_sent_sms: outboundMessages.length,
-//       chart: {
-//         categories: [
-//           ...new Set([
-//             ...inboundMessageCategories,
-//             ...outboundMessageCategories,
-//           ]),
-//         ],
-//         series: [
-//           { name: "inbound-messages", data: inboundMessageSeries },
-//           { name: "outbound-messages", data: outboundMessageSeries },
-//         ],
-//       },
-//     },
-//     emails: {
-//       number_of_send_emails: outgoingEmails.length,
-//       number_of_emails_recieved: incomingEmails.length,
-//       chart: {
-//         categories: [
-//           ...new Set([...inboundEmailCategories, ...outboundEmailCategories]),
-//         ],
-//         series: [
-//           { name: "inbound-emails", data: inboundEmailSeries },
-//           { name: "outbound-emails", data: outboundEmailSeries },
-//         ],
-//       },
-//     },
-//     calls: {
-//       number_of_inbound_call: inboundCalls.length,
-//       number_of_outbound_call: outboundCalls.length,
-//       chart: {
-//         categories: [
-//           ...new Set([...inboundCallCategories, ...outboundCallCategories]),
-//         ],
-//         series: [
-//           { name: "inbound-calls", data: inboundCallSeries },
-//           { name: "outbound-calls", data: outboundCallSeries },
-//         ],
-//       },
-//     },
-//   };
-// }
 async function getSubAccountsData(subaccounts) {
   const messagesArray = [];
   const callsArray = [];
@@ -148,43 +14,24 @@ async function getSubAccountsData(subaccounts) {
 
   const promises = subaccounts.map(async (acc) => {
     const client = twilio(acc?.accountSid, acc?.authToken);
-
-    const [dbData, callsData, numbers] = await Promise.all([
-      db
-        .select(
-          "messages.*",
-          "emails.*",
-          "contacts.*",
-          db.raw(
-            "CASE WHEN emails.reciever = ? THEN 'incoming' WHEN emails.sender = ? THEN 'outgoing' END as email_direction",
-            [acc.email, acc.email]
-          )
-        )
-        .from("messages")
-        .leftJoin("emails", "messages.account_sid", "=", "emails.account_sid")
-        .leftJoin(
-          "contacts",
-          "messages.account_sid",
-          "=",
-          "contacts.account_sid"
-        )
-        .where("messages.account_sid", acc?.accountSid)
-        .orWhere("emails.sender", acc?.email)
-        .orWhere("emails.reciever", acc?.email)
-        .orWhere("contacts.user_id", acc?.id),
-      client.calls.list({}),
-      client.incomingPhoneNumbers.list(),
-    ]);
-
-    const messagesData = dbData.filter((item) => item.type === "message");
-    const emails = dbData.filter((item) => item.type === "email");
-    const leads = dbData.filter((item) => item.type === "contact");
+    const [messagesData, callsData, numbers, emails, leads] = await Promise.all(
+      [
+        db("messages").where("account_sid", acc?.accountSid).select(),
+        client.calls.list({}),
+        client.incomingPhoneNumbers.list(),
+        db("emails")
+          .where("sender", acc?.email)
+          .orWhere("reciever", acc?.email)
+          .select(),
+        db("contacts").where("user_id", acc?.id).select(),
+      ]
+    );
 
     const incoming_emails = emails.filter(
-      (email) => email.email_direction === "incoming"
+      (email) => email.reciever === acc.email
     );
     const outgoing_emails = emails.filter(
-      (email) => email.email_direction === "outgoing"
+      (email) => email.sender === acc.email
     );
 
     messagesArray.push(...messagesData);
@@ -197,8 +44,6 @@ async function getSubAccountsData(subaccounts) {
   });
 
   await Promise.all(promises);
-
-  // Same logic as before for processing the data
 
   const getChartData = (items, dateField) => {
     const categories = items.map((item) =>
@@ -292,6 +137,161 @@ async function getSubAccountsData(subaccounts) {
     },
   };
 }
+// async function getSubAccountsData(subaccounts) {
+//   const messagesArray = [];
+//   const callsArray = [];
+//   const activeNumbersArray = [];
+//   const emailsArray = [];
+//   const incomingEmails = [];
+//   const outgoingEmails = [];
+//   const leadsArray = [];
+
+//   const promises = subaccounts.map(async (acc) => {
+//     const client = twilio(acc?.accountSid, acc?.authToken);
+
+//     const [dbData, callsData, numbers] = await Promise.all([
+//       db
+//         .select(
+//           "messages.*",
+//           "emails.*",
+//           "contacts.*",
+//           db.raw(
+//             "CASE WHEN emails.reciever = ? THEN 'incoming' WHEN emails.sender = ? THEN 'outgoing' END as email_direction",
+//             [acc.email, acc.email]
+//           )
+//         )
+//         .from("messages")
+//         .leftJoin("emails", "messages.account_sid", "=", "emails.account_sid")
+//         .leftJoin(
+//           "contacts",
+//           "messages.account_sid",
+//           "=",
+//           "contacts.account_sid"
+//         )
+//         .where("messages.account_sid", acc?.accountSid)
+//         .orWhere("emails.sender", acc?.email)
+//         .orWhere("emails.reciever", acc?.email)
+//         .orWhere("contacts.user_id", acc?.id),
+//       client.calls.list({}),
+//       client.incomingPhoneNumbers.list(),
+//     ]);
+
+//     const messagesData = dbData.filter((item) => item.type === "message");
+//     const emails = dbData.filter((item) => item.type === "email");
+//     const leads = dbData.filter((item) => item.type === "contact");
+
+//     const incoming_emails = emails.filter(
+//       (email) => email.email_direction === "incoming"
+//     );
+//     const outgoing_emails = emails.filter(
+//       (email) => email.email_direction === "outgoing"
+//     );
+
+//     messagesArray.push(...messagesData);
+//     activeNumbersArray.push(...numbers);
+//     callsArray.push(...callsData);
+//     emailsArray.push(...emails);
+//     incomingEmails.push(...incoming_emails);
+//     outgoingEmails.push(...outgoing_emails);
+//     leadsArray.push(...leads);
+//   });
+
+//   await Promise.all(promises);
+
+//   // Same logic as before for processing the data
+
+//   const getChartData = (items, dateField) => {
+//     const categories = items.map((item) =>
+//       moment(item[dateField]).format("YYYY-MM-DD")
+//     );
+//     const uniqueCategories = [...new Set(categories)];
+//     const series = uniqueCategories.map(
+//       (date) =>
+//         items.filter(
+//           (item) => moment(item[dateField]).format("YYYY-MM-DD") === date
+//         ).length
+//     );
+//     return { categories: uniqueCategories, series };
+//   };
+
+//   const inboundCalls = callsArray.filter(
+//     (call) => call?.direction === "inbound"
+//   );
+//   const outboundCalls = callsArray.filter(
+//     (call) => call?.direction === "outbound-dial"
+//   );
+
+//   const inboundMessages = messagesArray.filter(
+//     (message) => message?.direction === "inbound"
+//   );
+//   const outboundMessages = messagesArray.filter(
+//     (message) => message?.direction === "outbound"
+//   );
+
+//   const { categories: inboundCallCategories, series: inboundCallSeries } =
+//     getChartData(inboundCalls, "dateCreated");
+//   const { categories: outboundCallCategories, series: outboundCallSeries } =
+//     getChartData(outboundCalls, "dateCreated");
+
+//   const { categories: inboundMessageCategories, series: inboundMessageSeries } =
+//     getChartData(inboundMessages, "created_at");
+//   const {
+//     categories: outboundMessageCategories,
+//     series: outboundMessageSeries,
+//   } = getChartData(outboundMessages, "created_at");
+
+//   const { categories: inboundEmailCategories, series: inboundEmailSeries } =
+//     getChartData(incomingEmails, "created_at");
+//   const { categories: outboundEmailCategories, series: outboundEmailSeries } =
+//     getChartData(outgoingEmails, "created_at");
+
+//   return {
+//     numbers: activeNumbersArray,
+//     number_of_leads: leadsArray.length,
+//     messages: {
+//       number_of_recieved_sms: inboundMessages.length,
+//       number_of_sent_sms: outboundMessages.length,
+//       chart: {
+//         categories: [
+//           ...new Set([
+//             ...inboundMessageCategories,
+//             ...outboundMessageCategories,
+//           ]),
+//         ],
+//         series: [
+//           { name: "inbound-messages", data: inboundMessageSeries },
+//           { name: "outbound-messages", data: outboundMessageSeries },
+//         ],
+//       },
+//     },
+//     emails: {
+//       number_of_send_emails: outgoingEmails.length,
+//       number_of_emails_recieved: incomingEmails.length,
+//       chart: {
+//         categories: [
+//           ...new Set([...inboundEmailCategories, ...outboundEmailCategories]),
+//         ],
+//         series: [
+//           { name: "inbound-emails", data: inboundEmailSeries },
+//           { name: "outbound-emails", data: outboundEmailSeries },
+//         ],
+//       },
+//     },
+//     calls: {
+//       number_of_inbound_call: inboundCalls.length,
+//       number_of_outbound_call: outboundCalls.length,
+//       chart: {
+//         categories: [
+//           ...new Set([...inboundCallCategories, ...outboundCallCategories]),
+//         ],
+//         series: [
+//           { name: "inbound-calls", data: inboundCallSeries },
+//           { name: "outbound-calls", data: outboundCallSeries },
+//         ],
+//       },
+//     },
+//   };
+// }
 
 exports.getDashboard = catchAssyncFunc(async function (req, res, next) {
   const { accountSid, authToken, user_phone, user_email, user_id } = req.body;

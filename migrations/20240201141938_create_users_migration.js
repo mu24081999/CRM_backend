@@ -19,6 +19,7 @@ exports.up = function (knex) {
     table.string("username").notNullable();
     table.string("email").notNullable();
     table.string("google_app_password").nullable();
+    table.string("mail_provider").nullable();
     table.string("password").notNullable();
     table.string("accountSid").nullable();
     table.string("authToken").nullable();

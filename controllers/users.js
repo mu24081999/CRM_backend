@@ -52,6 +52,7 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
     personal_phone,
     password,
     google_app_password,
+    mail_provider,
     twilio_numbers,
     recording,
   } = req.body;
@@ -140,6 +141,7 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
       phone,
       personal_phone,
       google_app_password,
+      mail_provider,
       recording,
     };
   }
