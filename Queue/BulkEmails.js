@@ -133,8 +133,16 @@ const uploadFiles = async (files, from) => {
 };
 // Process queue jobs
 emailQueue.process(async (job) => {
-  const { from, google_app_password, mailOptions, subject, body, files } =
-    job.data;
+  const {
+    from,
+    google_app_password,
+    mailOptions,
+    subject,
+    body,
+    files,
+    email_type,
+    mail_provider,
+  } = job.data;
   let is_email_attachments_added;
   let is_attachments_saved;
   // const transporter = createTransporter(from, google_app_password);
@@ -147,7 +155,7 @@ emailQueue.process(async (job) => {
     mailOptions.attachments =
       is_email_attachments_added && is_email_attachments_added?.attachments;
   }
-  const transporter = getTransporter(credentials);
+  const transporter = getTransporter(credentials, email_type, mail_provider);
   const emailResponse = await sendEmail(transporter, mailOptions);
   let emailData = {}; // Initialize emailData to an empty object
   if (emailResponse) {
