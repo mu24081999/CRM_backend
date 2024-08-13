@@ -8,6 +8,7 @@ const Imap = require("node-imap");
 const { simpleParser } = require("mailparser");
 const { emailQueue } = require("../Queue/BulkEmails");
 const nodemailer = require("nodemailer");
+const { getTransporter } = require("../helper/transporter");
 exports.getEmailsByAccount = catchAssyncFunc(async (req, res, next) => {
   const config = {
     user: "mu24081999@gmail.com",
@@ -473,24 +474,32 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
     parent_id,
     google_app_password,
     from_name,
+    email_type,
+    mail_provider,
   } = req.body;
-  const transporter = nodeMailer.createTransport({
-    service: "gmail",
-    auth: {
-      // host: "smtp.ethereal.email",
-      // port: 587,
-      secure: true, // Use `true` for port 465, `false` for all other ports
-      host: "smpt.gmail.com",
-      port: "465",
-      pool: true,
-      user: from,
-      pass: google_app_password,
-      tls: {
-        // do not fail on invalid certs
-        rejectUnauthorized: false,
-      },
-    },
-  });
+  // const transporter = nodeMailer.createTransport({
+  //   service: "gmail",
+  //   auth: {
+  //     // host: "smtp.ethereal.email",
+  //     // port: 587,
+  //     secure: true, // Use `true` for port 465, `false` for all other ports
+  //     host: "smpt.gmail.com",
+  //     port: "465",
+  //     pool: true,
+  //     user: from,
+  //     pass: google_app_password,
+  //     tls: {
+  //       // do not fail on invalid certs
+  //       rejectUnauthorized: false,
+  //     },
+  //   },
+  // });
+  const credentials = {
+    user: from,
+    pass: google_app_password,
+  };
+  const transporter = getTransporter(credentials, email_type, mail_provider);
+
   const saveAttachments = async (data) => {
     const is_added = await db("email_attachments").insert({
       file_link: data.file_link,
