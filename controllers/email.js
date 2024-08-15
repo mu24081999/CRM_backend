@@ -843,6 +843,7 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
   const {
     from,
     to,
+    to_name,
     subject,
     body,
     type,
@@ -859,11 +860,13 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
       const is_all_enqueued = await Promise.all(
         to?.map(async (email, index) => {
           return new Promise(async (resolve, reject) => {
+            const user = await db("users")?.where("email", email).first();
+            const initial_body = `<div>${to_name[index]}</div>`;
             const mailOptions = {
               from: `${from_name} <${from}>`,
               to: email,
               subject: subject,
-              html: body,
+              html: initial_body + body,
             };
             // Enqueue email job
             await emailQueue
@@ -904,20 +907,23 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
     .where("customer_id", user?.id)
     .first();
   if (
-    user_subscription?.plan === "Solo Starter" &&
-    user?.bulk_emails_request_count <= 100
+    user_subscription?.plan === "Solo Starter"
+    // &&
+    // user?.bulk_emails_request_count <= 100
   ) {
     send_bulk();
   } else if (
-    user_subscription?.plan === "Growth" &&
-    user?.bulk_emails_request_count >= 0 &&
-    user?.bulk_emails_request_count < 300
+    user_subscription?.plan === "Growth"
+    // &&
+    // user?.bulk_emails_request_count >= 0 &&
+    // user?.bulk_emails_request_count < 300
   ) {
     send_bulk();
   } else if (
-    user_subscription?.plan === "Enterprise" &&
-    user?.bulk_emails_request_count >= 0 &&
-    user?.bulk_emails_request_count <= 500
+    user_subscription?.plan === "Enterprise"
+    //  &&
+    // user?.bulk_emails_request_count >= 0 &&
+    // user?.bulk_emails_request_count <= 500
   ) {
     send_bulk();
   } else {
