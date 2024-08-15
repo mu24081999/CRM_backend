@@ -504,59 +504,59 @@ io.on("connection", (socket) => {
         type: "text",
       };
     } else if (type === "file") {
-      const myBuffer = Buffer.from(file_data); // Replace with your buffer data
+      // const myBuffer = Buffer.from(file_data); // Replace with your buffer data
 
-      // Access the temporary file path and handle the file content
-      const tempFilePath = await createTempFileFromBuffer(myBuffer);
-      const [fileData] = await storage
-        .bucket("crm-justcall")
-        .upload(tempFilePath, {
-          // Specify the destination file name in GCS (optional)
-          destination: "chats/" + room + "/" + file_name,
-          // Set ACL to public-read
-          predefinedAcl: "publicRead",
-        });
-
-      // const fileData = await uploadFileToGCS(tempFilePath, room, file_name);
-      const publicUrl = fileData?.publicUrl();
-      formData = {
-        sender: sender,
-        recipient: recipient,
-        message: message,
-        room: room,
-        // file_size: file_size,
-        file_size: file_size,
-        file_url: publicUrl,
-        file_key: file_name,
-        type: "file",
-      };
-      // const params = {
-      //   Bucket: config.S3_BUCKET,
-      //   Key: file_name,
-      //   Body: file_data,
-      //   ContentType: file_type,
-      // };
-      // const is_added = await new Promise((resolve, reject) => {
-      //   s3.upload(params, {}, (err, data) => {
-      //     if (err) {
-      //       console.error(err);
-      //       reject(new Error("Error Uploading File: " + err));
-      //     } else {
-      //       // console.log("File uploaded successfully:", data);
-      //       formData = {
-      //         sender: sender,
-      //         recipient: recipient,
-      //         message: message,
-      //         room: room,
-      //         file_size: file_size,
-      //         file_url: data.Location,
-      //         file_key: data.Key,
-      //         type: "file",
-      //       };
-      //       resolve(true);
-      //     }
+      // // Access the temporary file path and handle the file content
+      // const tempFilePath = await createTempFileFromBuffer(myBuffer);
+      // const [fileData] = await storage
+      //   .bucket("crm-justcall")
+      //   .upload(tempFilePath, {
+      //     // Specify the destination file name in GCS (optional)
+      //     destination: "chats/" + room + "/" + file_name,
+      //     // Set ACL to public-read
+      //     predefinedAcl: "publicRead",
       //   });
-      // });
+
+      // // const fileData = await uploadFileToGCS(tempFilePath, room, file_name);
+      // const publicUrl = fileData?.publicUrl();
+      // formData = {
+      //   sender: sender,
+      //   recipient: recipient,
+      //   message: message,
+      //   room: room,
+      //   // file_size: file_size,
+      //   file_size: file_size,
+      //   file_url: publicUrl,
+      //   file_key: file_name,
+      //   type: "file",
+      // };
+      const params = {
+        Bucket: config.DIGITAL_OCEAN_BUCKET_NAME,
+        Key: file_name,
+        Body: file_data,
+        ContentType: file_type,
+      };
+      const is_added = await new Promise((resolve, reject) => {
+        s3.upload(params, {}, (err, data) => {
+          if (err) {
+            console.error(err);
+            reject(new Error("Error Uploading File: " + err));
+          } else {
+            // console.log("File uploaded successfully:", data);
+            formData = {
+              sender: sender,
+              recipient: recipient,
+              message: message,
+              room: room,
+              file_size: file_size,
+              file_url: data.Location,
+              file_key: data.Key,
+              type: "file",
+            };
+            resolve(true);
+          }
+        });
+      });
     }
     const is_message_added = await db("chats").insert(formData);
     if (!is_message_added) {
