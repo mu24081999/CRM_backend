@@ -12,7 +12,7 @@ exports.getUsers = catchAssyncFunc(async function (req, res, next) {
     {
       usersData: users,
     },
-    "success"
+    "successs"
   );
 });
 exports.readUser = catchAssyncFunc(async function (req, res, next) {
