@@ -860,13 +860,12 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
       const is_all_enqueued = await Promise.all(
         to?.map(async (email, index) => {
           return new Promise(async (resolve, reject) => {
-            const user = await db("users")?.where("email", email).first();
-            const initial_body = `<div>${to_name[index]}</div>`;
+            // const user = await db("users")?.where("email", email).first();
             const mailOptions = {
               from: `${from_name} <${from}>`,
               to: email,
               subject: subject,
-              html: initial_body + body,
+              html: body,
             };
             // Enqueue email job
             await emailQueue
