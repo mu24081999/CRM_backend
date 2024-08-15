@@ -2,13 +2,13 @@ const catchAssyncFunc = require("../middlewares/catchAsyncFunc");
 const helper = require("../helper/helper");
 const Joi = require("joi");
 const bcrypt = require("bcryptjs");
-const fs = require("fs")
+const fs = require("fs");
 
 exports.getUsers = catchAssyncFunc(async function (req, res, next) {
   const users = await db("users").select();
   return helper.sendSuccess(
     req,
-    res,s
+    res,
     {
       usersData: users,
     },
@@ -70,9 +70,9 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
   if (req.files) {
     const { avatar } = req.files;
     const { tempFilePath, name: avatar_name } = avatar;
-    fs.readFile(tempFilePath,async(err,data)=>{
-      if (err){
-        return helper.sendError(req,res,"Error reading file.",500)
+    fs.readFile(tempFilePath, async (err, data) => {
+      if (err) {
+        return helper.sendError(req, res, "Error reading file.", 500);
       }
       const documentParams = {
         Bucket: config.DIGITAL_OCEAN_BUCKET_NAME,
@@ -80,16 +80,15 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
         Body: data,
         ACL: "public-read", // Optional: makes the file publicly accessible
       };
-          // Upload the file to DigitalOcean Spaces
-    const response = await s3.upload(params, (err, data) => {
-      if (err) {
-        console.error("Error uploading file:", err);
-        return res.status(500).send("Error uploading file.");
-      }
-      
+      // Upload the file to DigitalOcean Spaces
+      const response = await s3.upload(params, (err, data) => {
+        if (err) {
+          console.error("Error uploading file:", err);
+          return res.status(500).send("Error uploading file.");
+        }
+      });
+      publicUrl = response?.Location;
     });
-    publicUrl = response?.Location
-    })
     // const [fileData] = await storage
     //   .bucket("crm-justcall")
     //   .upload(tempFilePath, {
