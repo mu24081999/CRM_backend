@@ -536,6 +536,7 @@ io.on("connection", (socket) => {
         // Body: file_data,
         Body: myBuffer,
         ContentType: file_type,
+        ACL: "public-read", // Optional: makes the file publicly accessible
       };
       const is_added = await new Promise((resolve, reject) => {
         s3.upload(params, {}, (err, data) => {
