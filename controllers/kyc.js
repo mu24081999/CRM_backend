@@ -82,28 +82,15 @@ exports.addKYCForm = catchAssyncFunc(async function (req, res, next) {
   // }
   if (req.files) {
     const { document } = req.files;
-    fs.readFile(document.tempFilePath, async (err, data) => {
-      if (err) {
-        console.error("Error reading file:", err);
-        return helper.sendError(req, res, "Error reading file.", 500);
-      }
-      // Set up parameters for the S3 upload
-      const documentParams = {
-        Bucket: config.DIGITAL_OCEAN_BUCKET_NAME,
-        Key: file.name, // The name of the file in the Space
-        Body: data,
-        ACL: "public-read", // Optional: makes the file publicly accessible
-      };
-
-      // Upload the file to DigitalOcean Spaces
-      const result = await s3.upload(documentParams, (err, data) => {
-        if (err) {
-          console.error("Error uploading file:", err);
-          return res.status(500).send("Error uploading file.");
-        }
-      });
-      publicUrl = result?.Location;
-    });
+    const data = await fs.promises.readFile(tempFilePath);
+    const documentParams = {
+      Bucket: config.DIGITAL_OCEAN_BUCKET_NAME,
+      Key: document.name,
+      Body: data,
+      ACL: "public-read",
+    };
+    const response = await S3.upload(documentParams).promises();
+    publicUrl = response.Location;
   }
 
   const is_exist_user_form = await db("kyc-forms")
