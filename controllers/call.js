@@ -3,9 +3,9 @@ const helper = require("../helper/helper");
 const Joi = require("joi");
 const moment = require("moment");
 const util = require("util");
-const startOutboundVoiceContactPromise = util
-  .promisify(connect.startOutboundVoiceContact)
-  .bind(connect);
+// const startOutboundVoiceContactPromise = util
+//   .promisify(connect.startOutboundVoiceContact)
+//   .bind(connect);
 
 exports.callUser = async function (req, res, next) {
   try {

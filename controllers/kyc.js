@@ -1,6 +1,6 @@
 const catchAssyncFunc = require("../middlewares/catchAsyncFunc");
 const helper = require("../helper/helper");
-
+const fs = require("fs");
 exports.getKYCForms = catchAssyncFunc(async function (req, res, next) {
   const forms = await db("kyc-forms").select();
   return helper.sendSuccess(
@@ -69,16 +69,41 @@ exports.addKYCForm = catchAssyncFunc(async function (req, res, next) {
   } = req.body;
   let publicUrl;
   let params;
+  // if (req.files) {
+  //   const { document } = req.files;
+  //   const [fileData] = await storage
+  //     .bucket("crm-justcall")
+  //     .upload(document.tempFilePath, {
+  //       destination:
+  //         "kycDocuments/" + firstname + "%" + lastname + "/" + document.name,
+  //       predefinedAcl: "publicRead",
+  //     });
+  //   publicUrl = fileData.publicUrl();
+  // }
   if (req.files) {
     const { document } = req.files;
-    const [fileData] = await storage
-      .bucket("crm-justcall")
-      .upload(document.tempFilePath, {
-        destination:
-          "kycDocuments/" + firstname + "%" + lastname + "/" + document.name,
-        predefinedAcl: "publicRead",
+    fs.readFile(document.tempFilePath, async (err, data) => {
+      if (err) {
+        console.error("Error reading file:", err);
+        return helper.sendError(req, res, "Error reading file.", 500);
+      }
+      // Set up parameters for the S3 upload
+      const documentParams = {
+        Bucket: config.DIGITAL_OCEAN_BUCKET_NAME,
+        Key: file.name, // The name of the file in the Space
+        Body: data,
+        ACL: "public-read", // Optional: makes the file publicly accessible
+      };
+
+      // Upload the file to DigitalOcean Spaces
+      const result = await s3.upload(documentParams, (err, data) => {
+        if (err) {
+          console.error("Error uploading file:", err);
+          return res.status(500).send("Error uploading file.");
+        }
       });
-    publicUrl = fileData.publicUrl();
+      publicUrl = result?.Location;
+    });
   }
 
   const is_exist_user_form = await db("kyc-forms")

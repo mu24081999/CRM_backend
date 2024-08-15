@@ -13,6 +13,7 @@ router.get(
   "/get-agents/:user_id",
   IsAuth,
   authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  upload.single("file"),
   getUserAgents
 );
 router.post("/post-cloudinary-file", uploadCloudinaryFile);

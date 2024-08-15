@@ -53,15 +53,52 @@ const authToken = config.TWILLIO_AUTH_TOKEN;
 global.twilioClient = twilio(accountSid, authToken);
 
 const AWS = require("aws-sdk");
-// Set AWS credentials and region
-AWS.config.update({
-  accessKeyId: config.AWS_ACCESS_KEY,
-  secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-  region: config.AWS_REGION,
+// // Set AWS credentials and region
+// AWS.config.update({
+//   accessKeyId: config.AWS_ACCESS_KEY,
+//   secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
+//   region: config.AWS_REGION,
+// });
+// global.connect = new AWS.Connect();
+// global.s3 = new AWS.S3();
+// Configure AWS SDK for DigitalOcean Spaces
+const spacesEndpoint = new AWS.Endpoint("nyc3.digitaloceanspaces.com");
+global.s3 = new AWS.S3({
+  endpoint: spacesEndpoint,
+  region: "nyc3",
+  accessKeyId: config.DIGITAL_OCEAN_ACESS_KEY,
+  secretAccessKey: config.DIGITAL_OCEAN_ACESS_TOKEN,
 });
-global.connect = new AWS.Connect();
-global.s3 = new AWS.S3();
+
+// Enable detailed logging
+AWS.config.update({ logger: console });
+
+// Function to check the configuration
+async function checkDOConfiguration() {
+  try {
+    // Log configuration
+    console.log("Access Key:", config.DIGITAL_OCEAN_ACESS_KEY);
+    console.log("Secret Key:", config.DIGITAL_OCEAN_ACESS_TOKEN);
+    console.log("Bucket Name:", config.DIGITAL_OCEAN_BUCKET_NAME);
+
+    // Attempt to list the contents of the Space
+    const params = { Bucket: config.DIGITAL_OCEAN_BUCKET_NAME };
+    const result = await s3.listObjectsV2(params).promise();
+    console.log("DigitalOcean Spaces is configured correctly.");
+    console.log("Contents of your Space:", result.Contents);
+  } catch (error) {
+    console.error("Error:", error);
+    console.error("Detailed Error:", error.stack); // Log the full stack trace
+    console.error("DigitalOcean Spaces may not be configured correctly.");
+  }
+}
+
+// Run the configuration check
+checkDOConfiguration();
 global.upload = multer({ dest: "uploads/" });
+// Set up Multer for file uploads
+const storage = multer.memoryStorage();
+global.upload = multer({ storage: storage });
 // const { Logger } = require("winston");
 
 //Global variables
