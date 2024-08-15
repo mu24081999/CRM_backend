@@ -176,16 +176,26 @@ exports.addContact = catchAsyncFunc(async (req, res, next) => {
   if (req.files) {
     const { file } = req.files;
     const { name, mimetype, tempFilePath } = file;
-    const [fileData] = await storage
-      .bucket("crm-justcall")
-      .upload(tempFilePath, {
-        // Specify the destination file name in GCS (optional)
-        destination:
-          "contacts/" + value.firstname + " " + value.lastname + "/" + name,
-        // Set ACL to public-read
-        predefinedAcl: "publicRead",
-      });
-    publicUrl = fileData.publicUrl();
+    const data = await fs.promises.readFile(tempFilePath);
+    const documentParams = {
+      Bucket: config.DIGITAL_OCEAN_BUCKET_NAME,
+      Key: name, // The name of the file in the Space
+      Body: data,
+      ACL: "public-read", // Optional: makes the file publicly accessible
+    };
+    const response = await s3.upload(documentParams).promise();
+    publicUrl = response.Location;
+
+    // const [fileData] = await storage
+    //   .bucket("crm-justcall")
+    //   .upload(tempFilePath, {
+    //     // Specify the destination file name in GCS (optional)
+    //     destination:
+    //       "contacts/" + value.firstname + " " + value.lastname + "/" + name,
+    //     // Set ACL to public-read
+    //     predefinedAcl: "publicRead",
+    //   });
+    // publicUrl = fileData.publicUrl();
   }
   const is_record_inserted = await db("contacts").insert({
     user_id: req.user.id,
