@@ -2,7 +2,7 @@ const catchAssyncFunc = require("../middlewares/catchAsyncFunc");
 const helper = require("../helper/helper");
 const Joi = require("joi");
 const moment = require("moment");
-
+const fs = require("fs");
 exports.getAllBrands = catchAssyncFunc(async function (req, res, next) {
   const brands = await db("brands").select();
   return helper.sendSuccess(
@@ -37,13 +37,24 @@ exports.addUpdateBrand = catchAssyncFunc(async function (req, res, next) {
 
   if (req.files) {
     const { brand_logo } = req.files;
-    const [fileData] = await storage
-      .bucket("crm-justcall")
-      .upload(brand_logo.tempFilePath, {
-        destination: "brands/" + user_id + "/" + brand_logo.name,
-        predefinedAcl: "publicRead",
-      });
-    publicUrl = fileData.publicUrl();
+    const data = await fs.promises.readFile(brand_logo?.tempFilePath);
+
+    const documentParams = {
+      Bucket: config.DIGITAL_OCEAN_BUCKET_NAME,
+      Key: brand_logo.name, // The name of the file in the Space
+      Body: data,
+      ACL: "public-read", // Optional: makes the file publicly accessible
+    };
+    const response = await s3.upload(documentParams).promise();
+    publicUrl = response.Location;
+
+    // const [fileData] = await storage
+    //   .bucket("crm-justcall")
+    //   .upload(brand_logo.tempFilePath, {
+    //     destination: "brands/" + user_id + "/" + brand_logo.name,
+    //     predefinedAcl: "publicRead",
+    //   });
+    // publicUrl = fileData.publicUrl();
   }
   if (is_exist_brand) {
     if (req.files) {
