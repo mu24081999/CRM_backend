@@ -82,7 +82,7 @@ exports.addKYCForm = catchAssyncFunc(async function (req, res, next) {
   // }
   if (req.files) {
     const { document } = req.files;
-    const data = await fs.promises.readFile(tempFilePath);
+    const data = await fs.promises.readFile(document.tempFilePath);
     const documentParams = {
       Bucket: config.DIGITAL_OCEAN_BUCKET_NAME,
       Key: document.name,
