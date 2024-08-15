@@ -504,7 +504,7 @@ io.on("connection", (socket) => {
         type: "text",
       };
     } else if (type === "file") {
-      // const myBuffer = Buffer.from(file_data); // Replace with your buffer data
+      const myBuffer = Buffer.from(file_data); // Replace with your buffer data
 
       // // Access the temporary file path and handle the file content
       // const tempFilePath = await createTempFileFromBuffer(myBuffer);
@@ -533,7 +533,8 @@ io.on("connection", (socket) => {
       const params = {
         Bucket: config.DIGITAL_OCEAN_BUCKET_NAME,
         Key: file_name,
-        Body: file_data,
+        // Body: file_data,
+        Body: myBuffer,
         ContentType: file_type,
       };
       const is_added = await new Promise((resolve, reject) => {
