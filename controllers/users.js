@@ -58,125 +58,81 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
     twilio_numbers,
     recording,
   } = req.body;
-  const is_exist_user = await db("users")
-    .where("id", user_id)
-    // .orWhere("username", username)
-    .first();
+
+  // Check if the user exists
+  const is_exist_user = await db("users").where("id", user_id).first();
   if (!is_exist_user) {
     return helper.sendSuccess(req, res, {}, "User not exist");
   }
 
   let publicUrl;
+
+  // Check if there are files to upload
   if (req.files) {
     const { avatar } = req.files;
     const { tempFilePath, name: avatar_name } = avatar;
-    fs.readFile(tempFilePath, async (err, data) => {
-      if (err) {
-        return helper.sendError(req, res, "Error reading file.", 500);
-      }
+
+    try {
+      const data = await fs.promises.readFile(tempFilePath);
+
       const documentParams = {
         Bucket: config.DIGITAL_OCEAN_BUCKET_NAME,
         Key: avatar_name, // The name of the file in the Space
         Body: data,
         ACL: "public-read", // Optional: makes the file publicly accessible
       };
-      // Upload the file to DigitalOcean Spaces
-      const response = await s3.upload(documentParams, (err, data) => {
-        if (err) {
-          console.error("Error uploading file:", err);
-          return res.status(500).send("Error uploading file.");
-        }
-      });
-      console.log("🚀 ~ response ~ response:", response);
-      publicUrl = response?.Location;
-    });
-    // const [fileData] = await storage
-    //   .bucket("crm-justcall")
-    //   .upload(tempFilePath, {
-    //     // Specify the destination file name in GCS (optional)
-    //     destination: "users/avatars/" + username + "/" + avatar_name,
-    //     // Set ACL to public-read
-    //     predefinedAcl: "publicRead",
-    //   });
-    // publicUrl = fileData?.publicUrl();
+
+      // Upload the file and await the response
+      const response = await s3.upload(documentParams).promise();
+      publicUrl = response.Location;
+    } catch (err) {
+      console.error("Error uploading file:", err);
+      return res.status(500).send("Error uploading file.");
+    }
   }
-  var userParams;
+
+  // Prepare user update parameters
+  let userParams = {
+    name,
+    username,
+    email,
+    role,
+    phone,
+    bio,
+    location,
+    status,
+    personal_phone,
+    google_app_password,
+    mail_provider,
+    email_type,
+    recording,
+  };
+
+  // Hash the password if provided
   if (password) {
     const saltRounds = 10;
-    const hashedPassword =
-      password !== undefined && bcrypt.hashSync(password, saltRounds);
-    userParams = {
-      name,
-      username,
-      email,
-      role,
-      phone,
-      bio,
-      location,
-      status,
-      personal_phone,
-      password: password !== undefined && password !== "" && hashedPassword,
-      google_app_password,
-      mail_provider,
-      email_type,
-      recording,
-    };
-  } else if (req.files) {
-    userParams = {
-      name,
-      username,
-      email,
-      role,
-      phone,
-      bio,
-      location,
-      status,
-      personal_phone,
-      avatar: req.files && publicUrl ? publicUrl : "",
-      google_app_password,
-      mail_provider,
-      email_type,
-      recording,
-    };
-  } else if (twilio_numbers) {
-    userParams = {
-      name,
-      username,
-      email,
-      role,
-      phone,
-      bio,
-      location,
-      status,
-      phone,
-      personal_phone,
-      twilio_numbers: JSON.stringify(twilio_numbers),
-      google_app_password,
-      mail_provider,
-      email_type,
-      recording,
-    };
-  } else {
-    userParams = {
-      name,
-      username,
-      email,
-      role,
-      phone,
-      bio,
-      location,
-      status,
-      phone,
-      personal_phone,
-      google_app_password,
-      mail_provider,
-      email_type,
-      recording,
-    };
+    const hashedPassword = bcrypt.hashSync(password, saltRounds);
+    userParams.password = hashedPassword;
   }
+
+  // Update avatar URL if a new file was uploaded
+  if (req.files) {
+    userParams.avatar = publicUrl;
+  }
+
+  // Handle Twilio numbers if provided
+  if (twilio_numbers) {
+    userParams.twilio_numbers = JSON.stringify(twilio_numbers);
+  }
+
+  // Update the user in the database
   const is_user_updated = await db("users")
     .where("id", user_id)
     .update(userParams);
 
-  if (is_user_updated) return helper.sendSuccess(req, res, {}, "User Updated!");
+  if (is_user_updated) {
+    return helper.sendSuccess(req, res, {}, "User Updated!");
+  } else {
+    return helper.sendError(req, res, "Failed to update user.", 500);
+  }
 });
