@@ -81,7 +81,7 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
         ACL: "public-read", // Optional: makes the file publicly accessible
       };
       // Upload the file to DigitalOcean Spaces
-      const response = await s3.upload(params, (err, data) => {
+      const response = await s3.upload(documentParams, (err, data) => {
         if (err) {
           console.error("Error uploading file:", err);
           return res.status(500).send("Error uploading file.");
