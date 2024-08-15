@@ -89,7 +89,7 @@ exports.addKYCForm = catchAssyncFunc(async function (req, res, next) {
       Body: data,
       ACL: "public-read",
     };
-    const response = await s3.upload(documentParams).promises();
+    const response = await s3.upload(documentParams).promise();
     publicUrl = response.Location;
   }
 
