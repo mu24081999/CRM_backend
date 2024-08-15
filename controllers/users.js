@@ -87,6 +87,7 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
           return res.status(500).send("Error uploading file.");
         }
       });
+      console.log("🚀 ~ response ~ response:", response);
       publicUrl = response?.Location;
     });
     // const [fileData] = await storage
