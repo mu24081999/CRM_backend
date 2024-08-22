@@ -11,6 +11,7 @@ exports.getKYCForms = catchAssyncFunc(async function (req, res, next) {
       ...form,
       user,
     };
+    console.log("🚀 ~ forms?.map ~ newObj:", newObj);
     newArray?.push(newObj);
   });
   return helper.sendSuccess(
