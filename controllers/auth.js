@@ -155,7 +155,7 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
       req,
       res,
       {},
-      "User already exists with this email."
+      "User already exists with this email/username."
     );
   }
 
@@ -199,11 +199,9 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
     twilio_numbers,
   };
   const is_user_added = await db("users").insert(userParams);
-  console.log("🚀 ~ is_user_added:", is_user_added);
   const new_user = await db("users")
     .where("id", parseInt(is_user_added[0]))
     .first();
-  console.log("🚀 ~ new_user:", new_user);
 
   if (new_user?.role === "USER" && new_user.parent_id !== null) {
     const addressDetails = {
@@ -214,7 +212,6 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
       postalCode: new_user?.postal_code,
       isoCountry: new_user?.country,
     };
-    console.log("🚀 ~ addressDetails:", addressDetails);
     // Create a subaccount
     const twilio_account = await twilioClient.api.accounts.create({
       friendlyName: new_user.username,
@@ -294,7 +291,7 @@ exports.signUp = catchAssyncFunc(async function (req, res, next) {
   }
 
   if (new_user) {
-    var otp_code = Math.floor(Math.random() * 900000);
+    var otp_code = Math.floor(100000 + Math.random() * 900000);
     const htmlMessage = `
     <!DOCTYPE html>
     <html>
@@ -458,7 +455,7 @@ exports.signIn = catchAssyncFunc(async function (req, res, next) {
     return helper.sendError(req, res, "Invalid username or password.", 403);
   }
   // return createSession(is_exist_user, req, res);
-  const otp_code = Math.floor(Math.random() * 900000);
+  const otp_code = Math.floor(100000 + Math.random() * 900000);
   const htmlMessage = `
   <!DOCTYPE html>
   <html>
@@ -569,7 +566,7 @@ exports.forgotPassword = catchAssyncFunc(async (req, res, next) => {
     return helper.sendSuccess(req, res, {}, "No user found.");
   }
 
-  var otp_code = Math.floor(Math.random() * 900000);
+  var otp_code = Math.floor(100000 + Math.random() * 900000);
 
   // const htmlMessage =
   //   "<h1>OTP for <b>DesktopCRM</b> App</h1><br></br><p>Hello " +

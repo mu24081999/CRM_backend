@@ -62,6 +62,10 @@ const AWS = require("aws-sdk");
 // global.connect = new AWS.Connect();
 // global.s3 = new AWS.S3();
 // Configure AWS SDK for DigitalOcean Spaces
+console.log({
+  accessKeyId: config.DIGITAL_OCEAN_ACESS_KEY,
+  secretAccessKey: config.DIGITAL_OCEAN_ACESS_TOKEN,
+});
 const spacesEndpoint = new AWS.Endpoint("nyc3.digitaloceanspaces.com");
 global.s3 = new AWS.S3({
   endpoint: spacesEndpoint,
@@ -202,9 +206,7 @@ app.use(cors(corsOptions));
 //error handling middleware
 app.use((error, req, res, next) => {
   logger.error(`Error :: ${req.originalUrl} :: ${error}`);
-
   const status = error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
-
   const message =
     error.message || "Something went wrong, please try again later";
 
