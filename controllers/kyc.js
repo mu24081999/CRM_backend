@@ -2,12 +2,22 @@ const catchAssyncFunc = require("../middlewares/catchAsyncFunc");
 const helper = require("../helper/helper");
 const fs = require("fs");
 exports.getKYCForms = catchAssyncFunc(async function (req, res, next) {
+  const users = await db("users").select();
   const forms = await db("kyc-forms").select();
+  const newArray = [];
+  forms?.map((form) => {
+    const user = users?.filter((user) => user.id === from.user_id)[0];
+    const newObj = {
+      ...form,
+      user,
+    };
+    newArray?.push(newObj);
+  });
   return helper.sendSuccess(
     req,
     res,
     {
-      kycData: forms,
+      kycData: newArray,
     },
     "success"
   );
