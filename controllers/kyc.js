@@ -6,7 +6,7 @@ exports.getKYCForms = catchAssyncFunc(async function (req, res, next) {
   const forms = await db("kyc-forms").select();
   const newArray = [];
   forms?.map((form) => {
-    const user = users?.filter((user) => user.id === from.user_id)[0];
+    const user = users?.filter((user) => user.id === form.user_id)[0];
     const newObj = {
       ...form,
       user,
