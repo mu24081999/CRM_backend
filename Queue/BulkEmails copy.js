@@ -1,29 +1,27 @@
 // emailQueue.js
 
+const nodemailer = require("nodemailer");
 const Queue = require("bee-queue");
 const { getTransporter } = require("../helper/transporter");
+
+// Redis configuration (customize if needed)
+// const redisConfig = {
+//   host: "redis-18953.c8.us-east-1-4.ec2.redns.redis-cloud.com", // Redis server host
+//   port: 18953, // Redis server port
+//   password: "RVV54NgVq8oR9Uks9sB3IILZdyV4OQad", // Uncomment if your Redis server requires a password
+// };
 const redisConfig = {
   host: "redis-11942.c103.us-east-1-mz.ec2.redns.redis-cloud.com",
   port: 11942,
-  password: "N0XiF2vOwBHIgGGOs4XkQ85VdtEfuZ0b",
+  password: "N0XiF2vOwBHIgGGOs4XkQ85VdtEfuZ0b", // Uncomment if your Redis server requires a password
 };
 
-const userQueues = new Map();
-
-const createUserEmailQueue = (userId) => {
-  return new Queue(`email-queue-${userId}`, {
-    redis: redisConfig,
-    activateDelayedJobs: true,
-  });
-};
-
-const getUserQueue = (userId) => {
-  if (!userQueues.has(userId)) {
-    const newQueue = createUserEmailQueue(userId);
-    userQueues.set(userId, newQueue);
-  }
-  return userQueues.get(userId);
-};
+// Create Bee-Queue instance
+// Create Bee-Queue instance with Redis configuration
+const emailQueue = new Queue("email", {
+  redis: redisConfig,
+  activateDelayedJobs: true,
+});
 
 // Function to send email
 const sendEmail = async (transporter, mailOptions) => {
@@ -129,92 +127,91 @@ const uploadFiles = async (files, from) => {
     };
   }
 };
-
-const processUserEmailQueue = (userId) => {
-  const userQueue = getUserQueue(userId);
-
-  userQueue.process(async (job) => {
-    const {
-      from,
-      google_app_password,
-      mailOptions,
-      subject,
-      body,
-      files,
-      email_type,
-      mail_provider,
-    } = job.data;
-
-    let is_email_attachments_added;
-    let is_attachments_saved;
-
-    const credentials = {
-      user: from,
-      pass: google_app_password,
+// Process queue jobs
+emailQueue.process(async (job) => {
+  const {
+    from,
+    google_app_password,
+    mailOptions,
+    subject,
+    body,
+    files,
+    email_type,
+    mail_provider,
+  } = job.data;
+  let is_email_attachments_added;
+  let is_attachments_saved;
+  // const transporter = createTransporter(from, google_app_password);
+  const credentials = {
+    user: from,
+    pass: google_app_password,
+  };
+  if (files) {
+    is_email_attachments_added = await uploadFiles(files, from);
+    mailOptions.attachments =
+      is_email_attachments_added && is_email_attachments_added?.attachments;
+  }
+  const transporter = getTransporter(credentials, email_type, mail_provider);
+  const emailResponse = await sendEmail(transporter, mailOptions);
+  let emailData = {}; // Initialize emailData to an empty object
+  if (emailResponse) {
+    emailData = {
+      subject: subject,
+      body: body,
+      sender: from,
+      reciever: emailResponse.envelope.to,
     };
+  }
 
-    if (files) {
-      is_email_attachments_added = await uploadFiles(files, from);
-      mailOptions.attachments =
-        is_email_attachments_added && is_email_attachments_added?.attachments;
-    }
-
-    const transporter = getTransporter(credentials, email_type, mail_provider);
-    const emailResponse = await sendEmail(transporter, mailOptions);
-    let emailData = {}; // Initialize emailData to an empty object
-
-    if (emailResponse) {
-      const emailData = {
-        subject: subject,
-        body: body,
-        sender: from,
-        receiver: emailResponse.envelope.to,
-      };
-      const email_response = await saveEmail(emailData);
-
-      if (files) {
-        is_attachments_saved = await Promise.all(
-          is_email_attachments_added.attachments.map(async (file) => {
-            return saveAttachments({
-              email_id: email_response.id,
-              file_link: file.path,
-              size: file.size,
-              file_type: file.file_type,
-            });
-          })
-        );
-      }
-    }
-  });
-
-  userQueue.on("succeeded", (job, result) => {
-    console.log(
-      `Job ${job.id} for user ${userId} succeeded with result: ${result}`
+  const email_response = await saveEmail(emailData);
+  if (files) {
+    is_attachments_saved = await Promise.all(
+      is_email_attachments_added?.attachments?.map((file, inex) => {
+        return new Promise(async (resolve, reject) => {
+          const is_added = await saveAttachments({
+            email_id: email_response[0],
+            file_link: file.path || file.href,
+            size: file.size,
+            file_type: file.file_type,
+          });
+          if (is_added) {
+            resolve(true);
+          }
+        });
+      })
     );
-  });
+  }
+  // await delay(15000);
+});
+// Event listeners for better logging
+emailQueue.on("succeeded", (job, result) => {
+  console.log(`Job ${job.id} succeeded with result: ${result}`);
+});
 
-  userQueue.on("failed", (job, err) => {
-    console.error(
-      `Job ${job.id} for user ${userId} failed with error: ${err.message}`
-    );
-  });
-
-  userQueue.on("progress", (job, progress) => {
-    console.log(
-      `Job ${job.id} for user ${userId} reported progress: ${progress}%`
-    );
-  });
+emailQueue.on("failed", (job, err) => {
+  console.error(`Job ${job.id} failed with error: ${err.message}`);
+});
+emailQueue.on("progress", function (progress) {
+  console.log("Job " + job.id + " reported progress: " + progress + "%");
+});
+// Handle graceful shutdown
+const shutdown = () => {
+  console.log("Shutting down gracefully...");
+  emailQueue
+    .close(5000) // wait up to 5 seconds for jobs to finish
+    .then(() => {
+      console.log("Queue closed. Exiting process.");
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error("Error closing queue:", err);
+      process.exit(1);
+    });
 };
 
-const addUserEmailJob = (userId, jobData) => {
-  const userQueue = getUserQueue(userId);
-  userQueue
-    .createJob(jobData)
-    .delayUntil(Date.now() + 15000) // Delay for 15 seconds
-    .save();
-  processUserEmailQueue(userId);
-};
+process.on("SIGINT", shutdown); // Listen for Ctrl+C
+process.on("SIGTERM", shutdown); // Listen for termination signal (e.g., from a process manager)
 
 module.exports = {
-  addUserEmailJob,
+  emailQueue,
 };

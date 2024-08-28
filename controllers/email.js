@@ -6,7 +6,9 @@ const nodeMailer = require("nodemailer");
 const fs = require("fs");
 const Imap = require("node-imap");
 const { simpleParser } = require("mailparser");
-const { emailQueue } = require("../Queue/BulkEmails");
+// const { emailQueue } = require("../Queue/BulkEmails");
+const { addUserEmailJob } = require("../Queue/BulkEmails");
+
 const nodemailer = require("nodemailer");
 const { getTransporter } = require("../helper/transporter");
 exports.getEmailsByAccount = catchAssyncFunc(async (req, res, next) => {
@@ -868,21 +870,31 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
               html: body,
             };
             // Enqueue email job
-            await emailQueue(from)
-              .createJob({
-                from,
-                google_app_password,
-                mailOptions,
-                subject,
-                body,
-                files: files?.files,
-                email_type,
-                mail_provider,
-              })
-              .delayUntil(Date.now() + 15000) // Delay for 15 seconds
-              .save()
-              .then(() => resolve(true))
-              .catch((err) => reject(err));
+            // await emailQueue
+            //   .createJob({
+            //     from,
+            //     google_app_password,
+            //     mailOptions,
+            //     subject,
+            //     body,
+            //     files: files?.files,
+            //     email_type,
+            //     mail_provider,
+            //   })
+            //   .delayUntil(Date.now() + 15000) // Delay for 15 seconds
+            //   .save()
+            //   .then(() => resolve(true))
+            //   .catch((err) => reject(err));
+            await addUserEmailJob(from, {
+              from,
+              google_app_password,
+              mailOptions,
+              subject,
+              body,
+              files,
+              email_type,
+              mail_provider,
+            });
             resolve(true);
           });
         })
