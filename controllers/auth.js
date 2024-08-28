@@ -567,15 +567,6 @@ exports.forgotPassword = catchAssyncFunc(async (req, res, next) => {
   }
 
   var otp_code = Math.floor(100000 + Math.random() * 900000);
-
-  // const htmlMessage =
-  //   "<h1>OTP for <b>DesktopCRM</b> App</h1><br></br><p>Hello " +
-  //   is_user_exist.name +
-  //   ",</p><p>We have generated a one-time password (OTP) for your  <b>DesktopCRM</b> account. Please use the following OTP to verify your identity:</p><h2 style='background-color: #f2f2f2; padding: 10px; border-radius: 4px; font-size: 24px; display: inline-block;'>[" +
-  //   otp_code +
-  //   "]</h2><p>This OTP is valid for a limited time period and can only be used once.</p><p>If you did not initiate this action or have any concerns regarding your account security, please contact our support team immediately at [Support Email/Phone Number].</p><br><a href='http://localhost:3000/reset-password-verification/" +
-  //   is_user_exist?.email +
-  //   "' >Reset Password</a><p>Thank you,<br>The <b>DesktopCRM</b> Team</p>";
   const htmlMessage = `
   <!DOCTYPE html>
   <html>

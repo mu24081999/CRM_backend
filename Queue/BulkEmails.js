@@ -5,11 +5,17 @@ const Queue = require("bee-queue");
 const { getTransporter } = require("../helper/transporter");
 
 // Redis configuration (customize if needed)
+// const redisConfig = {
+//   host: "redis-18953.c8.us-east-1-4.ec2.redns.redis-cloud.com", // Redis server host
+//   port: 18953, // Redis server port
+//   password: "RVV54NgVq8oR9Uks9sB3IILZdyV4OQad", // Uncomment if your Redis server requires a password
+// };
 const redisConfig = {
-  host: "redis-18953.c8.us-east-1-4.ec2.redns.redis-cloud.com", // Redis server host
-  port: 18953, // Redis server port
-  password: "RVV54NgVq8oR9Uks9sB3IILZdyV4OQad", // Uncomment if your Redis server requires a password
+  host: "redis-11942.c103.us-east-1-mz.ec2.redns.redis-cloud.com",
+  port: 11942,
+  password: "N0XiF2vOwBHIgGGOs4XkQ85VdtEfuZ0b", // Uncomment if your Redis server requires a password
 };
+
 // Create Bee-Queue instance
 // Create Bee-Queue instance with Redis configuration
 const emailQueue = new Queue("email", {

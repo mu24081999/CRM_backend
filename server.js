@@ -62,10 +62,7 @@ const AWS = require("aws-sdk");
 // global.connect = new AWS.Connect();
 // global.s3 = new AWS.S3();
 // Configure AWS SDK for DigitalOcean Spaces
-console.log({
-  accessKeyId: config.DIGITAL_OCEAN_ACESS_KEY,
-  secretAccessKey: config.DIGITAL_OCEAN_ACESS_TOKEN,
-});
+
 const spacesEndpoint = new AWS.Endpoint("nyc3.digitaloceanspaces.com");
 global.s3 = new AWS.S3({
   endpoint: spacesEndpoint,
