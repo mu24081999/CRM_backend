@@ -18,10 +18,17 @@ const redisConfig = {
 
 // Create Bee-Queue instance
 // Create Bee-Queue instance with Redis configuration
-const emailQueue = new Queue("email", {
-  redis: redisConfig,
-  activateDelayedJobs: true,
-});
+// const emailQueue = new Queue("email", {
+//   redis: redisConfig,
+//   activateDelayedJobs: true,
+// });
+const emailQueue = (email) => {
+  return new Queue(`email-queue-${email}`, {
+    redis: redisConfig,
+    activateDelayedJobs: true,
+  });
+};
+
 // Create Nodemailer transporter
 // const createTransporter = (from, google_app_password) => {
 //   return nodemailer.createTransport({

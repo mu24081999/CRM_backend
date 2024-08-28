@@ -868,7 +868,7 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
               html: body,
             };
             // Enqueue email job
-            await emailQueue
+            await emailQueue(from)
               .createJob({
                 from,
                 google_app_password,
