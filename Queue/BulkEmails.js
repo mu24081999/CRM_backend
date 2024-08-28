@@ -168,7 +168,7 @@ const processUserEmailQueue = (userId) => {
         subject: subject,
         body: body,
         sender: from,
-        receiver: emailResponse.envelope.to,
+        reciever: emailResponse.envelope.to,
       };
       const email_response = await saveEmail(emailData);
 
