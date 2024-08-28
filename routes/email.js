@@ -12,8 +12,18 @@ const {
 } = require("../controllers/email");
 
 const { IsAuth, authorizedRole } = require("../middlewares/auth");
-router.post("/send-email", sendEmail);
-router.post("/send-email-bulk", sendEmailBulk);
+router.post(
+  "/send-email",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  sendEmail
+);
+router.post(
+  "/send-email-bulk",
+  IsAuth,
+  authorizedRole(["SUPER_ADMIN", "USER", "ADMIN", "AGENT"]),
+  sendEmailBulk
+);
 router.put("/update-email/:emailId", updateEmail);
 router.get("/send-grid-email", sendGridEmail);
 router.get(
