@@ -10,11 +10,22 @@ const redisConfig = {
 
 const userQueues = new Map();
 
+// const createUserEmailQueue = (userId) => {
+//   return new Queue(`email-queue-${userId}`, {
+//     redis: redisConfig,
+//     activateDelayedJobs: true,
+//   });
+// };
 const createUserEmailQueue = (userId) => {
-  return new Queue(`email-queue-${userId}`, {
+  const newQueue = new Queue(`email-queue-${userId}`, {
     redis: redisConfig,
     activateDelayedJobs: true,
   });
+
+  // Call process once when the queue is created
+  processUserEmailQueue(newQueue, userId);
+
+  return newQueue;
 };
 
 const getUserQueue = (userId) => {
@@ -130,10 +141,10 @@ const uploadFiles = async (files, from) => {
   }
 };
 
-const processUserEmailQueue = (userId) => {
-  const userQueue = getUserQueue(userId);
+const processUserEmailQueue = (queue, userId) => {
+  // const userQueue = getUserQueue(userId);
 
-  userQueue.process(async (job) => {
+  queue.process(async (job) => {
     const {
       from,
       google_app_password,
@@ -187,32 +198,33 @@ const processUserEmailQueue = (userId) => {
     }
   });
 
-  userQueue.on("succeeded", (job, result) => {
+  queue.on("succeeded", (job, result) => {
     console.log(
       `Job ${job.id} for user ${userId} succeeded with result: ${result}`
     );
   });
 
-  userQueue.on("failed", (job, err) => {
+  queue.on("failed", (job, err) => {
     console.error(
       `Job ${job.id} for user ${userId} failed with error: ${err.message}`
     );
   });
 
-  userQueue.on("progress", (job, progress) => {
+  queue.on("progress", (job, progress) => {
     console.log(
       `Job ${job.id} for user ${userId} reported progress: ${progress}%`
     );
   });
 };
 
-const addUserEmailJob = (userId, jobData) => {
+const addUserEmailJob = async (userId, jobData) => {
   const userQueue = getUserQueue(userId);
   userQueue
     .createJob(jobData)
     .delayUntil(Date.now() + 15000) // Delay for 15 seconds
     .save();
-  processUserEmailQueue(userId);
+  // processUserEmailQueue(userId);
+  await delay(15000);
 };
 
 module.exports = {

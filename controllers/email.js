@@ -885,7 +885,7 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
             //   .save()
             //   .then(() => resolve(true))
             //   .catch((err) => reject(err));
-            await addUserEmailJob(from, {
+            await addUserEmailJob(req.user.id, {
               from,
               google_app_password,
               mailOptions,
