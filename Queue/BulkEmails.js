@@ -191,7 +191,7 @@ emailQueue.process(async (job) => {
       })
     );
   }
-  await delay(15000);
+  // await delay(15000);
 });
 // Event listeners for better logging
 emailQueue.on("succeeded", (job, result) => {
