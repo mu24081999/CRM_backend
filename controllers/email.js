@@ -905,34 +905,35 @@ exports.sendEmailBulk = catchAssyncFunc(async function (req, res, next) {
   const user_subscription = await db("subscriptions")
     .where("customer_id", user?.id)
     .first();
-  if (
-    user_subscription?.plan === "Solo Starter"
-    // &&
-    // user?.bulk_emails_request_count <= 100
-  ) {
-    send_bulk();
-  } else if (
-    user_subscription?.plan === "Growth"
-    // &&
-    // user?.bulk_emails_request_count >= 0 &&
-    // user?.bulk_emails_request_count < 300
-  ) {
-    send_bulk();
-  } else if (
-    user_subscription?.plan === "Enterprise"
-    //  &&
-    // user?.bulk_emails_request_count >= 0 &&
-    // user?.bulk_emails_request_count <= 500
-  ) {
-    send_bulk();
-  } else {
-    return helper.sendError(
-      req,
-      res,
-      "You have reached your daily limits",
-      400
-    );
-  }
+  send_bulk();
+  // if (
+  //   user_subscription?.plan === "Solo Starter"
+  //   // &&
+  //   // user?.bulk_emails_request_count <= 100
+  // ) {
+  //   send_bulk();
+  // } else if (
+  //   user_subscription?.plan === "Growth"
+  //   // &&
+  //   // user?.bulk_emails_request_count >= 0 &&
+  //   // user?.bulk_emails_request_count < 300
+  // ) {
+  //   send_bulk();
+  // } else if (
+  //   user_subscription?.plan === "Enterprise"
+  //   //  &&
+  //   // user?.bulk_emails_request_count >= 0 &&
+  //   // user?.bulk_emails_request_count <= 500
+  // ) {
+  //   send_bulk();
+  // } else {
+  //   return helper.sendError(
+  //     req,
+  //     res,
+  //     "You have reached your daily limits",
+  //     400
+  //   );
+  // }
   // Construct mailOptions
   // const mailOptions = {
   //   from: `${from_name} <${from}>`,
