@@ -194,7 +194,7 @@ const processUserEmailQueue = (queue, userId) => {
         );
       }
     }
-    await delay(10000);
+    await delay(2000);
   });
 
   queue.on("succeeded", (job, result) => {
