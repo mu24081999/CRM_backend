@@ -172,8 +172,6 @@ const processUserEmailQueue = (queue, userId) => {
 
     const transporter = getTransporter(credentials, email_type, mail_provider);
     const emailResponse = await sendEmail(transporter, mailOptions);
-    let emailData = {}; // Initialize emailData to an empty object
-
     if (emailResponse) {
       const emailData = {
         subject: subject,
@@ -196,6 +194,7 @@ const processUserEmailQueue = (queue, userId) => {
         );
       }
     }
+    await delay(10000);
   });
 
   queue.on("succeeded", (job, result) => {
