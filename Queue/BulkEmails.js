@@ -194,7 +194,7 @@ const processUserEmailQueue = (queue, userId) => {
         );
       }
     }
-    await delay(2000);
+    await delay(15000);
   });
 
   queue.on("succeeded", (job, result) => {
@@ -218,12 +218,8 @@ const processUserEmailQueue = (queue, userId) => {
 
 const addUserEmailJob = async (userId, jobData) => {
   const userQueue = getUserQueue(userId);
-  userQueue
-    .createJob(jobData)
-    .delayUntil(Date.now() + 15000) // Delay for 15 seconds
-    .save();
+  userQueue.createJob(jobData).save();
   // processUserEmailQueue(userId);
-  await delay(15000);
 };
 
 module.exports = {
