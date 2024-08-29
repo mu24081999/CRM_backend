@@ -194,7 +194,7 @@ const processUserEmailQueue = (queue, userId) => {
         );
       }
     }
-    await delay(15000);
+    await delay(5000);
   });
 
   queue.on("succeeded", (job, result) => {
@@ -214,6 +214,7 @@ const processUserEmailQueue = (queue, userId) => {
       `Job ${job.id} for user ${userId} reported progress: ${progress}%`
     );
   });
+  // Handle graceful shutdown
 };
 
 const addUserEmailJob = async (userId, jobData) => {
@@ -221,6 +222,28 @@ const addUserEmailJob = async (userId, jobData) => {
   userQueue.createJob(jobData).save();
   // processUserEmailQueue(userId);
 };
+
+const stopAllQueues = async () => {
+  for (const [userId, userQueue] of userQueues.entries()) {
+    await userQueue.close(); // Gracefully stop the queue
+    console.log(`Stopped queue for user: ${userId}`);
+  }
+  console.log("All queues have been stopped.");
+};
+
+// Capture Ctrl + C event and stop all queues
+process.on("SIGINT", () => {
+  console.log("Received SIGINT. Gracefully stopping all queues...");
+  stopAllQueues()
+    .then(() => {
+      console.log("All processing queues have been stopped.");
+      process.exit(0); // Exit the process after stopping all queues
+    })
+    .catch((err) => {
+      console.error("Error while stopping queues:", err);
+      process.exit(1); // Exit with an error code if stopping fails
+    });
+});
 
 module.exports = {
   addUserEmailJob,
