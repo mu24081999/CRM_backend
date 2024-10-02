@@ -251,7 +251,7 @@ app.get("/_ah/health", (req, res) => {
   res.status(200).send("Healthy");
 });
 app.post("/project/send-email", async (req, res) => {
-  const { name, email, topic, message } = req.body;
+  const { name, email, topic, message, phone } = req.body;
 
   try {
     // Create reusable transporter object using SMTP transport
@@ -276,6 +276,7 @@ app.post("/project/send-email", async (req, res) => {
           <li>Name: ${name}</li>
           <li>Email: ${email}</li>
           <li>Topic: ${topic}</li>
+          ${phone && `<li>Phone Number: ${phone}</li>`}
         </ul>
         <h3>Message</h3>
         <p>${message}</p>
