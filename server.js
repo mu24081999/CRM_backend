@@ -250,6 +250,48 @@ app.get("/", (req, res) => {
 app.get("/_ah/health", (req, res) => {
   res.status(200).send("Healthy");
 });
+app.post("/project/send-email", async (req, res) => {
+  const { name, email, topic, message } = req.body;
+
+  try {
+    // Create reusable transporter object using SMTP transport
+    const transporter = getTransporter(
+      {
+        user: "info@passyunkautocenter.com",
+        pass: "info@passyunkautocenter.com",
+      },
+      "professional_email",
+      "mail.passyunkautocenter.com"
+    );
+
+    // Email options
+    let mailOptions = {
+      from: '"Passyunkautocenter Contact Form" <info@passyunkautocenter.com>', // sender address
+      to: "mu24081999@gmail.com", // receiver's email
+      subject: `New Message from ${name}`, // Subject line
+      html: `
+        <p>You have a new message from your website contact form.</p>
+        <h3>Contact Details</h3>
+        <ul>
+          <li>Name: ${name}</li>
+          <li>Email: ${email}</li>
+          <li>Topic: ${topic}</li>
+        </ul>
+        <h3>Message</h3>
+        <p>${message}</p>
+      `, // HTML body
+    };
+
+    // Send email
+    await transporter.sendMail(mailOptions);
+
+    // Success response
+    res.status(200).json({ message: "Email sent successfully!" });
+  } catch (error) {
+    console.error("Error sending email:", error);
+    res.status(500).json({ message: "Failed to send email" });
+  }
+});
 
 //Routes
 const routes = require("./routes");
@@ -289,6 +331,7 @@ const os = require("os");
 console.log(os.hostname());
 
 const socketLogic = require("./socket");
+const { getTransporter } = require("./helper/transporter");
 server.listen(port, HOST, () => {
   console.log("Server listening on port https://localhost:" + port);
 });
