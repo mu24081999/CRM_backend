@@ -267,7 +267,7 @@ app.post("/project/send-email", async (req, res) => {
     // Email options
     let mailOptions = {
       from: '"Passyunkautocenter Contact Form" <info@passyunkautocenter.com>', // sender address
-      to: "mu24081999@gmail.com", // receiver's email
+      to: "info@passyunkautocenter.com", // receiver's email
       subject: `New Message from ${name}`, // Subject line
       html: `
         <p>You have a new message from your website contact form.</p>
