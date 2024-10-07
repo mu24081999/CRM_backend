@@ -76,7 +76,7 @@ exports.updateUser = catchAssyncFunc(async function (req, res, next) {
       const data = await fs.promises.readFile(tempFilePath);
 
       const documentParams = {
-        Bucket: config.DIGITAL_OCEAN_BUCKET_NAME,
+        Bucket: process.env.DIGITAL_OCEAN_BUCKET_NAME,
         Key: avatar_name, // The name of the file in the Space
         Body: data,
         ACL: "public-read", // Optional: makes the file publicly accessible

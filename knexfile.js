@@ -3,11 +3,11 @@ global.config = require(base_path + "/config");
 module.exports = {
   client: "mysql2",
   connection: {
-    host: config.DB_HOST,
-    user: config.DB_USER,
-    password: config.DB_PASSWORD,
-    port: config.DB_PORT,
-    database: config.DB_NAME,
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+    database: process.env.DB_NAME,
     timezone: "+05:00", // Set the timezone for Pakistan
   },
   pool: {
@@ -17,7 +17,7 @@ module.exports = {
       });
     },
   },
-  // connection: config.POSTGRESS_URL,
+  // connection: process.env.POSTGRESS_URL,
   migrations: {
     directory: "./migrations",
   },

@@ -8,7 +8,7 @@ const nodemailer = require("nodemailer");
 const twilio = require("twilio");
 // Create Session Function
 async function createSession(user, req, res) {
-  const token = jwt.sign({ user_id: user.id }, config.JWT_SECRET, {
+  const token = jwt.sign({ user_id: user.id }, process.env.JWT_SECRET, {
     expiresIn: "30d",
   });
   const exist_session = await db("sessions").where("user_id", user?.id).first();
@@ -73,7 +73,7 @@ async function sendGridEmail(toEmail, subject, htmlText) {
     port: 587,
     auth: {
       user: "apikey", // This is the fixed username for SendGrid SMTP
-      pass: config.SENDGRID_API_KEY, // Your SendGrid API key
+      pass: process.env.SENDGRID_API_KEY, // Your SendGrid API key
     },
   });
   // Define the email options

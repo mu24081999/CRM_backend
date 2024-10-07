@@ -104,7 +104,7 @@ exports.sendGridEmail = catchAssyncFunc(async (req, res, next) => {
     port: 587,
     auth: {
       user: "apikey", // This is the fixed username for SendGrid SMTP
-      pass: config.SENDGRID_API_KEY, // Your SendGrid API key
+      pass: process.env.SENDGRID_API_KEY, // Your SendGrid API key
     },
   });
   // Define the email options
@@ -132,8 +132,8 @@ exports.sendGridEmail = catchAssyncFunc(async (req, res, next) => {
 //     auth: {
 //       host: "smpt.gmail.com",
 //       port: "465",
-//       user: config.EMAIL_FROM_ACC,
-//       pass: config.EMAIL_FROM_ACC_PASS,
+//       user: process.env.EMAIL_FROM_ACC,
+//       pass: process.env.EMAIL_FROM_ACC_PASS,
 //     },
 //   });
 //   const saveAttachments = async (data) => {
@@ -173,7 +173,7 @@ exports.sendGridEmail = catchAssyncFunc(async (req, res, next) => {
 //                 );
 //               }
 //               const params = {
-//                 Bucket: config.S3_BUCKET,
+//                 Bucket: process.env.S3_BUCKET,
 //                 Key: "emails/attachments/" + from + "/" + file.name,
 //                 Body: data,
 //                 ContentType: file.mimetype,
@@ -215,7 +215,7 @@ exports.sendGridEmail = catchAssyncFunc(async (req, res, next) => {
 //             return helper.sendError(req, res, "Error uploading files.", 500);
 //           }
 //           const params = {
-//             Bucket: config.S3_BUCKET,
+//             Bucket: process.env.S3_BUCKET,
 //             Key: "emails/attachments/" + from + "/" + name,
 //             Body: data,
 //             ContentType: mimetype,
@@ -539,7 +539,7 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
             //     );
             //   }
             //   const params = {
-            //     Bucket: config.S3_BUCKET,
+            //     Bucket: process.env.S3_BUCKET,
             //     Key: "emails/attachments/" + from + "/" + file.name,
             //     Body: data,
             //     ContentType: file.mimetype,
@@ -600,7 +600,7 @@ exports.sendEmail = catchAssyncFunc(async function (req, res, next) {
           //     return helper.sendError(req, res, "Error uploading files.", 500);
           //   }
           //   const params = {
-          //     Bucket: config.S3_BUCKET,
+          //     Bucket: process.env.S3_BUCKET,
           //     Key: "emails/attachments/" + from + "/" + name,
           //     Body: data,
           //     ContentType: mimetype,

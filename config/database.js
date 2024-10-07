@@ -3,20 +3,20 @@ const logger = require("../utils/winston");
 require("dotenv");
 console.log({
   // connectionLimit: 10,
-  host: config.DB_HOST,
-  port: config.DB_PORT, // Specify the port number for your MySQL server
-  user: config.DB_USER,
-  password: config.DB_PASSWORD,
-  database: config.DB_NAME,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT, // Specify the port number for your MySQL server
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 /* Set your database credentials here */
 const connection = mysql.createPool({
   // connectionLimit: 10,
-  host: config.DB_HOST,
-  port: config.DB_PORT, // Specify the port number for your MySQL server
-  user: config.DB_USER,
-  password: config.DB_PASSWORD,
-  database: config.DB_NAME,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT, // Specify the port number for your MySQL server
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 module.exports = {
   connect_database: function () {
@@ -56,11 +56,11 @@ module.exports = {
 //   const connectionParams = {
 //     // connectionLimit: 10,
 //     // ...clientOpts,
-//     host: config.DB_HOST,
-//     port: config.DB_PORT, // Specify the port number for your MySQL server
-//     user: config.DB_USER,
-//     password: config.DB_PASSWORD,
-//     database: config.DB_NAME,
+//     host: process.env.DB_HOST,
+//     port: process.env.DB_PORT, // Specify the port number for your MySQL server
+//     user: process.env.DB_USER,
+//     password: process.env.DB_PASSWORD,
+//     database: process.env.DB_NAME,
 //   };
 //   /* Set your database credentials here */
 //   const connection = mysql.createPool(connectionParams);

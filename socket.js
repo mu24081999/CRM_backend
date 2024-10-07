@@ -30,7 +30,7 @@ async function sendGridEmail(toEmail, subject, htmlText) {
     port: 587,
     auth: {
       user: "apikey", // This is the fixed username for SendGrid SMTP
-      pass: config.SENDGRID_API_KEY, // Your SendGrid API key
+      pass: process.env.SENDGRID_API_KEY, // Your SendGrid API key
     },
   });
   // Define the email options
@@ -531,7 +531,7 @@ io.on("connection", (socket) => {
       //   type: "file",
       // };
       const params = {
-        Bucket: config.DIGITAL_OCEAN_BUCKET_NAME,
+        Bucket: process.env.DIGITAL_OCEAN_BUCKET_NAME,
         Key: file_name,
         // Body: file_data,
         Body: myBuffer,
@@ -670,8 +670,8 @@ io.on("connection", (socket) => {
       auth: {
         host: "smpt.gmail.com",
         port: "465",
-        user: config.EMAIL_FROM_ACC,
-        pass: config.EMAIL_FROM_ACC_PASS,
+        user: process.env.EMAIL_FROM_ACC,
+        pass: process.env.EMAIL_FROM_ACC_PASS,
       },
     });
 
@@ -709,7 +709,7 @@ io.on("connection", (socket) => {
       files.forEach(async (fileItem, index) => {
         // Handle each fileItem here
         const params = {
-          Bucket: config.S3_BUCKET,
+          Bucket: process.env.S3_BUCKET,
           Key: fileItem.name,
           Body: fileItem.data,
           ContentType: fileItem.mimetype,

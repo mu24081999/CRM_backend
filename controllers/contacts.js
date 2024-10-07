@@ -77,7 +77,7 @@ exports.uploadFile = catchAsyncFunc(async function (req, res, next) {
 //         return res.status(500).send("Internal Server Error");
 //       }
 //       const params = {
-//         Bucket: config.S3_BUCKET,
+//         Bucket: process.env.S3_BUCKET,
 //         Key: name,
 //         Body: data,
 //         ContentType: mimetype,
@@ -178,7 +178,7 @@ exports.addContact = catchAsyncFunc(async (req, res, next) => {
     const { name, mimetype, tempFilePath } = file;
     const data = await fs.promises.readFile(tempFilePath);
     const documentParams = {
-      Bucket: config.DIGITAL_OCEAN_BUCKET_NAME,
+      Bucket: process.env.DIGITAL_OCEAN_BUCKET_NAME,
       Key: name, // The name of the file in the Space
       Body: data,
       ACL: "public-read", // Optional: makes the file publicly accessible
@@ -314,7 +314,7 @@ exports.readContact = catchAsyncFunc(async (req, res, next) => {
 //         return res.status(500).send("Internal Server Error");
 //       }
 //       const params = {
-//         Bucket: config.S3_BUCKET,
+//         Bucket: process.env.S3_BUCKET,
 //         Key: name,
 //         Body: data,
 //         ContentType: mimetype,

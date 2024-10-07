@@ -30,7 +30,7 @@ exports.uploadCloudinaryFile = catchAssyncFunc(async function (req, res, next) {
     }
     // Set up parameters for the S3 upload
     const params = {
-      Bucket: config.DIGITAL_OCEAN_BUCKET_NAME,
+      Bucket: process.env.DIGITAL_OCEAN_BUCKET_NAME,
       Key: file.name, // The name of the file in the Space
       Body: data,
       ACL: "public-read", // Optional: makes the file publicly accessible
@@ -57,7 +57,7 @@ exports.degitalOceanFile = catchAssyncFunc(async function (req, res, next) {
 
   // Set up parameters for the S3 upload
   const params = {
-    Bucket: config.DIGITAL_OCEAN_BUCKET_NAME,
+    Bucket: process.env.DIGITAL_OCEAN_BUCKET_NAME,
     Key: file.originalname, // The name of the file in the Space
     Body: file.buffer,
     ACL: "public-read", // Optional: makes the file publicly accessible

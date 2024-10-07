@@ -49,7 +49,7 @@ exports.uploadChatFile = catchAssyncFunc(
     console.log("🚀 ~ file:", file);
     // Upload file to S3
     const params = {
-      Bucket: config.S3_BUCKET,
+      Bucket: process.env.S3_BUCKET,
       Key: name,
       Body: data,
       ContentType: mimetype,

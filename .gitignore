@@ -130,4 +130,4 @@ dist
 .pnp.*
 
 #config
-config.js
+process.env.js

@@ -77,7 +77,7 @@ exports.addPost = catchAssyncFunc(async function (req, res, next) {
       //       return helper.sendError(req, res, "Error uploading files.", 500);
       //     }
       //     const params = {
-      //       Bucket: config.S3_BUCKET,
+      //       Bucket: process.env.S3_BUCKET,
       //       Key: "posts/previews/" + user_name + "/" + name,
       //       Body: data,
       //       ContentType: mimetype,
@@ -129,7 +129,7 @@ exports.addPost = catchAssyncFunc(async function (req, res, next) {
                 );
                 resolve(true);
                 // const params = {
-                //   Bucket: config.S3_BUCKET,
+                //   Bucket: process.env.S3_BUCKET,
                 //   Key: "posts/sliders/" + user_name + "/" + file.name,
                 //   Body: data,
                 //   ContentType: file.mimetype,
@@ -178,7 +178,7 @@ exports.addPost = catchAssyncFunc(async function (req, res, next) {
         //       return helper.sendError(req, res, "Error uploading files.", 500);
         //     }
         //     const params = {
-        //       Bucket: config.S3_BUCKET,
+        //       Bucket: process.env.S3_BUCKET,
         //       Key: "posts/sliders/" + user_name + "/" + name,
         //       Body: data,
         //       ContentType: mimetype,
@@ -261,7 +261,7 @@ exports.updatePost = catchAssyncFunc(async function (req, res, next) {
   //           return helper.sendError(req, res, "Error uploading files.", 500);
   //         }
   //         const params = {
-  //           Bucket: config.S3_BUCKET,
+  //           Bucket: process.env.S3_BUCKET,
   //           Key: "posts/previews/" + user_name + "/" + name,
   //           Body: data,
   //           ContentType: mimetype,
@@ -296,7 +296,7 @@ exports.updatePost = catchAssyncFunc(async function (req, res, next) {
   //               );
   //             }
   //             const params = {
-  //               Bucket: config.S3_BUCKET,
+  //               Bucket: process.env.S3_BUCKET,
   //               Key: "posts/sliders/" + user_name + "/" + file.name,
   //               Body: data,
   //               ContentType: file.mimetype,
@@ -332,7 +332,7 @@ exports.updatePost = catchAssyncFunc(async function (req, res, next) {
   //           return helper.sendError(req, res, "Error uploading files.", 500);
   //         }
   //         const params = {
-  //           Bucket: config.S3_BUCKET,
+  //           Bucket: process.env.S3_BUCKET,
   //           Key: "posts/sliders/" + user_name + "/" + name,
   //           Body: data,
   //           ContentType: mimetype,

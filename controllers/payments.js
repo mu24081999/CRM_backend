@@ -1,6 +1,6 @@
 const catchAssyncFunc = require("../middlewares/catchAsyncFunc");
 const helper = require("../helper/helper");
-const stripe = require("stripe")(config.STRIPE_API_KEY);
+const stripe = require("stripe")(process.env.STRIPE_API_KEY);
 
 exports.createPayment = catchAssyncFunc(async (req, res, next) => {
   console.log(req.body);

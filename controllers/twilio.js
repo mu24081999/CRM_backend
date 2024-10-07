@@ -14,7 +14,7 @@ async function sendGridEmail(toEmail, subject, htmlText) {
     port: 587,
     auth: {
       user: "apikey", // This is the fixed username for SendGrid SMTP
-      pass: config.SENDGRID_API_KEY, // Your SendGrid API key
+      pass: process.env.SENDGRID_API_KEY, // Your SendGrid API key
     },
   });
   // Define the email options
@@ -751,10 +751,10 @@ exports.getCallToken = catchAssyncFunc(async function (req, res, next) {
     api_key_secret,
   } = req.body;
   const accessToken = new AccessToken(
-    // config.TWILLIO_ACCOUNT_SID,
+    // process.env.TWILLIO_ACCOUNT_SID,
     // accountSid,
-    // config.TWILIO_API_KEY,
-    // config.TWILIO_VOICE_API_KEY_AUTH_TOKEN,
+    // process.env.TWILIO_API_KEY,
+    // process.env.TWILIO_VOICE_API_KEY_AUTH_TOKEN,
     accountSid,
     api_key_sid,
     api_key_secret,
@@ -766,7 +766,7 @@ exports.getCallToken = catchAssyncFunc(async function (req, res, next) {
   accessToken.identity = identity;
 
   const grant = new AccessToken.VoiceGrant({
-    // outgoingApplicationSid: config.TWILIO_TWIML_SID,
+    // outgoingApplicationSid: process.env.TWILIO_TWIML_SID,
     outgoingApplicationSid: twiml_app_sid,
     incomingAllow: true,
     outgoingApplicationParams: { from: from_phone }, // Set the "from" number here
@@ -784,7 +784,7 @@ exports.routeCall = catchAssyncFunc(async function (req, res, next) {
 });
 exports.answerCall = catchAssyncFunc(async function (req, res, next) {
   const { callId } = req.body;
-  twilio(config.TWILLIO_ACCOUNT_SID, config.TWILLIO_AUTH_TOKEN)
+  twilio(process.env.TWILLIO_ACCOUNT_SID, process.env.TWILLIO_AUTH_TOKEN)
     .calls(callId)
     .update({
       url: "https://6428-37-111-155-42.ngrok-free.app/v1/user/calling/routeCall",

@@ -10,7 +10,7 @@ const IsAuth = async (req, res, next) => {
         errors: "Please login to get access",
       });
 
-    const decodeToken = jwt.verify(token, config.JWT_SECRET);
+    const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
     const session = await db("sessions")
       .where("user_id", decodeToken?.user_id)
       .andWhere("token", token)

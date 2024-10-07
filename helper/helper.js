@@ -30,13 +30,13 @@ module.exports = {
         auth: {
           host: "smpt.gmail.com",
           port: "465",
-          user: config.EMAIL_FROM_ACC,
-          pass: config.EMAIL_FROM_ACC_PASS,
+          user: process.env.EMAIL_FROM_ACC,
+          pass: process.env.EMAIL_FROM_ACC_PASS,
         },
       });
 
       const mailOptions = {
-        from: `"Desktop-CRM" <${config.EMAIL_FROM_ACC}>`,
+        from: `"Desktop-CRM" <${process.env.EMAIL_FROM_ACC}>`,
         to: toEmail,
         subject: subject,
         text: textMessage,

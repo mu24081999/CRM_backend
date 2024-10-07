@@ -53,7 +53,7 @@ exports.deleteBoard = catchAssyncFunc(async function (req, res, next) {
 //         return res.status(500).send("Internal Server Error");
 //       }
 //       const params = {
-//         Bucket: config.S3_BUCKET,
+//         Bucket: process.env.S3_BUCKET,
 //         Key: name,
 //         Body: data,
 //         ContentType: mimetype,

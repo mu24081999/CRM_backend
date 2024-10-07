@@ -13,8 +13,8 @@ function sendEmailTemplate(email, post_data) {
     auth: {
       host: "smpt.gmail.com",
       port: "465",
-      user: config.EMAIL_FROM_ACC,
-      pass: config.EMAIL_FROM_ACC_PASS,
+      user: process.env.EMAIL_FROM_ACC,
+      pass: process.env.EMAIL_FROM_ACC_PASS,
     },
   });
   // Configure the Handlebars options
@@ -29,7 +29,7 @@ function sendEmailTemplate(email, post_data) {
   };
   transporter.use("compile", hbs(handlebarOptions));
   const mailOptions = {
-    from: config.EMAIL_FROM_ACC,
+    from: process.env.EMAIL_FROM_ACC,
     to: email,
     subject: "DesktopCRM Inovice",
     template: "email", // Name of the template file
@@ -141,7 +141,7 @@ exports.addInvoice = catchAssyncFunc(async function (req, res, next) {
       //     return res.status(500).send("Internal Server Error");
       //   }
       //   const params = {
-      //     Bucket: config.S3_BUCKET,
+      //     Bucket: process.env.S3_BUCKET,
       //     Key: "invoices/" + user_name + "/logos/" + name,
       //     Body: data,
       //     ContentType: mimetype,
@@ -231,7 +231,7 @@ exports.updateInvoiceRec = catchAssyncFunc(async function (req, res, next) {
           return res.status(500).send("Internal Server Error");
         }
         const params = {
-          Bucket: config.S3_BUCKET,
+          Bucket: process.env.S3_BUCKET,
           Key: "invoices/" + user_name + "/logos/" + name,
           Body: data,
           ContentType: mimetype,

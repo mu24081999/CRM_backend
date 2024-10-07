@@ -31,7 +31,7 @@ exports.deleteFile = catchAssyncFunc(async function (req, res, next) {
   console.log("🚀 ~ exports.deleteFile ~ file:", file);
 
   // const deleteParams = {
-  //   Bucket: config.S3_BUCKET,
+  //   Bucket: process.env.S3_BUCKET,
   //   Key: user_name + "/" + file.title,
   // };
   const is_deleted = await storage
@@ -92,7 +92,7 @@ exports.addFile = catchAssyncFunc(async function (req, res, next) {
         }
         return helper.sendSuccess(req, res, {}, "File successfully added.");
         // const params = {
-        //   Bucket: config.S3_BUCKET,
+        //   Bucket: process.env.S3_BUCKET,
         //   Key: user_name + "/" + name,
         //   // ACL: "public-read",
         //   Body: data,

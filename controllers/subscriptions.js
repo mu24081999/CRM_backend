@@ -73,7 +73,7 @@ async function sendGridEmail(toEmail, subject, htmlText) {
     port: 587,
     auth: {
       user: "apikey", // This is the fixed username for SendGrid SMTP
-      pass: config.SENDGRID_API_KEY, // Your SendGrid API key
+      pass: process.env.SENDGRID_API_KEY, // Your SendGrid API key
     },
   });
   // Define the email options

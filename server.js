@@ -1,5 +1,7 @@
 const express = require("express");
 const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
+
 global.base_path = __dirname;
 global.config = require(base_path + "/config");
 const cors = require("cors");
@@ -29,9 +31,9 @@ const { GoogleAuth } = require("google-auth-library");
 //Setting cloudinary
 const cloudinary = require("cloudinary");
 cloudinary.config({
-  cloud_name: config.CLOUDINARY_NAME,
-  api_key: config.CLOUDINARY_API_KEY,
-  api_secret: config.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 // var fileUpload = require("express-fileupload");
@@ -48,28 +50,29 @@ async function authenticate() {
 authenticate();
 
 //Twillio Connection
-const accountSid = config.TWILLIO_ACCOUNT_SID;
-const authToken = config.TWILLIO_AUTH_TOKEN;
+const accountSid = process.env.TWILLIO_ACCOUNT_SID;
+const authToken = process.env.TWILLIO_AUTH_TOKEN;
 global.twilioClient = twilio(accountSid, authToken);
 
 const AWS = require("aws-sdk");
 // // Set AWS credentials and region
-// AWS.config.update({
-//   accessKeyId: config.AWS_ACCESS_KEY,
-//   secretAccessKey: config.AWS_SECRET_ACCESS_KEY,
-//   region: config.AWS_REGION,
+// AWS.process.env.update({
+//   accessKeyId: process.env.AWS_ACCESS_KEY,
+//   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+//   region: process.env.AWS_REGION,
 // });
 // global.connect = new AWS.Connect();
 // global.s3 = new AWS.S3();
 // Configure AWS SDK for DigitalOcean Spaces
+const spacesEndpoint = new AWS.Endpoint(process.env.DIGITAL_OCEAN_REGION);
 
-const spacesEndpoint = new AWS.Endpoint("nyc3.digitaloceanspaces.com");
 global.s3 = new AWS.S3({
   endpoint: spacesEndpoint,
   region: "nyc3",
-  accessKeyId: config.DIGITAL_OCEAN_ACESS_KEY,
-  secretAccessKey: config.DIGITAL_OCEAN_ACESS_TOKEN,
+  accessKeyId: process.env.DIGITAL_OCEAN_ACESS_KEY,
+  secretAccessKey: process.env.DIGITAL_OCEAN_ACESS_TOKEN,
 });
+console.log("🚀 ~ spacesEndpoint:", s3);
 
 // Enable detailed logging
 AWS.config.update({ logger: console });
@@ -77,14 +80,11 @@ AWS.config.update({ logger: console });
 // Function to check the configuration
 async function checkDOConfiguration() {
   try {
-    // Log configuration
-    console.log("Access Key:", config.DIGITAL_OCEAN_ACESS_KEY);
-    console.log("Secret Key:", config.DIGITAL_OCEAN_ACESS_TOKEN);
-    console.log("Bucket Name:", config.DIGITAL_OCEAN_BUCKET_NAME);
-
     // Attempt to list the contents of the Space
-    const params = { Bucket: config.DIGITAL_OCEAN_BUCKET_NAME };
+    const params = { Bucket: process.env.DIGITAL_OCEAN_BUCKET_NAME };
+
     const result = await s3.listObjectsV2(params).promise();
+
     console.log("DigitalOcean Spaces is configured correctly.");
     console.log("Contents of your Space:", result.Contents);
   } catch (error) {
@@ -114,7 +114,6 @@ conn();
 //Database connection
 
 global.app = express();
-require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 // Setting parsers for parsing the incoming data
 app.use(
@@ -135,7 +134,7 @@ app.use(
 //Setting up sessions
 app.use(
   session({
-    secret: config.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
   })
@@ -296,7 +295,7 @@ app.post("/project/send-email", async (req, res) => {
 
 //Routes
 const routes = require("./routes");
-const port = process.env.PORT || config.PORT;
+const port = process.env.PORT || process.env.PORT;
 const HOST = "0.0.0.0"; // Listen on all interfaces
 
 const options = {
